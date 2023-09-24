@@ -1,0 +1,272 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.5;
+
+import "openzeppelin-contracts/contracts/utils/math/Math.sol";
+import "openzeppelin-contracts/contracts/utils/Strings.sol";
+import "openzeppelin-contracts/contracts/access/Ownable.sol";
+import "openzeppelin-contracts/contracts/access/AccessControl.sol";
+import "openzeppelin-contracts/contracts/interfaces/IERC2981.sol";
+import "openzeppelin-contracts/contracts/utils/introspection/IERC165.sol";
+import "openzeppelin-contracts/contracts/security/ReentrancyGuard.sol";
+import "./ERC721A.sol";
+
+contract MoonveraLaunchpad is
+    ERC721A,
+    Ownable,
+    AccessControl,
+    IERC2981,
+    ReentrancyGuard
+{
+    //this contract is made only for the Arab Collectors Club and it's done by the ACC devs.
+    // Any other contract under the ACC name could be a scam.
+    // /\((
+    using Math for uint256;
+    using Strings for uint256;
+    string baseURI;
+    string public baseExtension = ".json";
+    uint256 public maxSupply = 555;
+    uint256 public mintPrice;
+    uint256 public ogMintPrice;
+    uint256 public whitelistMintPrice;
+
+    address[] public WhitelistMinters;
+    address[] public ogMinters;
+    address[] public regularMinters;
+    uint256 public constant royaltyPercentage = 10; // 10% royalty fees forced on secondary sales
+    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    bool public isMintingActive = true; // Initially, the minting is set to be active.
+    uint256 public constant maxOGMint = 2; //OG members will be able to mint 2 passes
+    uint256 public constant maxRegularMint = 1; //Regular member will mint only 1
+
+    mapping(address => uint256) public mintsPerWallet;
+    event RoyaltyFee(
+        address indexed receiver,
+        uint256 indexed tokenId,
+        uint256 amount
+    );
+
+    enum MinterType {
+        Owner,
+        OG,
+        WL,
+        Regular
+    }
+
+    error RegularMintError(uint8 _rule);
+    error OwnerMintError(uint8 _rule);
+
+    constructor(
+        string memory _name,
+        string memory _symbol,
+        string memory _initBaseURI,
+        uint256 _initMintPrice,
+        uint256 _initOGMintPrice,
+        address[] memory _initialOGMinters,
+        address[] memory _initialRegularMinters,
+        uint256 _initWhitelistMintPrice
+    ) Ownable()  {
+        __ERC721A_init(_name,_symbol);
+        setBaseURI(_initBaseURI);
+        ogMintPrice = _initOGMintPrice;
+        mintPrice = _initMintPrice;
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(MINTER_ROLE, msg.sender);
+        ogMinters = _initialOGMinters;
+        regularMinters = _initialRegularMinters;
+        whitelistMintPrice = _initWhitelistMintPrice;
+    }
+
+    // internal
+    function _baseURI() internal view virtual override returns (string memory) {
+        return baseURI;
+    }
+
+
+    function mint(
+        address _to,
+        uint256 _mintAmount,
+        MinterType _mintType // Enum MintType 1 to 4
+    ) external payable nonReentrant {
+        require(isMintingActive);
+        require(_to != address(0x0));
+        require(_mintAmount > 0, "Invalid mint amount");
+        require(totalSupply() + _mintAmount <= maxSupply, "Exceeds max supply");
+
+        if (_mintType == MinterType.Owner) {
+            require(_msgSender() == hasRole(DE));
+            _safeMint(_to, _mintAmount);
+        }
+        if (_mintType == MinterType.OG) {
+            require(isOGMinter(_msgSender()));
+            require(_internalSafeMint(msg.value, _to, ogMintPrice, _mintAmount, maxOGMint));
+        }
+        if (_mintType == MinterType.WL) {
+            require(isWhitelistedMinter(_msgSender()));
+            require(_internalSafeMint(msg.value, _to, whitelistMintPrice, _mintAmount, maxRegularMint));
+        }
+        if (_mintType == MinterType.Regular) {
+            require(isRegularMinter(_msgSender()));
+            require(_internalSafeMint(msg.value,_to, mintPrice, _mintAmount, maxRegularMint));
+        }
+    }
+
+    function _internalSafeMint(
+        uint256 _msgValue,
+        address _mintTo,
+        uint256 _mintPrice,
+        uint256 _mintAmount,
+        uint256 _maxMintAmount
+    ) internal returns (bool) {
+        require(_msgValue >= _mintAmount * mintPrice,"Insufficient mint payment");
+        _safeMint(_mintTo, _mintAmount);
+        mintsPerWallet[msg.sender] += _mintAmount;
+        return true;
+    }
+
+    function tokenURI(
+        uint256 tokenId
+    ) public view virtual override returns (string memory) {
+        require(
+            _exists(tokenId),
+            "ERC721Metadata: URI query for nonexistent token"
+        );
+
+        string memory currentBaseURI = _baseURI();
+        return
+            bytes(currentBaseURI).length > 0
+                ? string(
+                    abi.encodePacked(
+                        currentBaseURI,
+                        tokenId.toString(),
+                        baseExtension
+                    )
+                )
+                : "";
+    }
+
+    // only owner
+    function setMintingActive(bool _isMintingActive) public onlyOwner {
+        isMintingActive = _isMintingActive;
+    }
+
+    function setBaseURI(string memory _newBaseURI) public onlyOwner {
+        baseURI = _newBaseURI;
+    }
+
+    function getMintCountOf(address _address) public view returns (uint256) {
+        return mintsPerWallet[_address];
+    }
+
+    function setBaseExtension(
+        string memory _newBaseExtension
+    ) public onlyOwner {
+        baseExtension = _newBaseExtension;
+    }
+
+    function setMintPrice(uint256 _newMintPrice) public onlyOwner nonReentrant {
+        mintPrice = _newMintPrice;
+    }
+
+    function setWhitelistMintPrice(
+        uint256 _newWhitelistMintPrice
+    ) public onlyOwner nonReentrant {
+        whitelistMintPrice = _newWhitelistMintPrice;
+    }
+
+    function setOGMintPrice(
+        uint256 _newOGMintPrice
+    ) public onlyOwner nonReentrant {
+        ogMintPrice = _newOGMintPrice;
+    }
+    function isWhitelistedMinter(address _address) public view returns (bool) {
+        for (uint256 i = 0; i < WhitelistMinters.length; i++) {
+            if (WhitelistMinters[i] == _address) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function isOGMinter(address _address) public view returns (bool) {
+        for (uint256 i = 0; i < ogMinters.length; i++) {
+            if (ogMinters[i] == _address) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function isRegularMinter(address _address) public view returns (bool) {
+        for (uint256 i = 0; i < regularMinters.length; i++) {
+            if (regularMinters[i] == _address) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function updateWhitelistMinters(
+        address[] calldata _newWhitelistMinters
+    ) public onlyOwner nonReentrant {
+        require(
+            _newWhitelistMinters.length > 0,
+            "Empty WhitelistMinters array"
+        );
+        for (uint256 i = 0; i < _newWhitelistMinters.length; i++) {
+            address whitelistMinter = _newWhitelistMinters[i];
+            if (!isWhitelistedMinter(whitelistMinter)) {
+                WhitelistMinters.push(whitelistMinter);
+            }
+        }
+    }
+
+    function updateOGMinters(
+        address[] calldata _newOGMinters
+    ) public onlyOwner nonReentrant {
+        require(_newOGMinters.length > 0, "Empty OGMinters array");
+
+        for (uint256 i = 0; i < _newOGMinters.length; i++) {
+            address ogMinter = _newOGMinters[i];
+            if (!isOGMinter(ogMinter)) {
+                ogMinters.push(ogMinter);
+            }
+        }
+    }
+
+    function updateRegularMinters(
+        address[] calldata _newRegularMinters
+    ) public onlyOwner nonReentrant {
+        require(_newRegularMinters.length > 0, "Empty regularMinters array");
+
+        for (uint256 i = 0; i < _newRegularMinters.length; i++) {
+            address regularMinter = _newRegularMinters[i];
+            if (!isRegularMinter(regularMinter)) {
+                regularMinters.push(regularMinter);
+            }
+        }
+    }
+
+    function withdraw() public onlyOwner nonReentrant {
+        (bool succ, ) = msg.sender.call{value: address(this).balance}("");
+        require(succ, "ETH WITHDRAW FAILED");
+    }
+
+    function royaltyInfo(
+        uint256 _tokenId,
+        uint256 _salePrice
+    ) external view override returns (address receiver, uint256 royaltyAmount) {
+        // The receiver will be the contract owner
+        receiver = owner();
+
+        // Calculate the royalty amount using the specified royaltyPercentage
+        royaltyAmount = Math.mulDiv(_salePrice, royaltyPercentage, 100);
+    }
+
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view override(ERC721A, AccessControl, IERC165) returns (bool) {
+        return
+            interfaceId == type(IERC2981).interfaceId ||
+            super.supportsInterface(interfaceId);
+    }
+}
