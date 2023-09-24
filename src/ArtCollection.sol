@@ -9,7 +9,7 @@ import "solady/src/utils/Clone.sol";
 import "./abstracts/MintingStages.sol";
 
 
-import "./ERC721A.sol";
+import "./tokens/ERC721A.sol";
 
 /** 
     @title

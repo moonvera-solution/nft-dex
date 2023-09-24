@@ -4,7 +4,7 @@
 
 pragma solidity ^0.8.5;
 
-import "./interfaces/IERC721A.sol";
+import "../interfaces/IERC721A.sol";
 
 
 /**
