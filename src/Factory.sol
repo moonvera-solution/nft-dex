@@ -5,8 +5,8 @@ import {Clone} from "solady/src/utils/Clone.sol";
 import {ArtCollection} from "./ArtCollection.sol";
 
 /**
-    @title Simple factory to create erc721's clones with immutable arguments
-    @author Moonvera team
+    @title Factory contract to create erc721's clones with immutable arguments
+    @author MoonveraLabs
  */
 contract Factory {
     // Keep track of collections/clones per user

@@ -1,66 +1,115 @@
-
 // SPDX-License-Identifier: MIT O
 pragma solidity ^0.8.5;
 
-import {Test, console,console2} from "forge-std/Test.sol";
+import {Test, console, console2} from "forge-std/Test.sol";
 import {GasSnapshot} from "forge-gas-snapshot/GasSnapshot.sol";
 
 import "../src/Factory.sol";
 import "../src/ArtCollection.sol";
 import "./TestSetUp.sol";
 
-contract ArtCollectionTest is Test,TestSetUp, GasSnapshot{
+contract ArtCollectionTest is Test, TestSetUp, GasSnapshot {
+    ArtCollection private _nftCollection;
 
-    function setUp() public{
-        vm.deal(user1, 10 ether);
+    function setUp() public virtual {
+        factory = new Factory(3000); // takes fee on mint 3%
+        factory.updateMember(user1, block.timestamp + 5 days);
         clone = new ArtCollection();
-    }
 
-    /// @notice deployer is Admin
-    function test_initialAdminRole() external {
-        vm.startPrank(user1,user1);
-        Factory factory = new Factory(3000); // takes fee on mint
-        factory.updateMember(user1, block.timestamp + 5 days );
-
-        _initialOGMinters = new address[](2);
-        _initialOGMinters[0] = user8;
-        _initialOGMinters[1] = user9;
-
-        _initialWLMinters = new address[](2);
-        _initialWLMinters[0] = user8;
-        _initialWLMinters[1] = user9;
-
-        address collection = factory.createCollection{value:.5 ether}(address(clone));
-        
-        // profiling variants gas cost of ArtCollection::initialize()
-        snapStart("INIT CLONE");
-        _initCollection(
-            _initialOGMinters,
-            _initialWLMinters,
-            collection
+        vm.startPrank(user1, user1);
+        vm.deal(user1, 10 ether);
+        address collectionAddress = factory.createCollection{value: .5 ether}(
+            address(clone)
         );
+
+        snapStart("init_clone");
+        _initCollection(address(collectionAddress));
         snapEnd();
-
-
-        assert(ArtCollection(collection).hasRole(ADMIN_ROLE,user1));
+        _nftCollection = ArtCollection(collectionAddress);
     }
 
-    // function test_initialize() public{
-        
-    //     _deployInitCollection(user);
-    // }
+    /// @notice deployer is Clone/Art Collection Admin
+    function test_initialize() external {
+        assert((_nftCollection).hasRole(ADMIN_ROLE, user1));
+        assert((_nftCollection)._mintFee() == 3000); // test immutable arg
+    }
 
-    // function test_getImmutableFee() public{
-    //     vm.startPrank(user5,user5);
-    //     vm.deal(user5, 10 ether);
-    //     Factory newFactory = new Factory(3000);
-    //     newFactory.updateMember(user5, block.timestamp + 1 days);
-    //     newFactory.updateFeeOnMint(300);
+    /**
+        Fuzz Test Abstract Minting Stages Contract
+    */
+    // OG MINTING
+    function test_updateOGMintPrice(uint256 price) public {
+        vm.assume(price > 0);
+        _nftCollection.updateOGMintPrice(price);
+        assert(_nftCollection._ogMintPrice() == price);
+    }
 
-    //     uint256 platformFee = .5 ether;
+    function test_updateOGMintTime(uint256 start, uint256 end) public {
+        vm.assume(start > block.timestamp);
+        vm.assume(end > start && end < block.timestamp + 5 days);
+        _nftCollection.updateOGMintTime(start, end);
+        assert(_nftCollection._ogMintStart() > block.timestamp);
+        assert(_nftCollection._ogMintEnd() > _nftCollection._ogMintStart());
+    }
 
-    //     address newCollection = newFactory.createCollection{value:platformFee}(address(clone));
-    //     _initCollection(newCollection);
+    function test_updateOGMintMax(uint256 price) public {
+        vm.assume(price > 0);
+        _nftCollection.updateOGMintMax(price);
+        assert(_nftCollection._ogMintMax() == price);
+    }
 
-    // }
+    // WL MINTING
+    function test_updateWhitelistMintPrice(uint256 price) public {
+        vm.assume(price > 0);
+        _nftCollection.updateWhitelistMintPrice(price);
+        assert(_nftCollection._whitelistMintPrice() == price);
+    }
+
+    function test_updateWLMintTime(uint256 start, uint256 end) public {
+        vm.assume(start > block.timestamp);
+        vm.assume(end > start && end < block.timestamp + 5 days);
+        _nftCollection.updateWLMintTime(start, end);
+        assert(_nftCollection._whitelistMintStart() > block.timestamp);
+        assert(
+            _nftCollection._whitelistMintEnd() >
+                _nftCollection._whitelistMintStart()
+        );
+    }
+
+    function test_updateWLMintMax(uint256 mintMax) public {
+        vm.assume(mintMax > 0);
+        vm.assume(mintMax > _nftCollection._maxSupply());
+        _nftCollection.updateWLMintMax(mintMax);
+        assert(_nftCollection._whitelistMintMax() == mintMax);
+    }
+
+    function test_updateOGList(address[] calldata ogList) public {}
+
+    // REGULAR MINTING
+
+    function test_mintPrice(uint256 price) public {
+        vm.assume(price > 0);
+        _nftCollection.updateMintPrice(price);
+        assert(_nftCollection._mintPrice() == price);
+    }
+
+    function test_updateMintMax(uint256 mintMax) public {
+        vm.assume(mintMax > 0);
+        vm.assume(mintMax < _nftCollection._maxSupply());
+        _nftCollection.updateMintMax(mintMax);
+        assert(_nftCollection._mintMax() == mintMax);
+    }
+
+    function test_updateTime(uint256 start, uint256 end) public {
+        vm.assume(start > block.timestamp);
+        vm.assume(end > start && end < block.timestamp + 5 days);
+        _nftCollection.updateTime(start, end);
+        assert(_nftCollection._mintStart() > block.timestamp);
+        assert(_nftCollection._mintEnd() > _nftCollection._mintStart());
+    }
+
+    function test_addOgRole() public{
+        _nftCollection.grantRole(OG_MINTER_ROLE, user4);
+        assert(_nftCollection.hasRole(OG_MINTER_ROLE, user4));
+    }
 }

@@ -1,204 +1,196 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
 
-import "openzeppelin-contracts-upgradeable/contracts/utils/math/SafeMathUpgradeable.sol";
 import "openzeppelin-contracts-upgradeable/contracts/utils/StringsUpgradeable.sol";
 import "openzeppelin-contracts/contracts/interfaces/IERC2981.sol";
 import "openzeppelin-contracts/contracts/utils/introspection/IERC165.sol";
 import "solady/src/utils/Clone.sol";
 import "./abstracts/MintingStages.sol";
-
-
 import "./tokens/ERC721A.sol";
 
-/** 
-    @title
-    //this contract is made only for the Arab Collectors Club and it's done by the ACC devs.
-    // Any other contract under the ACC name could be a scam.
-    // /\((
- */
-contract ArtCollection is
-    Clone,
-    ERC721A,
-    IERC2981,
-    MintingStages
-{
-    using SafeMathUpgradeable for uint256;
+/// @title Art Collection
+/// @author MoonveraLabs
+/// @dev This contract is made only for the Arab Collectors Club
+contract ArtCollection is Clone, ERC721A, IERC2981, MintingStages {
     using StringsUpgradeable for uint256;
 
     string public baseURI;
-    string public baseExtension;
-    uint256 public maxSupply;
-    uint256 public feeOnMint;
-
+    string public _baseExtension;
+    uint256 public _maxSupply;
+    uint256 public _mintFee; // basis points divided by 100%
+    uint256 public _royaltyFee; // basis points divided by 100%
 
     // Cap number of mint per user
-    mapping(address => uint256) public mintsPerWallet;
+    mapping(address => uint256) public _mintsPerWallet;
 
-    event RoyaltyFee(
-        address indexed receiver,
-        uint256 indexed tokenId,
-        uint256 amount
-    );
+    event OGmintEvent(address indexed sender, uint256 tokenId);
+    event WLmintEvent(address indexed sender, uint256 tokenId);
+    event MintEvent(address indexed sender, uint256 tokenId);
+    event BurnEvent(address indexed sender, uint256 tokenId);
 
+
+    /// @notice Init Collection ERC721A
+    /// @notice clone with Immutable arg has access predefined intialized storage
+    /// @dev feeOnMint = _getArgUint256(0); Unique Immutable argument
+    /// @dev mintStageDetails array[] memory layout. index: 0-3:Og,4-7:WL,8-11:Reg
     function initialize(
-        string memory _name,
-        string memory _symbol,
-        string memory _initBaseURI,
-        string memory _baseExtension,
-        address[] calldata _initialOGMinters,
-        address[] calldata _initialWLMinters,
-        uint256 _initWhitelistMintPrice,
-        uint256 _initMintPrice,
-        uint256 _initOGMintPrice,
-        uint256 _maxSupply
+        string memory name,
+        string memory symbol,
+        string memory initBaseURI,
+        string memory baseExtension,
+        uint256 maxSupply,
+        uint256 royaltyFee,
+        address[] calldata initialOGMinters,
+        address[] calldata initialWLMinters,
+        uint256[] calldata mintStageDetails
     ) external initializer {
-        __ERC721A_init(_name, _symbol);
+        __ERC721A_init(name, symbol);
         __AccessControl_init();
+        _setRoleAdmin(OG_MINTER_ROLE,ADMIN_ROLE); // set ADMIN_ROLE as admin of OG's
+        _setRoleAdmin(WL_MINTER_ROLE,ADMIN_ROLE); // set ADMIN_ROLE as admin of WL's
         _grantRole(ADMIN_ROLE, msg.sender);
-        setBaseURI(_initBaseURI);
 
-        ogMintPrice = _initOGMintPrice;
-        whitelistMintPrice = _initWhitelistMintPrice;
-        mintPrice = _initMintPrice;
+        setBaseURI(initBaseURI);
+        _baseExtension = _baseExtension;
+        _maxSupply = maxSupply;
+        _royaltyFee = royaltyFee;
 
-        ogMinters = _initialOGMinters;
-        whitelistMinters =  _initialWLMinters;
-    
-        ogMintingStart = block.timestamp;
-        ogMintingEnd = ogMintingStart + 2 days;
-        regularMintingStart = ogMintingEnd; // Start right after OG minting ends
-        regularMintingEnd = regularMintingStart + 30 days; // For example
-        whitelistMintingStart = block.timestamp;
-        whitelistMintingEnd = whitelistMintingStart + 1 days; // For example, 1 day for whitelist
-        maxSupply = _maxSupply;
-        baseExtension = _baseExtension;
+        // OG minting stage details
+        _ogMintPrice = mintStageDetails[0];
+        _ogMintMax = mintStageDetails[1];
+        _ogMintStart = mintStageDetails[2];
+        _ogMintEnd = mintStageDetails[3];
 
+        // WL minting stage details
+        _whitelistMintPrice = mintStageDetails[4];
+        _whitelistMintMax = mintStageDetails[5];
+        _whitelistMintStart = mintStageDetails[6];
+        _whitelistMintEnd = mintStageDetails[7];
+
+        // Regular minting stage details
+        _mintPrice = mintStageDetails[8];
+        _mintMax = mintStageDetails[9];
+        _mintStart = mintStageDetails[10];
+        _mintEnd = mintStageDetails[11];
+
+        // init minting roles OG=0, WL=1
+        updateMinterRoles(initialOGMinters,0);
+        updateMinterRoles(initialWLMinters,1);
         // Clone with Immutable arg has access predefined intialized storage
-        feeOnMint = _getArgUint256(0);
-        // {
-        //     updateMinterRoles(_initialOGMinters,0);
-        //     updateMinterRoles(_initialWLMinters,1);
-        // }
+        _mintFee = _getArgUint256(0);
     }
 
-    /// @param _minterList array of addresses
-    /// @param _mintRole 0 = OG, 1 = WL
-    function updateMinterRoles(
-        address[] calldata _minterList,
-        uint8 _mintRole
-    ) public onlyRole(ADMIN_ROLE) {
-        uint256 minters = _minterList.length;
-        require(minters > 0, "Invalid minterList");
-        for (uint256 i = 0; i < minters; ++i) {
-            require(_minterList[i] != address(0x0), "Invalid Address");
-            _mintRole == 0
-                ? _grantRole(OG_MINTER_ROLE, _minterList[i])
-                : _grantRole(WL_MINTER_ROLE, _minterList[i]);
-        }
-    }
-
-    function updateWL(address[] calldata _ogMinters) external{
-                uint256 minters = _ogMinters.length;
-        require(minters > 0, "Invalid minterList");
-        for (uint256 i = 0; i < minters; ++i) {
-            require(_ogMinters[i] != address(0x0), "Invalid Address");
-            ogMinters[i] = _ogMinters[i];
-        }
-    }
-
-
-    // internal
-    function _baseURI() internal view virtual override returns (string memory) {
-        return baseURI;
+    function _baseURI()
+        internal
+        view
+        override
+        returns (string memory baseURI)
+    {
+        baseURI = _baseURI();
     }
 
     function mintForOwner(
-        address _to,
-        uint256 _mintAmount
+        address to,
+        uint256 mintAmount
     ) external payable nonReentrant onlyRole(ADMIN_ROLE) {
-        require(totalSupply() + _mintAmount <= maxSupply, "Over mintMax error");
-        _safeMint(_to, _mintAmount);
+        require(totalSupply() + mintAmount <= _maxSupply, "Over mintMax error");
+        _safeMint(to, mintAmount);
     }
 
     function mintForOG(
-        address _to,
-        uint256 _mintAmount
-    ) external payable onlyRole(OG_MINTER_ROLE) nonReentrant {
+        address to,
+        uint256 mintAmount
+    ) external payable nonReentrant onlyRole(OG_MINTER_ROLE) {
         uint256 currentTime = block.timestamp;
-        require(totalSupply() + _mintAmount <= maxSupply, "Over mintMax error");
+        require(totalSupply() + mintAmount <= _maxSupply, "Over mintMax error");
         require(
-            currentTime >= ogMintingStart && currentTime <= ogMintingEnd,
+            currentTime >= _ogMintStart && currentTime <= _ogMintEnd,
             "Not OG mint time"
         );
-        _internalSafeMint(msg.value, _to, ogMintPrice, _mintAmount, maxOGMint);
+        _internalSafeMint(msg.value, to, _ogMintPrice, mintAmount, _ogMintMax);
     }
 
     function mintForWhitelist(
-        address _to,
-        uint256 _mintAmount
+        address to,
+        uint256 mintAmount
     ) external payable onlyRole(WL_MINTER_ROLE) nonReentrant {
         uint256 currentTime = block.timestamp;
-        require(totalSupply() + _mintAmount <= maxSupply, "Over mintMax error");
+        require(totalSupply() + mintAmount <= _maxSupply, "Over mintMax error");
         require(
-            currentTime >= whitelistMintingStart &&
-                currentTime <= whitelistMintingEnd,
+            currentTime >= _whitelistMintStart &&
+                currentTime <= _whitelistMintEnd,
             "Not OG mint time"
-        );
-        _internalSafeMint(msg.value, _to, ogMintPrice, _mintAmount, maxOGMint);
-    }
-
-    function mintForRegular(
-        address _to,
-        uint256 _mintAmount
-    ) external payable nonReentrant {
-        uint256 currentTime = block.timestamp;
-        require(totalSupply() + _mintAmount <= maxSupply, "Over mintMax error");
-        require(
-            currentTime >= regularMintingStart &&
-                currentTime <= regularMintingEnd,
-            "Not Regular minTime"
         );
         _internalSafeMint(
             msg.value,
-            _to,
-            mintPrice,
-            _mintAmount,
-            maxRegularMint
+            to,
+            _whitelistMintPrice,
+            mintAmount,
+            _ogMintMax
         );
     }
 
-    /// @notice Checks for ether sent before calling _safeMint
+    function mintForRegular(
+        address to,
+        uint256 mintAmount
+    ) external payable nonReentrant {
+        uint256 currentTime = block.timestamp;
+        require(totalSupply() + mintAmount <= _maxSupply, "Over mintMax error");
+        require(
+            currentTime >= _mintStart && currentTime <= _mintEnd,
+            "Not Regular minTime"
+        );
+        _internalSafeMint(msg.value, to, _mintPrice, mintAmount, _mintMax);
+    }
+
+    /// @notice Checks for ether sent to this contract before calling _safeMint
     function _internalSafeMint(
-        uint256 _msgValue,
-        address _mintTo,
-        uint256 _mintPrice,
-        uint256 _mintAmount,
-        uint256 _maxMintAmount
+        uint256 msgValue,
+        address mintTo,
+        uint256 mintPrice,
+        uint256 mintAmount,
+        uint256 maxMintAmount
     ) internal {
         require(
-            mintsPerWallet[msg.sender] + _mintAmount <= _maxMintAmount,
+            _mintsPerWallet[msg.sender] + mintAmount <= maxMintAmount,
             "Exceeds maxMint"
         );
 
-        uint256 priceWithFee = _applyMintFee(_mintAmount * mintPrice);
-        
+        uint256 price = mintAmount * mintPrice;
+        uint256 mintFee = _calculateFee(price, _mintFee);
+
         require(
-            _msgValue >= priceWithFee,
+            msgValue >= (price + mintFee),
             "Insufficient mint payment"
         );
-        
-        mintsPerWallet[msg.sender] += _mintAmount;
-        _safeMint(_mintTo, _mintAmount);
+
+        _mintsPerWallet[msg.sender] += mintAmount;
+        _safeMint(mintTo, mintAmount);
     }
 
     /// @notice Using basis Points as measurement units.
-    function _applyMintFee(uint256 _price) internal returns(uint256 _priceWithFee){
-        _priceWithFee = _price * feeOnMint;
-        require(_priceWithFee >= 10_000, "Invalid Price");
+    /// @dev feeOnMint is on basis points
+    function _calculateFee(
+        uint256 price,
+        uint256 feeOnMint
+    ) internal pure returns (uint256 mintFee) {
+        mintFee = price * feeOnMint;
+        require(mintFee >= 10_000, "Invalid Price");
         // A basis point is one hundredth of 1 percentage point
         // ex: (300 * 500) / 10_000 is the same as 500 * .03
-        _priceWithFee = _priceWithFee / 10_000;
+        mintFee = mintFee / 10_000;
+    }
+
+    /// @notice Using basis Points as measurement units.
+    function royaltyInfo(
+        uint256 tokenId,
+        uint256 salePrice
+    ) external view override returns (address receiver, uint256 royaltyAmount) {
+        // The receiver will be the contract owner
+        receiver = msg.sender;
+
+        // Calculate the royalty amount using the specified ROYALTY_PERCENTAGE in basis points
+        royaltyAmount = (salePrice * _royaltyFee) / 10_000;
     }
 
     function tokenURI(
@@ -209,57 +201,42 @@ contract ArtCollection is
             "ERC721Metadata: URI query for nonexistent token"
         );
 
-        string memory currentBaseURI = _baseURI();
+        string memory current_baseURI = _baseURI();
         return
-            bytes(currentBaseURI).length > 0
+            bytes(current_baseURI).length > 0
                 ? string(
                     abi.encodePacked(
-                        currentBaseURI,
+                        current_baseURI,
                         tokenId.toString(),
-                        baseExtension
+                        _baseExtension
                     )
                 )
                 : "";
     }
 
-    function setBaseURI(string memory _newBaseURI) public {
-        baseURI = _newBaseURI;
+    function setBaseURI(string memory newBaseURI) public {
+        baseURI = newBaseURI;
     }
 
-    function getMintCountOf(address _address) public view returns (uint256) {
-        return mintsPerWallet[_address];
+    function getMintCountOf(address user) public view returns (uint256) {
+        return _mintsPerWallet[user];
     }
 
-    function setBaseExtension(string memory _newBaseExtension) public {
-        baseExtension = _newBaseExtension;
+    function setBaseExtension(string memory newBaseExtension) public {
+        _baseExtension = newBaseExtension;
     }
-
-
-    function withdraw() public nonReentrant {
-        uint256 balance = address(this).balance;
-        payable(msg.sender).transfer(balance);
-    }
-
-    function royaltyInfo(
-        uint256 _tokenId,
-        uint256 _salePrice
-    ) external view override returns (address receiver, uint256 royaltyAmount) {
-        // The receiver will be the contract owner
-        receiver = msg.sender;
-
-        // Calculate the royalty amount using the specified ROYALTY_PERCENTAGE
-        royaltyAmount = (_salePrice.mul(ROYALTY_PERCENTAGE)).div(100);
-    }
-
-    event Burned(address indexed operator, uint256 tokenId);
 
     function burn(uint256 tokenId) external {
         require(ownerOf(tokenId) == msg.sender, "Not Owner");
 
         _burn(tokenId);
 
-        // Emit the 'Burned' event
-        emit Burned(_msgSender(), tokenId);
+        emit BurnEvent(_msgSender(), tokenId);
+    }
+
+    /// @notice only ADMIN access withdraw royalties
+    function withdraw() external onlyRole(ADMIN_ROLE) {
+        payable(msg.sender).transfer(address(this).balance);
     }
 
     function supportsInterface(

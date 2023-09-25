@@ -3,8 +3,10 @@ pragma solidity ^0.8.7;
 import "openzeppelin-contracts-upgradeable/contracts/access/AccessControlUpgradeable.sol";
 import "openzeppelin-contracts-upgradeable/contracts/security/ReentrancyGuardUpgradeable.sol";
 
-abstract contract MintingStages is AccessControlUpgradeable,ReentrancyGuardUpgradeable{
-    
+abstract contract MintingStages is
+    AccessControlUpgradeable,
+    ReentrancyGuardUpgradeable
+{
     uint256 public constant ROYALTY_PERCENTAGE = 10; // 10% royalty fees forced on secondary sales
 
     /* ACCESS ROLES */
@@ -15,74 +17,103 @@ abstract contract MintingStages is AccessControlUpgradeable,ReentrancyGuardUpgra
     bytes32 public constant OG_MINTER_ROLE = keccak256("OG_MINTER_ROLE");
 
     /* OG MINT DETAILS */
-    uint256 public ogMintingStart;
-    uint256 public ogMintingEnd;
-    uint256 public maxOGMint;
+    uint256 public _ogMintPrice;
+    uint256 public _ogMintMax;
+    uint256 public _ogMintStart;
+    uint256 public _ogMintEnd;
 
     /* WL MINT DETAILS */
-    uint256 public whitelistMintingStart;
-    uint256 public whitelistMintingEnd;
-    uint256 public maxWLMint;
+    uint256 public _whitelistMintPrice;
+    uint256 public _whitelistMintMax;
+    uint256 public _whitelistMintStart;
+    uint256 public _whitelistMintEnd;
 
     /* REGULAR MINT DETAILS*/
-    uint256 public regularMintingStart;
-    uint256 public regularMintingEnd;
-    uint256 public maxRegularMint;
+    uint256 public _mintPrice;
+    uint256 public _mintMax;
+    uint256 public _mintStart;
+    uint256 public _mintEnd;
 
-    // DELETE and use internal update function
-    address[] public whitelistMinters;
-    address[] public ogMinters;
+    address[] public _whitelistMinters;
+    address[] public _ogMinters;
 
-    uint256 public mintPrice;
-    uint256 public ogMintPrice;
-    uint256 public whitelistMintPrice;
+    event UpdateWLevent(address indexed sender, uint256 listLength);
+    event UpdateOgEvent(address indexed sender, uint256 listLength);
 
-    function setOGMintTime(
-        uint256 _start,
-        uint256 _end
+    /// OG MINTING
+    function updateOGMintPrice(uint256 newPrice) external onlyRole(ADMIN_ROLE) {
+        _ogMintPrice = newPrice;
+    }
+
+    function updateOGMintTime(
+        uint256 start,
+        uint256 end
     ) external onlyRole(ADMIN_ROLE) {
-        ogMintingStart = _start;
-        ogMintingEnd = _end;
+        _ogMintStart = start;
+        _ogMintEnd = end;
     }
 
-    function setOGMintMax(
-        uint256 _maxOGMintAllowed
+    function updateOGMintMax(uint256 ogMintMax) external onlyRole(ADMIN_ROLE) {
+        _ogMintMax = ogMintMax;
+    }
+    
+    /// WL MINTING
+
+    function updateWhitelistMintPrice(
+        uint256 whitelistMintPrice
     ) external onlyRole(ADMIN_ROLE) {
-        maxOGMint = _maxOGMintAllowed;
+        _whitelistMintPrice = whitelistMintPrice;
     }
 
-    function setWLMintTime(
-        uint256 _start,
-        uint256 _end
+    function updateWLMintTime(
+        uint256 start,
+        uint256 end
     ) external onlyRole(ADMIN_ROLE) {
-        whitelistMintingStart = _start;
-        whitelistMintingEnd = _end;
+        _whitelistMintStart = start;
+        _whitelistMintEnd = end;
     }
 
-    function setWLMintMax(
-        uint256 _maxWLMintAllowed
+    function updateWLMintMax(
+        uint256 whitelistMintMax
     ) external onlyRole(ADMIN_ROLE) {
-        maxWLMint = _maxWLMintAllowed;
+        _whitelistMintMax = whitelistMintMax;
     }
 
-    function setRegularMintingTime(uint256 _start, uint256 _end) external {
-        regularMintingStart = _start;
-        regularMintingEnd = _end;
-    }
+    // REGULAR MINTING
 
-    function setRegularMintMax(
-        uint256 _maxRegularMintAllowed
+    function updateMintPrice(
+        uint256 mintPrice
     ) external onlyRole(ADMIN_ROLE) {
-        maxRegularMint = _maxRegularMintAllowed;
+        _mintPrice = mintPrice;
     }
 
-    function setRegularMintPrice(uint256 _newMintPrice) public nonReentrant() {
-        mintPrice = _newMintPrice;
+    function updateMintMax(
+        uint256 mintMax
+    ) external onlyRole(ADMIN_ROLE) {
+        _mintMax = mintMax;
+    }
+    function updateTime(
+        uint256 start,
+        uint256 end
+    ) external onlyRole(ADMIN_ROLE) {
+        _mintStart = start;
+        _mintEnd = end;
     }
 
-    function setWhitelistMintPrice(
-        uint256 _newWhitelistMintPrice
-    ) public nonReentrant {
-        whitelistMintPrice = _newWhitelistMintPrice;
+    /// @param _minterList array of addresses
+    /// @param _mintRole 0 = OG, 1 = WL
+    function updateMinterRoles(
+        address[] calldata _minterList,
+        uint8 _mintRole
+    ) public onlyRole(ADMIN_ROLE) {
+        uint256 minters = _minterList.length;
+        require(minters > 0, "Invalid minterList");
+        for (uint256 i = 0; i < minters; ++i) {
+            require(_minterList[i] != address(0x0), "Invalid Address");
+            _mintRole == 0
+                ? _grantRole(OG_MINTER_ROLE, _minterList[i])
+                : _grantRole(WL_MINTER_ROLE, _minterList[i]);
+        }
     }
+
 }
