@@ -12,15 +12,14 @@ contract ArtCollectionTest is Test, TestSetUp, GasSnapshot {
     ArtCollection private _nftCollection;
 
     function setUp() public virtual {
+        clone = new ArtCollection();
         factory = new Factory(3000); // takes fee on mint 3%
         factory.updateMember(user1, block.timestamp + 5 days);
-        clone = new ArtCollection();
+        factory.updateCollectionImpl(address(clone));
 
         vm.startPrank(user1, user1);
         vm.deal(user1, 10 ether);
-        address collectionAddress = factory.createCollection{value: .5 ether}(
-            address(clone)
-        );
+        address collectionAddress = factory.createCollection{value: .5 ether}();
 
         snapStart("init_clone");
         _initCollection(address(collectionAddress));

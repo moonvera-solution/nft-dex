@@ -27,8 +27,12 @@ contract ArtCollection is Clone, ERC721A, IERC2981, MintingStages {
     event WLmintEvent(address indexed sender, uint256 tokenId);
     event MintEvent(address indexed sender, uint256 tokenId);
     event BurnEvent(address indexed sender, uint256 tokenId);
-
-
+    address public _owner;
+    
+    modifier onlyOwner(){
+        require(msg.sender == owner, "OnlyOwner");
+        _;
+    }
     /// @notice Init Collection ERC721A
     /// @notice clone with Immutable arg has access predefined intialized storage
     /// @dev feeOnMint = _getArgUint256(0); Unique Immutable argument
@@ -43,12 +47,13 @@ contract ArtCollection is Clone, ERC721A, IERC2981, MintingStages {
         address[] calldata initialOGMinters,
         address[] calldata initialWLMinters,
         uint256[] calldata mintStageDetails
-    ) external initializer {
+    ) external initializer onlyOwner {
         __ERC721A_init(name, symbol);
         __AccessControl_init();
+        _grantRole(ADMIN_ROLE, msg.sender);
+        _setRoleAdmin(ADMIN_ROLE,ADMIN_ROLE);   
         _setRoleAdmin(OG_MINTER_ROLE,ADMIN_ROLE); // set ADMIN_ROLE as admin of OG's
         _setRoleAdmin(WL_MINTER_ROLE,ADMIN_ROLE); // set ADMIN_ROLE as admin of WL's
-        _grantRole(ADMIN_ROLE, msg.sender);
 
         setBaseURI(initBaseURI);
         _baseExtension = _baseExtension;
@@ -77,7 +82,7 @@ contract ArtCollection is Clone, ERC721A, IERC2981, MintingStages {
         updateMinterRoles(initialOGMinters,0);
         updateMinterRoles(initialWLMinters,1);
         // Clone with Immutable arg has access predefined intialized storage
-        _mintFee = _getArgUint256(0);
+        _mintFee = _getArgUint256(1);
     }
 
     function _baseURI()

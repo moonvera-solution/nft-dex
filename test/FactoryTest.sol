@@ -18,8 +18,9 @@ contract Factorytest is Test, GasSnapshot{
     address user1 = address(1);
 
     function setUp() public {
-        factory = new Factory(3000); // takes fee on mint
         clone = new ArtCollection();
+        factory = new Factory(3000); // takes fee on mint
+        factory.updateCollectionImpl(address(clone));
          snapSize("ArtCollection", address(clone));
         vm.deal(address(this), 10 ether);
     }
@@ -36,9 +37,7 @@ contract Factorytest is Test, GasSnapshot{
     }
 
     function test_createCollection() public {
-        address newCollection = factory.createCollection{value: .5 ether}(
-            address(clone)
-        );
+        address newCollection = factory.createCollection{value: .5 ether}();
         address collectedCollection = factory.collections(address(this));
         // snap("test_createCollection:: new user collection",factory.collections(address(this)));
         assertTrue(

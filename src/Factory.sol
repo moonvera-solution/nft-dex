@@ -15,6 +15,12 @@ contract Factory {
     // Factory  address(user) => validUntil;
     mapping(address => uint256) public members;
 
+    // Current ArtCollection template 
+    address  public _collectionTemplate;
+
+    // Collections count
+    uint256 totalCollections;
+
     // ownable by deployer
     address public _owner;
 
@@ -78,12 +84,14 @@ contract Factory {
         _feeOnMint = _newFeeOnMint;
     }
 
-    function createCollection(
-        address _impl
-    ) external payable auth returns (address _clone) {
+    function updateCollectionImpl(address collectionTemplate) external onlyOwner{
+         require(collectionTemplate != address(0x0),"Zero address");
+         _collectionTemplate = collectionTemplate;
+    }
+    function createCollection() external payable auth returns (address _clone) {
         require(msg.value >= _deployFee, "Missing deploy fee");
 
-        _clone = LibClone.clone(address(_impl), abi.encode(_feeOnMint));
+        _clone = LibClone.clone(address(_collectionTemplate), abi.encode(_feeOnMint));
         if (_clone == address(0x0)) revert CreateCloneError();
         collections[msg.sender] = _clone;
         uint256 _dust = msg.value - _deployFee;
@@ -91,9 +99,14 @@ contract Factory {
             payable(msg.sender).transfer(_dust);
         }
         delete members[msg.sender];
-        emit CreateCloneEvent(msg.sender, _impl, _clone);
+        totalCollections = totalCollections + 1;
+        emit CreateCloneEvent(msg.sender, _collectionTemplate, _clone);
     }
 
+    function transferOwnerShip(address newOner) external onlyOwner{
+        require(newOner != address(0x0),"Zero address");
+        _owner = newOner;
+    }
     function withdraw() external onlyOwner {
         payable(msg.sender).transfer(address(this).balance);
     }
