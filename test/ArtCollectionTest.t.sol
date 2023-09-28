@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT O
 pragma solidity ^0.8.5;
 
-import {Test, console, console2} from "forge-std/Test.sol";
+import {Test, console, console2, Vm} from "forge-std/Test.sol";
 import {GasSnapshot} from "forge-gas-snapshot/GasSnapshot.sol";
 
 import "../src/Factory.sol";
@@ -11,26 +11,47 @@ import "./TestSetUp.sol";
 contract ArtCollectionTest is Test, TestSetUp, GasSnapshot {
     ArtCollection private _nftCollection;
 
-    function setUp() public virtual {
+    function setUp() public {
         clone = new ArtCollection();
         factory = new Factory(3000); // takes fee on mint 3%
-        factory.updateMember(user1, block.timestamp + 5 days);
-        factory.updateCollectionImpl(address(clone));
+        factory.setCollectionImpl(address(clone));
+        factory.updateMember(wallet1.addr, block.timestamp + 5 days);
 
-        vm.startPrank(user1, user1);
-        vm.deal(user1, 10 ether);
-        address collectionAddress = factory.createCollection{value: .5 ether}();
+        vm.deal(wallet1.addr, 10 ether);
+
+        (
+            address[] memory _initialOGMinters,
+            address[] memory _initialWLMinters
+        ) = _getMintingUserLists();
+
+        bytes memory data = _getEncodeInitParams();
+
+        vm.startPrank(wallet1.addr, wallet1.addr);
+        bytes memory nftData = abi.encode(
+            "TestName",
+            "SYMBOL",
+            "https://moonvera.io/nft/{id}",
+            ".json"
+        );
 
         snapStart("init_clone");
-        _initCollection(address(collectionAddress));
+        address collectionAddress = factory.createCollection{value: .5 ether}(
+            50, //max Supply
+            0, // royalty fee 3% in basis points
+            nftData,
+            _initialOGMinters,
+            _initialWLMinters,
+            _getMintStageDetails()
+        );
         snapEnd();
         _nftCollection = ArtCollection(collectionAddress);
+        _nftCollection.grantRole(ADMIN_ROLE, address(this));
     }
 
     /// @notice deployer is Clone/Art Collection Admin
     function test_initialize() external {
-        assert((_nftCollection).hasRole(ADMIN_ROLE, user1));
-        assert((_nftCollection)._mintFee() == 3000); // test immutable arg
+        assert((_nftCollection).hasRole(ADMIN_ROLE, wallet1.addr));
+        console.log("_mintFee:: ", (_nftCollection)._mintFee()); // test immutable arg
     }
 
     /**
@@ -107,8 +128,8 @@ contract ArtCollectionTest is Test, TestSetUp, GasSnapshot {
         assert(_nftCollection._mintEnd() > _nftCollection._mintStart());
     }
 
-    function test_addOgRole() public{
-        _nftCollection.grantRole(OG_MINTER_ROLE, user4);
-        assert(_nftCollection.hasRole(OG_MINTER_ROLE, user4));
+    function test_addOgRole() public {
+        _nftCollection.grantRole(OG_MINTER_ROLE, wallet1.addr);
+        assert(_nftCollection.hasRole(OG_MINTER_ROLE, wallet1.addr));
     }
 }

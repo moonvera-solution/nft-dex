@@ -41,19 +41,22 @@ abstract contract MintingStages is
     event UpdateOgEvent(address indexed sender, uint256 listLength);
 
     /// OG MINTING
-    function updateOGMintPrice(uint256 newPrice) external onlyRole(ADMIN_ROLE) {
-        _ogMintPrice = newPrice;
+    function updateOGMintPrice(uint256 price) external onlyRole(ADMIN_ROLE) {
+        require(price > 0, "Invalid price amount");
+        _ogMintPrice = price;
     }
 
     function updateOGMintTime(
         uint256 start,
         uint256 end
     ) external onlyRole(ADMIN_ROLE) {
+        require(end > start, "End not > start");
         _ogMintStart = start;
         _ogMintEnd = end;
     }
 
     function updateOGMintMax(uint256 ogMintMax) external onlyRole(ADMIN_ROLE) {
+        require(ogMintMax > 0, "Invalid max amount");
         _ogMintMax = ogMintMax;
     }
     
@@ -62,6 +65,7 @@ abstract contract MintingStages is
     function updateWhitelistMintPrice(
         uint256 whitelistMintPrice
     ) external onlyRole(ADMIN_ROLE) {
+        require(whitelistMintPrice > 0, "Invalid price amount");
         _whitelistMintPrice = whitelistMintPrice;
     }
 
@@ -69,6 +73,7 @@ abstract contract MintingStages is
         uint256 start,
         uint256 end
     ) external onlyRole(ADMIN_ROLE) {
+        require(end > start, "End not > start");
         _whitelistMintStart = start;
         _whitelistMintEnd = end;
     }
@@ -76,6 +81,7 @@ abstract contract MintingStages is
     function updateWLMintMax(
         uint256 whitelistMintMax
     ) external onlyRole(ADMIN_ROLE) {
+        require(whitelistMintMax > 0, "Invalid max amount");
         _whitelistMintMax = whitelistMintMax;
     }
 
@@ -84,18 +90,21 @@ abstract contract MintingStages is
     function updateMintPrice(
         uint256 mintPrice
     ) external onlyRole(ADMIN_ROLE) {
+        require(mintPrice > 0, "Invalid price amount");
         _mintPrice = mintPrice;
     }
 
     function updateMintMax(
         uint256 mintMax
     ) external onlyRole(ADMIN_ROLE) {
+        require(mintMax > 0, "Invalid mint amount");
         _mintMax = mintMax;
     }
     function updateTime(
         uint256 start,
         uint256 end
     ) external onlyRole(ADMIN_ROLE) {
+        require(end > start, "End not > start");
         _mintStart = start;
         _mintEnd = end;
     }
@@ -103,9 +112,10 @@ abstract contract MintingStages is
     /// @param _minterList array of addresses
     /// @param _mintRole 0 = OG, 1 = WL
     function updateMinterRoles(
-        address[] calldata _minterList,
+        address[] memory _minterList,
         uint8 _mintRole
     ) public onlyRole(ADMIN_ROLE) {
+        require(_mintRole == 0 || _mintRole == 1, "Error only OG=0,WL=1");
         uint256 minters = _minterList.length;
         require(minters > 0, "Invalid minterList");
         for (uint256 i = 0; i < minters; ++i) {

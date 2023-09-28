@@ -11,7 +11,7 @@ contract Deployer is Script {
         Factory newFactory = new Factory(3000);
         newFactory.updateMember(_sender, block.timestamp + 1 days);
         ArtCollection impl = new ArtCollection();
-
+        _collection = address(0x0);//newFactory.createCollection(address(impl));
     }
 
     function _deployFactory() internal returns(address _factory) {

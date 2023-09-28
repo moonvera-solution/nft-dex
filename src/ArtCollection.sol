@@ -8,6 +8,8 @@ import "solady/src/utils/Clone.sol";
 import "./abstracts/MintingStages.sol";
 import "./tokens/ERC721A.sol";
 
+import {Test, console, console2, Vm} from "forge-std/Test.sol";
+
 /// @title Art Collection
 /// @author MoonveraLabs
 /// @dev This contract is made only for the Arab Collectors Club
@@ -28,32 +30,36 @@ contract ArtCollection is Clone, ERC721A, IERC2981, MintingStages {
     event MintEvent(address indexed sender, uint256 tokenId);
     event BurnEvent(address indexed sender, uint256 tokenId);
     address public _owner;
-    
-    modifier onlyOwner(){
-        require(msg.sender == owner, "OnlyOwner");
-        _;
-    }
-    /// @notice Init Collection ERC721A
-    /// @notice clone with Immutable arg has access predefined intialized storage
-    /// @dev feeOnMint = _getArgUint256(0); Unique Immutable argument
-    /// @dev mintStageDetails array[] memory layout. index: 0-3:Og,4-7:WL,8-11:Reg
+
     function initialize(
-        string memory name,
-        string memory symbol,
-        string memory initBaseURI,
-        string memory baseExtension,
         uint256 maxSupply,
         uint256 royaltyFee,
+        uint256 mintFee,
+        bytes memory nftData,
         address[] calldata initialOGMinters,
         address[] calldata initialWLMinters,
         uint256[] calldata mintStageDetails
-    ) external initializer onlyOwner {
+    ) public initializer {
+        (
+            string memory name,
+            string memory symbol,
+            string memory initBaseURI,
+            string memory baseExtension
+        ) = abi.decode(nftData, (string, string, string, string));
+
         __ERC721A_init(name, symbol);
-        __AccessControl_init();
+        __AccessControl_init_unchained();
+        _setRoleAdmin(ADMIN_ROLE, ADMIN_ROLE);
+
+        // granting Admin to Factory to be able to grant roles for user
+        // since user is not msg.sender, but revoking at the end of function
         _grantRole(ADMIN_ROLE, msg.sender);
-        _setRoleAdmin(ADMIN_ROLE,ADMIN_ROLE);   
-        _setRoleAdmin(OG_MINTER_ROLE,ADMIN_ROLE); // set ADMIN_ROLE as admin of OG's
-        _setRoleAdmin(WL_MINTER_ROLE,ADMIN_ROLE); // set ADMIN_ROLE as admin of WL's
+        _setRoleAdmin(ADMIN_ROLE, ADMIN_ROLE);
+
+        // immutable arguments set at clone deployment, storage slot 0 always collection owner/admin
+        _grantRole(ADMIN_ROLE, _getArgAddress(0));
+        _setRoleAdmin(OG_MINTER_ROLE, ADMIN_ROLE); // set ADMIN_ROLE as admin of OG's
+        _setRoleAdmin(WL_MINTER_ROLE, ADMIN_ROLE); // set ADMIN_ROLE as admin of WL's
 
         setBaseURI(initBaseURI);
         _baseExtension = _baseExtension;
@@ -77,20 +83,17 @@ contract ArtCollection is Clone, ERC721A, IERC2981, MintingStages {
         _mintMax = mintStageDetails[9];
         _mintStart = mintStageDetails[10];
         _mintEnd = mintStageDetails[11];
-
         // init minting roles OG=0, WL=1
-        updateMinterRoles(initialOGMinters,0);
-        updateMinterRoles(initialWLMinters,1);
+        updateMinterRoles(initialOGMinters, 0);
+        updateMinterRoles(initialWLMinters, 1);
         // Clone with Immutable arg has access predefined intialized storage
-        _mintFee = _getArgUint256(1);
+        _mintFee = mintFee;
+
+        // revoke ADMIN_ROLE to factory, ADMIN is the OWNER of collection
+        revokeRole(ADMIN_ROLE, msg.sender);
     }
 
-    function _baseURI()
-        internal
-        view
-        override
-        returns (string memory baseURI)
-    {
+    function _baseURI() internal view override returns (string memory baseURI) {
         baseURI = _baseURI();
     }
 
@@ -164,10 +167,7 @@ contract ArtCollection is Clone, ERC721A, IERC2981, MintingStages {
         uint256 price = mintAmount * mintPrice;
         uint256 mintFee = _calculateFee(price, _mintFee);
 
-        require(
-            msgValue >= (price + mintFee),
-            "Insufficient mint payment"
-        );
+        require(msgValue >= (price + mintFee), "Insufficient mint payment");
 
         _mintsPerWallet[msg.sender] += mintAmount;
         _safeMint(mintTo, mintAmount);

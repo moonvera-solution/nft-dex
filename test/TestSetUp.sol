@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT O
 pragma solidity ^0.8.5;
 
-import {Test, console2} from "forge-std/Test.sol";
+import {Test, console2, Vm} from "forge-std/Test.sol";
 import "../src/Factory.sol";
 import "../script/Deployer.sol";
 
@@ -13,7 +13,7 @@ contract TestSetUp is Test {
     bytes32 public constant WL_MINTER_ROLE = keccak256("WL_MINTER_ROLE");
     bytes32 public constant OG_MINTER_ROLE = keccak256("OG_MINTER_ROLE");
 
-    address public user1 = address(1);
+    Vm.Wallet public wallet1 = vm.createWallet("wallet::user1");
     address public user2 = address(2);
     address public user3 = address(3);
     address public user4 = address(4);
@@ -24,40 +24,42 @@ contract TestSetUp is Test {
     address public user9 = address(9);
     address public user10 = address(10);
 
-    function _initCollection(address _implAddress) internal {
+    // function _initCollection(
+    //     address _implAddress,
+    //     address[] memory _initialOGMinters,
+    //     address[] memory _initialWLMinters
+    // ) internal {
+    //     ArtCollection(_implAddress).initialize(
+    //         wallet1.addr,
+    //         "TestName", //string memory _name,
+    //         "SYMBOL", // string memory _symbol,
+    //         "https://moonvera.io/nft/{id}", // string memory _initBaseURI,
+    //         ".json", // base extension
+    //         50, //max Supply
+    //         3000, // royalty fee 3% in basis points
+    //         _initialOGMinters,
+    //         _initialWLMinters,
+    //         _getMintStageDetails()
+    //     );
+    // }
+    function _getEncodeInitParams() internal returns (bytes memory _data) {
         (
             address[] memory _initialOGMinters,
             address[] memory _initialWLMinters
         ) = _getMintingUserLists();
 
-        ArtCollection(_implAddress).initialize(
-            "TestName", //string memory _name,
-            "SYMBOL", // string memory _symbol,
-            "https://moonvera.io/nft/{id}", // string memory _initBaseURI,
-            ".json", // base extension
-            50, //max Supply
-            3000, // royalty fee 3% in basis points
-            _initialOGMinters,
-            _initialWLMinters,
-            _getMintStageDetails()
-        );
-    }
+        uint256[] memory _mintStageDetails = _getMintStageDetails();
 
-    function _initCollection(
-        address _implAddress,
-        address[] memory _initialOGMinters,
-        address[] memory _initialWLMinters
-    ) internal {
-        ArtCollection(_implAddress).initialize(
+        _data = abi.encode(
             "TestName", //string memory _name,
             "SYMBOL", // string memory _symbol,
             "https://moonvera.io/nft/{id}", // string memory _initBaseURI,
             ".json", // base extension
-            50, //max Supply
-            3000, // royalty fee 3% in basis points
+            uint256(50), //max Supply
+            uint256(3000), // royalty fee 3% in basis points
             _initialOGMinters,
             _initialWLMinters,
-            _getMintStageDetails()
+            _mintStageDetails
         );
     }
 
@@ -106,4 +108,6 @@ contract TestSetUp is Test {
         _mintStageDetails[10] = block.timestamp + 5 days; //_mintStart
         _mintStageDetails[11] = block.timestamp + 5 days; //_mintEnd
     }
+
+    fallback() external payable {}
 }
