@@ -58,28 +58,68 @@ contract Factory {
         _;
     }
 
-    // only members
     modifier onlyMember() {
         require(members[msg.sender] >= block.timestamp, "Only members");
         _;
     }
-
+    
     modifier auth() {
         require(msg.sender == _owner || members[msg.sender] >= block.timestamp, "Only Auth");
         _;
     }
 
-    function updateDeployFee(uint256 _newFee) external onlyOwner {
+    /// @notice Access: only Owner
+    /// @param fee new fee on mint
+    /// @dev payable for gas saving
+    function updateMintFee(uint256 fee) external payable onlyOwner {
+        _mintFee = fee;
+    }
+
+    /// @notice Access: only Owner
+    /// @param impl Clone's proxy implementation of ArtCollection logic
+    /// @dev payable for gas saving
+    function setCollectionImpl(address impl) external payable onlyOwner {
+        require(impl != address(0x0),"Address zero");
+        _collectionImpl = impl;
+    }
+
+    /// @notice Access: only Owner
+    /// @dev payable for gas saving
+    function transferOwnerShip(address newOner) external payable onlyOwner {
+        require(newOner != address(0x0), "Zero address");
+        _owner = newOner;
+    }
+
+    /// @notice Access: only Owner
+    /// @dev payable for gas saving
+    function withdraw() external payable onlyOwner {
+        payable(msg.sender).transfer(address(this).balance);
+    }
+
+    /// @notice Access: only Owner
+    /// @dev payable for gas saving
+    function updateDeployFee(uint256 _newFee) external payable onlyOwner {
         require(_newFee > 0, "Invalid Fee");
         _deployFee = _newFee;
     }
 
-    function updateMember(address user, uint256 daysValidUntil) external onlyOwner {
+    /// @notice Access: only Owner
+    /// @param user only Owner
+    /// @param expire days from today to membership expired
+    /// @dev payable for gas saving
+    function updateMember(address user, uint256 expire) external payable onlyOwner {
         uint256 validUntil = block.timestamp + (daysValidUntil * 60 * 60 * 24);
         require(block.timestamp < validUntil, "Invalid valid until");
         members[user] = validUntil;
     }
 
+    /// @notice Deploys ArtCollection Immutable proxy clone and call initialize
+    /// @dev access: Admin or Current member
+    /// @dev _deployFee & _mintFee are set by Factory ADMIN
+    /// @param nftsData only Owner
+    /// @param initialOGMinters  List of OG memeber addresses
+    /// @param initialWLMinters List of WL memeber addresses
+    /// @param mintingStages Details of Regular,OG & WL minting stages
     function createCollection(
         bytes memory nftsData,
         address[] calldata initialOGMinters,
@@ -117,28 +157,12 @@ contract Factory {
     function getTime() public view returns (uint256 _time) {
         _time = block.timestamp;
     }
-
+    
     /// @param _daysFromNow current timestamp plus days
     function getTime(uint256 _daysFromNow) public view returns (uint256 _time) {
         _time = block.timestamp + (_daysFromNow * 60 * 60 * 24);
     }
 
-    function updateMintFee(uint256 _newFeeOnMint) external onlyOwner {
-        _mintFee = _newFeeOnMint;
-    }
-
-    function setCollectionImpl(address _impl) external onlyOwner {
-        _collectionImpl = _impl;
-    }
-
-    function transferOwnerShip(address newOner) external onlyOwner {
-        require(newOner != address(0x0), "Zero address");
-        _owner = newOner;
-    }
-
-    function withdraw() external onlyOwner {
-        payable(msg.sender).transfer(address(this).balance);
-    }
 
     function totalCollections() external view returns (uint256 _total) {
         _total = _totalCollections;
