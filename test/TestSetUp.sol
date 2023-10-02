@@ -3,7 +3,6 @@ pragma solidity ^0.8.5;
 
 import {Test, console2, Vm} from "forge-std/Test.sol";
 import "../src/Factory.sol";
-import "../script/Deployer.sol";
 
 contract TestSetUp is Test {
     Factory public factory;
@@ -24,51 +23,21 @@ contract TestSetUp is Test {
     address public user9 = address(9);
     address public user10 = address(10);
 
-    // function _initCollection(
-    //     address _implAddress,
-    //     address[] memory _initialOGMinters,
-    //     address[] memory _initialWLMinters
-    // ) internal {
-    //     ArtCollection(_implAddress).initialize(
-    //         wallet1.addr,
-    //         "TestName", //string memory _name,
-    //         "SYMBOL", // string memory _symbol,
-    //         "https://moonvera.io/nft/{id}", // string memory _initBaseURI,
-    //         ".json", // base extension
-    //         50, //max Supply
-    //         3000, // royalty fee 3% in basis points
-    //         _initialOGMinters,
-    //         _initialWLMinters,
-    //         _getMintStageDetails()
-    //     );
-    // }
-    function _getEncodeInitParams() internal returns (bytes memory _data) {
-        (
-            address[] memory _initialOGMinters,
-            address[] memory _initialWLMinters
-        ) = _getMintingUserLists();
+    function _initCollectionFromFactory(Factory _factory) internal {
+        (address[] memory _initialOGMinters, address[] memory _initialWLMinters) = _getMintingUserLists();
+        bytes memory nftData = abi.encode("TestName", "SYMBOL", "https://moonvera.io/nft/{id}", ".json");
+        _factory.createCollection{value: 0.05 ether}(nftData, _initialOGMinters, _initialWLMinters, _getMintingStages()); // createCollection fee
+    }
 
-        uint256[] memory _mintStageDetails = _getMintStageDetails();
-
-        _data = abi.encode(
-            "TestName", //string memory _name,
-            "SYMBOL", // string memory _symbol,
-            "https://moonvera.io/nft/{id}", // string memory _initBaseURI,
-            ".json", // base extension
-            uint256(50), //max Supply
-            uint256(3000), // royalty fee 3% in basis points
-            _initialOGMinters,
-            _initialWLMinters,
-            _mintStageDetails
-        );
+    function _initCollection(address _collection, uint256 mintFee) internal returns (bytes memory _data) {
+        bytes memory nftData = abi.encode("TestName", "SYMBOL", "https://moonvera.io/nft/{id}", ".json");
+        (address[] memory _initialOGMinters, address[] memory _initialWLMinters) = _getMintingUserLists();
+        ArtCollection(_collection).initialize(mintFee, nftData, _initialOGMinters, _initialWLMinters, _getMintingStages());
     }
 
     function _getMintingUserLists()
         internal
-        returns (
-            address[] memory _initialOGMinters,
-            address[] memory _initialWLMinters
-        )
+        returns (address[] memory _initialOGMinters, address[] memory _initialWLMinters)
     {
         _initialOGMinters = new address[](2);
         _initialOGMinters[0] = user5;
@@ -78,35 +47,20 @@ contract TestSetUp is Test {
         _initialWLMinters[0] = user8;
     }
 
-    /**
-            mintStageDetails array content
-            0 initOgMintPrice
-            1 ogMintStartTime
-            2 ogMintEndTime
-            3 initWLmintPrice
-            4 wlMintStartTime
-            5 wlMintEndTime
-            6 initRegMintprice
-            7 regMintStartTime
-            8 regMintEndTime
-     */
-    function _getMintStageDetails()
-        internal
-        returns (uint256[] memory _mintStageDetails)
-    {
+    function _getMintingStages() public returns (uint256[] memory _mintStageDetails) {
         _mintStageDetails = new uint256[](12);
-        _mintStageDetails[0] = 500; //_ogMintPrice
-        _mintStageDetails[1] = 500; //_ogMintMax
-        _mintStageDetails[2] = block.timestamp + 5 days; //_ogMintStart
-        _mintStageDetails[3] = block.timestamp + 5 days; //_ogMintEnd
-        _mintStageDetails[4] = 500; //_whitelistMintPrice
-        _mintStageDetails[5] = 500; //_whitelistMintMax
-        _mintStageDetails[6] = block.timestamp + 5 days; //_whitelistMintStart
-        _mintStageDetails[7] = block.timestamp + 5 days; //_whitelistMintEnd
-        _mintStageDetails[8] = 500; //_mintPrice
-        _mintStageDetails[9] = 500; //_mintMax
-        _mintStageDetails[10] = block.timestamp + 5 days; //_mintStart
-        _mintStageDetails[11] = block.timestamp + 5 days; //_mintEnd
+        _mintStageDetails[0] = 1; //_ogMintPrice
+        _mintStageDetails[1] = 50; //_ogMintMax
+        _mintStageDetails[2] = block.timestamp; //_ogMintStart
+        _mintStageDetails[3] = block.timestamp + 5 * 60 * 60 * 24; //_ogMintEnd
+        _mintStageDetails[4] = 1; //_whitelistMintPrice
+        _mintStageDetails[5] = 50; //_whitelistMintMax
+        _mintStageDetails[6] = block.timestamp; //_whitelistMintStart
+        _mintStageDetails[7] = block.timestamp + 5 * 60 * 60 * 24; //_whitelistMintEnd
+        _mintStageDetails[8] = 1; //_mintPrice
+        _mintStageDetails[9] = 50; //_mintMax
+        _mintStageDetails[10] = block.timestamp; //_mintStart
+        _mintStageDetails[11] = block.timestamp + 5 * 60 * 60 * 24; //_mintEnd
     }
 
     fallback() external payable {}

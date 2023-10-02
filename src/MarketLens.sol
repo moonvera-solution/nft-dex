@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: MIT O
 pragma solidity ^0.8.5;
 
-
-
 contract MarketLens {
- /*
+/*
     function fetchMarketItems() public view returns (MarketItem[] memory) {
         uint itemCount = _itemIds.current();
         uint unsoldItemCount = _itemIds.current() - _itemsSold.current();

@@ -7,10 +7,9 @@ import {ArtCollection} from "./ArtCollection.sol";
 
 import {Test, console, console2, Vm} from "forge-std/Test.sol";
 
-
 /**
  * @title Factory contract to create erc721's clones with immutable arguments
- *     @author MoonveraLabs
+ * @author MoonveraLabs
  */
 contract Factory {
     // Keep track of collections/clones per user
@@ -20,7 +19,7 @@ contract Factory {
     mapping(address => uint256) public members;
 
     // Current ArtCollection template
-    address public _collectionTemplate;
+    address public _collectionImpl;
 
     // ownable by deployer
     address public _owner;
@@ -36,19 +35,11 @@ contract Factory {
 
     error CreateCloneError();
 
-    event CreateCloneEvent(
-        address indexed sender,
-        address impl,
-        address cloneAddress
-    );
+    event CreateCloneEvent(address indexed sender, address impl, address cloneAddress);
 
     event InitOwnerEvent(address sender);
     event InitCollectionEvent(address sender, address collection);
-    event CreateCollectionEvent(
-        address sender,
-        address template,
-        address clone
-    );
+    event CreateCollectionEvent(address sender, address template, address clone);
 
     constructor(uint256 freeOnMint) {
         _owner = payable(msg.sender);
@@ -74,10 +65,7 @@ contract Factory {
     }
 
     modifier auth() {
-        require(
-            msg.sender == _owner || members[msg.sender] >= block.timestamp,
-            "Only Auth"
-        );
+        require(msg.sender == _owner || members[msg.sender] >= block.timestamp, "Only Auth");
         _;
     }
 
@@ -86,64 +74,61 @@ contract Factory {
         _deployFee = _newFee;
     }
 
-    function updateMember(
-        address user,
-        uint256 daysValidUntil
-    ) external onlyOwner {
-        emit InitOwnerEvent(msg.sender);
-        uint256 validUntil = block.timestamp + daysValidUntil;
+    function updateMember(address user, uint256 daysValidUntil) external onlyOwner {
+        uint256 validUntil = block.timestamp + (daysValidUntil * 60 * 60 * 24);
         require(block.timestamp < validUntil, "Invalid valid until");
         members[user] = validUntil;
     }
 
-    function updateFeeOnMint(uint256 _newFeeOnMint) external onlyOwner {
-        _mintFee = _newFeeOnMint;
-    }
-
-    address public collectionImpl;
-
-    function setCollectionImpl(address _impl) external onlyOwner {
-        collectionImpl = _impl;
-    }
-
     function createCollection(
-        uint256 maxSupply,
-        uint256 royaltyFee,
         bytes memory nftsData,
         address[] calldata initialOGMinters,
         address[] calldata initialWLMinters,
-        uint256[] calldata mintStageDetails
+        uint256[] calldata mintingStages
     ) external payable auth returns (address _clone) {
         require(msg.value >= _deployFee, "Missing deploy fee");
 
         bytes memory data = abi.encodePacked(msg.sender);
-        _clone = LibClone.clone(
-            address(collectionImpl),
-            data
-        );
+        _clone = LibClone.clone(address(_collectionImpl), data);
         if (_clone == address(0x0)) revert CreateCloneError();
         collections[msg.sender] = _clone;
-        emit CreateCollectionEvent(msg.sender, collectionImpl, _clone);
+        emit CreateCollectionEvent(msg.sender, _collectionImpl, _clone);
 
         if (msg.value - _deployFee > 0) {
             payable(msg.sender).transfer(msg.value - _deployFee);
         }
         delete members[msg.sender]; // only one time create clone
 
-        // init collection
-        // ArtCollection(_clone).grantRole(keccak256("ADMIN_ROLE"), address(this));
+        // Init Art collection proxy clone
         ArtCollection(_clone).initialize(
-            maxSupply,
-            royaltyFee,
             _mintFee, // set by factory owner
             nftsData,
             initialOGMinters,
             initialWLMinters,
-            mintStageDetails
+            mintingStages
         );
 
-        _totalCollections = _totalCollections + 1;
+        unchecked {
+            _totalCollections = _totalCollections + 1;
+        }
         emit InitCollectionEvent(msg.sender, _clone);
+    }
+
+    function getTime() public view returns (uint256 _time) {
+        _time = block.timestamp;
+    }
+
+    /// @param _daysFromNow current timestamp plus days
+    function getTime(uint256 _daysFromNow) public view returns (uint256 _time) {
+        _time = block.timestamp + (_daysFromNow * 60 * 60 * 24);
+    }
+
+    function updateMintFee(uint256 _newFeeOnMint) external onlyOwner {
+        _mintFee = _newFeeOnMint;
+    }
+
+    function setCollectionImpl(address _impl) external onlyOwner {
+        _collectionImpl = _impl;
     }
 
     function transferOwnerShip(address newOner) external onlyOwner {
@@ -158,16 +143,4 @@ contract Factory {
     function totalCollections() external view returns (uint256 _total) {
         _total = _totalCollections;
     }
-
-    function transferOwnership(address newOwner) external onlyOwner {
-        require(
-            newOwner != address(0),
-            "Ownable: new owner is the zero address"
-        );
-        _owner = newOwner;
-    }
 }
-/**
- * ArtCollectionTest:test_initialAdminRole() (gas:  1268925)
- *                                            diff: 31740
- */

@@ -1,27 +1,40 @@
 // SPDX-License-Identifier: MIT O
 pragma solidity ^0.8.5;
 
-import {Test, console} from "forge-std/Test.sol";
+import {Test, console, console2, Vm} from "forge-std/Test.sol";
 import {GasSnapshot} from "forge-gas-snapshot/GasSnapshot.sol";
 import "./TestSetUp.sol";
+import "./utils/Encoder.sol";
 
 import "../src/Factory.sol";
-import "../script/Deployer.sol";
+import {ArtCollection} from "../src/ArtCollection.sol";
 
-contract Factorytest is Test, TestSetUp, GasSnapshot{
-
+contract Factorytest is Test, TestSetUp, GasSnapshot, Encoder {
     uint160 public constant ALLOW_LAUNCH_PERIOD = 7 days;
 
     function setUp() public {
         clone = new ArtCollection();
         factory = new Factory(3000); // takes fee on mint
-        factory.setCollectionImpl(address   (clone));
-        
-         snapSize("ArtCollection", address(clone));
-        vm.deal(address(this), 10 ether);
+        factory.setCollectionImpl(address(clone));
 
-        vm.warp(9771973 + 20 days);
-        console.log("block.timestamp::::::  ",block.timestamp);
+        snapSize("ArtCollection", address(clone));
+        vm.deal(address(this), 10 ether);
+    }
+
+    function test_createCollection() public {
+        (address[] memory _initialOGMinters, address[] memory _initialWLMinters) = _getMintingUserLists();
+
+        Vm.Wallet memory regularWallet = vm.createWallet("member");
+        factory.updateMember(regularWallet.addr, 5);
+
+        assert(factory.members(regularWallet.addr) > 0);
+
+        vm.startPrank(regularWallet.addr, regularWallet.addr);
+        vm.deal(regularWallet.addr, 1 ether);
+
+        address artCollectionAddr = factory.createCollection{value: 0.5 ether}(
+            _encodeNftDetails(), _initialOGMinters, _initialWLMinters, _getMintingStages()
+        );
     }
 
     function test_owner() public {
@@ -35,26 +48,9 @@ contract Factorytest is Test, TestSetUp, GasSnapshot{
         assertTrue(factory.members(address(this)) > block.timestamp);
     }
 
-    // function test_createCollection() public {
-    //         (
-    //         address[] memory _initialOGMinters,
-    //         address[] memory _initialWLMinters
-    //     ) = _getMintingUserLists();
-    //     address newCollection = factory.createCollection{value: .5 ether}(
-    //         "TestName", //string memory _name,
-    //         "SYMBOL", // string memory _symbol,
-    //         "https://moonvera.io/nft/{id}", // string memory _initBaseURI,
-    //         ".json", // base extension
-    //         50, //max Supply
-    //         3000, // royalty fee 3% in basis points
-    //         _initialOGMinters,
-    //         _initialWLMinters,
-    //         _getMintStageDetails()
-    //     );
-    //     address collectedCollection = factory.collections(address(this));
-    //     // snap("test_createCollection:: new user collection",factory.collections(address(this)));
-    //     assertTrue(
-    //         factory.collections(address(this)) == address(newCollection)
-    //     );
-    // }
+    function test_getTime() public {
+        vm.warp(block.timestamp + 5 days);
+        assertEq(factory.getTime(), block.timestamp);
+        assertEq(factory.getTime(5), block.timestamp + (5 * 60 * 60 * 24));
+    }
 }

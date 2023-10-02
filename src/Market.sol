@@ -8,14 +8,12 @@ import "openzeppelin-contracts/contracts/token/ERC721/ERC721.sol";
 import "openzeppelin-contracts/contracts/interfaces/IERC20.sol";
 
 contract Market is OwnableUpgradeable, IERC721ReceiverUpgradeable, ReentrancyGuardUpgradeable {
-    
     uint256 private _itemIds;
     uint256 private _itemsSold;
     uint256 public _listingPrice; // cost of NFT listing
 
-
     struct MarketItem {
-        uint itemId;
+        uint256 itemId;
         address collection;
         uint256 tokenId;
         address payable seller;
@@ -26,17 +24,16 @@ contract Market is OwnableUpgradeable, IERC721ReceiverUpgradeable, ReentrancyGua
     }
 
     event ListItem(MarketItem _marketItem);
+
     error ListItemError(uint8 _rule);
 
     event BuyItem(MarketItem _marketItem);
+
     error BuyItemError(uint8 _rule);
-    
 
     mapping(uint256 => MarketItem) public idToMarketItem;
 
-    function initialize(
-      uint256 _initListingPrice
-    ) public initializer {
+    function initialize(uint256 _initListingPrice) public initializer {
         __Ownable_init();
         updateListingPrice(_initListingPrice);
     }
@@ -49,9 +46,7 @@ contract Market is OwnableUpgradeable, IERC721ReceiverUpgradeable, ReentrancyGua
     /// @dev We are not checking if collection item is IErc721 compliant
     // @audit  support auction listings
     // @audit  TODO only whitelisted ERC20 accepted as payment
-    function listItem(
-        MarketItem calldata marketItem
-    ) public payable nonReentrant {
+    function listItem(MarketItem calldata marketItem) public payable nonReentrant {
         // verify Item
         if (_listingPrice < msg.value) revert ListItemError(1);
 
@@ -62,21 +57,17 @@ contract Market is OwnableUpgradeable, IERC721ReceiverUpgradeable, ReentrancyGua
         if (marketItem.itemId == 0) {
             //  new market item
             ERC721(nftContract).safeTransferFrom(
-                _msgSender(),
-                address(this),
-                marketItem.tokenId,
-                abi.encode(marketItem)
+                _msgSender(), address(this), marketItem.tokenId, abi.encode(marketItem)
             );
         }
     }
 
     /// @notice Get triggered on this contrcat receiving any NFT
-    function onERC721Received(
-        address operator,
-        address from,
-        uint256 tokenId,
-        bytes calldata data
-    ) external override returns (bytes4) {
+    function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata data)
+        external
+        override
+        returns (bytes4)
+    {
         uint256 itemId = _itemIds + 1;
         MarketItem memory _newItem = abi.decode(data, (MarketItem));
         _newItem.itemId = itemId;
@@ -87,22 +78,22 @@ contract Market is OwnableUpgradeable, IERC721ReceiverUpgradeable, ReentrancyGua
     }
 
     uint256 _buyFee = 300;
-    /// @notice 
-    function buyItem(uint256 _itemId) external payable nonReentrant {
-      MarketItem memory item = idToMarketItem[_itemId];
-      address _quoteAsset = item.quoteAsset;
-      uint256 _priceWithFee = item.price + _buyFee;
-      if(_quoteAsset == address(0x0)){
-        if(msg.value < _priceWithFee) revert BuyItemError(1);
-        ERC721(item.collection).transferFrom(address(this),_msgSender(),item.tokenId);
-        delete idToMarketItem[_itemId];
-        
-        // TODO return dust
+    /// @notice
 
-      }else{
-        require(IERC20(_quoteAsset).transferFrom(_msgSender(),address(this),_priceWithFee),"buyItem::1");
-        ERC721(item.collection).transferFrom(address(this),_msgSender(),item.tokenId);
-        delete idToMarketItem[_itemId];
-      }
+    function buyItem(uint256 _itemId) external payable nonReentrant {
+        MarketItem memory item = idToMarketItem[_itemId];
+        address _quoteAsset = item.quoteAsset;
+        uint256 _priceWithFee = item.price + _buyFee;
+        if (_quoteAsset == address(0x0)) {
+            if (msg.value < _priceWithFee) revert BuyItemError(1);
+            ERC721(item.collection).transferFrom(address(this), _msgSender(), item.tokenId);
+            delete idToMarketItem[_itemId];
+
+            // TODO return dust
+        } else {
+            require(IERC20(_quoteAsset).transferFrom(_msgSender(), address(this), _priceWithFee), "buyItem::1");
+            ERC721(item.collection).transferFrom(address(this), _msgSender(), item.tokenId);
+            delete idToMarketItem[_itemId];
+        }
     }
 }

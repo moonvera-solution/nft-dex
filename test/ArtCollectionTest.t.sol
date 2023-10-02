@@ -7,55 +7,111 @@ import {GasSnapshot} from "forge-gas-snapshot/GasSnapshot.sol";
 import "../src/Factory.sol";
 import "../src/ArtCollection.sol";
 import "./TestSetUp.sol";
+import "./utils/Encoder.sol";
 
-contract ArtCollectionTest is Test, TestSetUp, GasSnapshot {
+contract ArtCollectionInternalsTest is ArtCollection {
+    function calculateFee(uint256 price, uint256 feeOnMint) external returns (uint256 _mintFee) {
+        _mintFee = _calculateFee(price, feeOnMint);
+    }
+
+    function internalSafeMint(
+        uint256 msgValue,
+        address mintTo,
+        uint256 mintPrice,
+        uint256 mintAmount,
+        uint256 maxMintAmount
+    ) external {
+        _internalSafeMint(msgValue, mintTo, mintPrice, mintAmount, maxMintAmount);
+    }
+}
+
+contract ArtCollectionTest is Test, TestSetUp, GasSnapshot, Encoder {
     ArtCollection private _nftCollection;
+    ArtCollectionInternalsTest private artCollectionInternalsTest;
 
     function setUp() public {
         clone = new ArtCollection();
+        artCollectionInternalsTest = new ArtCollectionInternalsTest();
         factory = new Factory(3000); // takes fee on mint 3%
         factory.setCollectionImpl(address(clone));
         factory.updateMember(wallet1.addr, block.timestamp + 5 days);
+        factory.updateMintFee(0 wei);
 
         vm.deal(wallet1.addr, 10 ether);
+        vm.deal(address(this), 100 ether);
 
-        (
-            address[] memory _initialOGMinters,
-            address[] memory _initialWLMinters
-        ) = _getMintingUserLists();
+        (address[] memory _initialOGMinters, address[] memory _initialWLMinters) = _getMintingUserLists();
 
-        bytes memory data = _getEncodeInitParams();
 
         vm.startPrank(wallet1.addr, wallet1.addr);
-        bytes memory nftData = abi.encode(
-            "TestName",
-            "SYMBOL",
-            "https://moonvera.io/nft/{id}",
-            ".json"
-        );
+        bytes memory nftData = abi.encode(50, 0, "TestName", "SYMBOL", "https://moonvera.io/nft/{id}");
 
         snapStart("init_clone");
-        address collectionAddress = factory.createCollection{value: .5 ether}(
-            50, //max Supply
-            0, // royalty fee 3% in basis points
-            nftData,
-            _initialOGMinters,
-            _initialWLMinters,
-            _getMintStageDetails()
+        address collectionAddress = factory.createCollection{value: 0.5 ether}(
+            nftData, _initialOGMinters, _initialWLMinters, _getMintingStages()
         );
         snapEnd();
         _nftCollection = ArtCollection(collectionAddress);
+
+        // grant ADMIN role to address(this) for minting fuzz
         _nftCollection.grantRole(ADMIN_ROLE, address(this));
+    }
+
+    function test_calculateFee() external {
+        uint256 fee = artCollectionInternalsTest.calculateFee(2 ether, 3000);
+        assertEq(fee,1994000000000000000);
+    }
+
+    function test_printEncode() external {
+        bytes memory data = _encodeNftDetails();
+        // console2.logBytes(data);
     }
 
     /// @notice deployer is Clone/Art Collection Admin
     function test_initialize() external {
         assert((_nftCollection).hasRole(ADMIN_ROLE, wallet1.addr));
-        console.log("_mintFee:: ", (_nftCollection)._mintFee()); // test immutable arg
     }
 
-    /**
-        Fuzz Test Abstract Minting Stages Contract
+    function test_mintForRegular(address to, uint256 mintAmount) public {
+        vm.assume(mintAmount > 0 && mintAmount <= _nftCollection._maxSupply());
+        _nftCollection.updateMintPrice(5 wei);
+        _nftCollection.mintForRegular{value: 1 ether}(to, mintAmount);
+        assert(_nftCollection.balanceOf(to) > 0);
+    }
+
+    function test_mintForWhitelist(address to, uint256 mintAmount) public {
+        Vm.Wallet memory WLmember = vm.createWallet("WL-member");
+        vm.deal(WLmember.addr, 10 ether);
+        vm.assume(to != address(0x0));
+        vm.assume(mintAmount > 0 && mintAmount <= _nftCollection._maxSupply());
+        _nftCollection.grantRole(WLmember.addr, 1); // OG=0, WL=1
+        _nftCollection.updateWhitelistMintPrice(5 wei);
+        assertTrue(_nftCollection.hasRole(WL_MINTER_ROLE, WLmember.addr));
+
+        vm.startPrank(WLmember.addr, WLmember.addr);
+
+        // paying one eth to mint as WL
+        _nftCollection.mintForWhitelist{value: 1 ether}(to, mintAmount);
+        assert(_nftCollection.balanceOf(to) > 0);
+    }
+
+    function test_mintForOG(address to, uint256 mintAmount) public {
+        Vm.Wallet memory OGmember = vm.createWallet("OG-member");
+        vm.deal(OGmember.addr, 10 ether);
+        vm.assume(to != address(0x0));
+        vm.assume(mintAmount > 0 && mintAmount <= _nftCollection._maxSupply());
+        _nftCollection.grantRole(OGmember.addr, 0); // OG=0, WL=1
+        _nftCollection.updateOGMintPrice(5 wei);
+        assertTrue(_nftCollection.hasRole(OG_MINTER_ROLE, OGmember.addr));
+
+        vm.startPrank(OGmember.addr, OGmember.addr);
+        // paying one eth to mint as OG
+        _nftCollection.mintForOG{value: 1 ether}(to, mintAmount);
+        assert(_nftCollection.balanceOf(to) > 0);
+    }
+
+    /* 
+    Fuzz Test Abstract Minting Stages Contract
     */
     // OG MINTING
     function test_updateOGMintPrice(uint256 price) public {
@@ -90,10 +146,7 @@ contract ArtCollectionTest is Test, TestSetUp, GasSnapshot {
         vm.assume(end > start && end < block.timestamp + 5 days);
         _nftCollection.updateWLMintTime(start, end);
         assert(_nftCollection._whitelistMintStart() > block.timestamp);
-        assert(
-            _nftCollection._whitelistMintEnd() >
-                _nftCollection._whitelistMintStart()
-        );
+        assert(_nftCollection._whitelistMintEnd() > _nftCollection._whitelistMintStart());
     }
 
     function test_updateWLMintMax(uint256 mintMax) public {
@@ -103,11 +156,20 @@ contract ArtCollectionTest is Test, TestSetUp, GasSnapshot {
         assert(_nftCollection._whitelistMintMax() == mintMax);
     }
 
-    function test_updateOGList(address[] calldata ogList) public {}
+    function test_updateMinterRoles(uint256 index, address[] calldata minterList, uint8 role) public {
+        vm.assume(role == 1 || role == 0);
+        vm.assume(minterList.length > 0);
+        vm.assume(index > 0 && index < minterList.length);
+        _nftCollection.updateMinterRoles(minterList, role);
+        assertTrue(
+            _nftCollection.hasRole(OG_MINTER_ROLE, minterList[index])
+                || _nftCollection.hasRole(WL_MINTER_ROLE, minterList[index])
+        );
+    }
 
     // REGULAR MINTING
 
-    function test_mintPrice(uint256 price) public {
+    function test_updateMintPrice(uint256 price) public {
         vm.assume(price > 0);
         _nftCollection.updateMintPrice(price);
         assert(_nftCollection._mintPrice() == price);

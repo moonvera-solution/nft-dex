@@ -1,12 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
+
 import "openzeppelin-contracts-upgradeable/contracts/access/AccessControlUpgradeable.sol";
 import "openzeppelin-contracts-upgradeable/contracts/security/ReentrancyGuardUpgradeable.sol";
 
-abstract contract MintingStages is
-    AccessControlUpgradeable,
-    ReentrancyGuardUpgradeable
-{
+abstract contract MintingStages is AccessControlUpgradeable, ReentrancyGuardUpgradeable {
     uint256 public constant ROYALTY_PERCENTAGE = 10; // 10% royalty fees forced on secondary sales
 
     /* ACCESS ROLES */
@@ -46,10 +44,7 @@ abstract contract MintingStages is
         _ogMintPrice = price;
     }
 
-    function updateOGMintTime(
-        uint256 start,
-        uint256 end
-    ) external onlyRole(ADMIN_ROLE) {
+    function updateOGMintTime(uint256 start, uint256 end) external onlyRole(ADMIN_ROLE) {
         require(end > start, "End not > start");
         _ogMintStart = start;
         _ogMintEnd = end;
@@ -59,51 +54,38 @@ abstract contract MintingStages is
         require(ogMintMax > 0, "Invalid max amount");
         _ogMintMax = ogMintMax;
     }
-    
+
     /// WL MINTING
 
-    function updateWhitelistMintPrice(
-        uint256 whitelistMintPrice
-    ) external onlyRole(ADMIN_ROLE) {
+    function updateWhitelistMintPrice(uint256 whitelistMintPrice) external onlyRole(ADMIN_ROLE) {
         require(whitelistMintPrice > 0, "Invalid price amount");
         _whitelistMintPrice = whitelistMintPrice;
     }
 
-    function updateWLMintTime(
-        uint256 start,
-        uint256 end
-    ) external onlyRole(ADMIN_ROLE) {
+    function updateWLMintTime(uint256 start, uint256 end) external onlyRole(ADMIN_ROLE) {
         require(end > start, "End not > start");
         _whitelistMintStart = start;
         _whitelistMintEnd = end;
     }
 
-    function updateWLMintMax(
-        uint256 whitelistMintMax
-    ) external onlyRole(ADMIN_ROLE) {
+    function updateWLMintMax(uint256 whitelistMintMax) external onlyRole(ADMIN_ROLE) {
         require(whitelistMintMax > 0, "Invalid max amount");
         _whitelistMintMax = whitelistMintMax;
     }
 
     // REGULAR MINTING
 
-    function updateMintPrice(
-        uint256 mintPrice
-    ) external onlyRole(ADMIN_ROLE) {
+    function updateMintPrice(uint256 mintPrice) external onlyRole(ADMIN_ROLE) {
         require(mintPrice > 0, "Invalid price amount");
         _mintPrice = mintPrice;
     }
 
-    function updateMintMax(
-        uint256 mintMax
-    ) external onlyRole(ADMIN_ROLE) {
+    function updateMintMax(uint256 mintMax) external onlyRole(ADMIN_ROLE) {
         require(mintMax > 0, "Invalid mint amount");
         _mintMax = mintMax;
     }
-    function updateTime(
-        uint256 start,
-        uint256 end
-    ) external onlyRole(ADMIN_ROLE) {
+
+    function updateTime(uint256 start, uint256 end) external onlyRole(ADMIN_ROLE) {
         require(end > start, "End not > start");
         _mintStart = start;
         _mintEnd = end;
@@ -111,19 +93,14 @@ abstract contract MintingStages is
 
     /// @param _minterList array of addresses
     /// @param _mintRole 0 = OG, 1 = WL
-    function updateMinterRoles(
-        address[] memory _minterList,
-        uint8 _mintRole
-    ) public onlyRole(ADMIN_ROLE) {
+    /// @dev reverts if any address in the array is address zero
+    function updateMinterRoles(address[] calldata _minterList, uint8 _mintRole) public onlyRole(ADMIN_ROLE) {
         require(_mintRole == 0 || _mintRole == 1, "Error only OG=0,WL=1");
         uint256 minters = _minterList.length;
         require(minters > 0, "Invalid minterList");
         for (uint256 i = 0; i < minters; ++i) {
             require(_minterList[i] != address(0x0), "Invalid Address");
-            _mintRole == 0
-                ? _grantRole(OG_MINTER_ROLE, _minterList[i])
-                : _grantRole(WL_MINTER_ROLE, _minterList[i]);
+            _mintRole == 0 ? _grantRole(OG_MINTER_ROLE, _minterList[i]) : _grantRole(WL_MINTER_ROLE, _minterList[i]);
         }
     }
-
 }

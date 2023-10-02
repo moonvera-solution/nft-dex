@@ -3,7 +3,7 @@
 ***Project from [MoonveraLabs](https://moonvera.io/) for the [Arab collectors club.](https://arabcc.io/)***
 <br>
 ### Decentralized market and launchpad for minting, listing and trading of non-fungible assets.
-#### Contract components
+#### CONTRACT COMPONENTS
 - Factory.sol:
     - Factory to create ERC721A clone contracts with immutable arguments, solady implementation
 - ArtCollection.sol: ERC721AUpgradable Azuki ERC721 like implementation, supports the following features
@@ -19,6 +19,17 @@
 - MarketLens.sol
     - Contract to query Internal and 3rd Party market statistics
 
-#### WIP
+
+#### SECURITY REVIEW
+
+- Static analysis with Slither github action through CI/CD
+- [Auditbase](https://app.auditbase.com/) report
+- Static analysis report by [4naly3er](https://github.com/Picodes/4naly3er) report from code4rena team
+- Defender 2.0 (beta)
+
+#### MONITORING
+- Forta bot
+- Tenderly alerts to telegram
+#### ROADMAP
 - per-stage merkleRoot
 - crossmint support
