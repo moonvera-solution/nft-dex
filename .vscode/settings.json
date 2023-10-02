@@ -1,1 +1,4 @@
-{}
+{
+    "slither.solcPath": "",
+    "slither.hiddenDetectors": []
+}
