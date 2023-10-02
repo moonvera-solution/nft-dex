@@ -10,7 +10,6 @@ import "./lib/FullMath.sol";
 import "./abstracts/MintingStages.sol";
 import "./tokens/ERC721A.sol";
 
-import {Test, console, console2, Vm} from "forge-std/Test.sol";
 
 /// @title Art Collection ERC721A Upgradable
 /// @notice This contract is made only for the Arab Collectors Club ACC
@@ -109,6 +108,8 @@ contract ArtCollection is Clone, ERC721A, IERC2981, MintingStages {
         _safeMint(to, mintAmount);
     }
 
+    /// @param to address to mint to
+    /// @param mintAmount amount to mint (batch minting)
     function mintForOG(address to, uint256 mintAmount) external payable nonReentrant onlyRole(OG_MINTER_ROLE) {
         uint256 currentTime = block.timestamp;
         require(totalSupply() + mintAmount <= _maxSupply, "Over mintMax error");
@@ -116,6 +117,8 @@ contract ArtCollection is Clone, ERC721A, IERC2981, MintingStages {
         _internalSafeMint(msg.value, to, _ogMintPrice, mintAmount, _ogMintMax);
     }
 
+    /// @param to address to mint to
+    /// @param mintAmount amount to mint (batch minting)
     function mintForWhitelist(address to, uint256 mintAmount) external payable onlyRole(WL_MINTER_ROLE) nonReentrant {
         uint256 currentTime = block.timestamp;
         require(totalSupply() + mintAmount <= _maxSupply, "Over mintMax error");
@@ -123,6 +126,8 @@ contract ArtCollection is Clone, ERC721A, IERC2981, MintingStages {
         _internalSafeMint(msg.value, to, _whitelistMintPrice, mintAmount, _ogMintMax);
     }
 
+    /// @param to address to mint to
+    /// @param mintAmount amount to mint (batch minting)
     function mintForRegular(address to, uint256 mintAmount) external payable nonReentrant {
         uint256 currentTime = block.timestamp;
         require(totalSupply() + mintAmount <= _maxSupply, "Over mintMax error");
@@ -131,6 +136,11 @@ contract ArtCollection is Clone, ERC721A, IERC2981, MintingStages {
     }
 
     /// @notice Checks for ether sent to this contract before calling _safeMint
+    /// @param msgValue internal values set at minting call
+    /// @param mintTo internal values set at minting call
+    /// @param mintPrice internal values set at minting call
+    /// @param mintAmount internal values set at minting call
+    /// @param maxMintAmount internal values set at minting call
     function _internalSafeMint(
         uint256 msgValue,
         address mintTo,
@@ -156,7 +166,7 @@ contract ArtCollection is Clone, ERC721A, IERC2981, MintingStages {
         mintFee = FullMath.mulDiv(uint256(price), 1e6 - feeOnMint, 1e6);
     }
 
-    /// @notice Using basis Points as measurement units.
+    /// @notice IERC2981 compatible
     function royaltyInfo(uint256 tokenId, uint256 salePrice)
         external
         view
