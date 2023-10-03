@@ -22,10 +22,11 @@
 
 #### SECURITY REVIEW
 
-- Static analysis Slithergithub action through CI/CD
 - [Auditbase](https://app.auditbase.com/) report
 - Static analysis report by [4naly3er](https://github.com/Picodes/4naly3er) tool from code4rena team
 - Defender 2.0 (beta)
+- Static analysis Slither github action through CI/CD | current issue:
+    `https://github.com/crytic/slither/issues/2148`
 
 #### MONITORING
 - Forta bot

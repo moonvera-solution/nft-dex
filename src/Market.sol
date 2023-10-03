@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT O
-pragma solidity ^0.8.5;
+pragma solidity 0.8.20;
 
 import "../lib/openzeppelin-contracts-upgradeable/contracts/security/ReentrancyGuardUpgradeable.sol";
 import "../lib/openzeppelin-contracts-upgradeable/contracts/token/ERC721/IERC721ReceiverUpgradeable.sol";

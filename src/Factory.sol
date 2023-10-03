@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT O
-pragma solidity ^0.8.5;
+pragma solidity 0.8.20;
 
 import {LibClone} from "../lib/solady/src/utils/LibClone.sol";
 import {Clone} from "../lib/solady/src/utils/Clone.sol";
