@@ -1,11 +1,9 @@
 // SPDX-License-Identifier: MIT O
-pragma solidity ^0.8.5;
-
-import {Script, console2} from "forge-std/Script.sol";
+pragma solidity ^0.8.4;
 import {Factory} from "../src/Factory.sol";
 import {ArtCollection} from "../src/ArtCollection.sol";
+import "../lib/forge-std/src/Script.sol";
 import {ERC1967Proxy} from "openzeppelin-contracts/contracts/proxy/ERC1967/ERC1967Proxy.sol";
-import "../test/TestSetUp.sol";
 
 import "./Utils.sol";
 

@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: MIT O
-pragma solidity 0.8.20;
+pragma solidity ^0.8.4;
 
 import {LibClone} from "../lib/solady/src/utils/LibClone.sol";
 import {Clone} from "../lib/solady/src/utils/Clone.sol";
 import {ArtCollection} from "./ArtCollection.sol";
 
-import {Test, console, console2, Vm} from "forge-std/Test.sol";
 
 /**
  * @title Factory contract to create erc721's clones with immutable arguments
