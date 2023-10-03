@@ -22,14 +22,16 @@
 
 #### SECURITY REVIEW
 
-- Static analysis with Slither github action through CI/CD
+- Static analysis Slithergithub action through CI/CD
 - [Auditbase](https://app.auditbase.com/) report
-- Static analysis report by [4naly3er](https://github.com/Picodes/4naly3er) report from code4rena team
+- Static analysis report by [4naly3er](https://github.com/Picodes/4naly3er) tool from code4rena team
 - Defender 2.0 (beta)
 
 #### MONITORING
 - Forta bot
 - Tenderly alerts to telegram
 #### ROADMAP
-- per-stage merkleRoot
-- crossmint support
+- NFT collateral lending
+- NFT Swap
+- Per-stage merkleRoot
+- Crossmint support

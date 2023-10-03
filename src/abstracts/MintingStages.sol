@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
 
-import "openzeppelin-contracts-upgradeable/contracts/access/AccessControlUpgradeable.sol";
-import "openzeppelin-contracts-upgradeable/contracts/security/ReentrancyGuardUpgradeable.sol";
+import "../../lib/openzeppelin-contracts-upgradeable/contracts/access/AccessControlUpgradeable.sol";
+import "../../lib/openzeppelin-contracts-upgradeable/contracts/security/ReentrancyGuardUpgradeable.sol";
 
 abstract contract MintingStages is AccessControlUpgradeable, ReentrancyGuardUpgradeable {
     uint256 public constant ROYALTY_PERCENTAGE = 10; // 10% royalty fees forced on secondary sales
@@ -98,9 +98,12 @@ abstract contract MintingStages is AccessControlUpgradeable, ReentrancyGuardUpgr
         require(_mintRole == 0 || _mintRole == 1, "Error only OG=0,WL=1");
         uint256 minters = _minterList.length;
         require(minters > 0, "Invalid minterList");
-        for (uint256 i = 0; i < minters; ++i) {
+        for (uint256 i; i < minters;) {
             require(_minterList[i] != address(0x0), "Invalid Address");
             _mintRole == 0 ? _grantRole(OG_MINTER_ROLE, _minterList[i]) : _grantRole(WL_MINTER_ROLE, _minterList[i]);
+            unchecked {
+                ++i;
+            }
         }
     }
 }

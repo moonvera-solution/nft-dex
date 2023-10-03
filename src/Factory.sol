@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT O
 pragma solidity ^0.8.5;
 
-import {LibClone} from "solady/src/utils/LibClone.sol";
-import {Clone} from "solady/src/utils/Clone.sol";
+import {LibClone} from "../lib/solady/src/utils/LibClone.sol";
+import {Clone} from "../lib/solady/src/utils/Clone.sol";
 import {ArtCollection} from "./ArtCollection.sol";
 
 import {Test, console, console2, Vm} from "forge-std/Test.sol";
@@ -62,7 +62,7 @@ contract Factory {
         require(members[msg.sender] >= block.timestamp, "Only members");
         _;
     }
-    
+
     modifier auth() {
         require(msg.sender == _owner || members[msg.sender] >= block.timestamp, "Only Auth");
         _;
@@ -79,7 +79,7 @@ contract Factory {
     /// @param impl Clone's proxy implementation of ArtCollection logic
     /// @dev payable for gas saving
     function setCollectionImpl(address impl) external payable onlyOwner {
-        require(impl != address(0x0),"Address zero");
+        require(impl != address(0x0), "Address zero");
         _collectionImpl = impl;
     }
 
@@ -108,7 +108,7 @@ contract Factory {
     /// @param expire days from today to membership expired
     /// @dev payable for gas saving
     function updateMember(address user, uint256 expire) external payable onlyOwner {
-        uint256 validUntil = block.timestamp + (daysValidUntil * 60 * 60 * 24);
+        uint256 validUntil = block.timestamp + (expire * 60 * 60 * 24);
         require(block.timestamp < validUntil, "Invalid valid until");
         members[user] = validUntil;
     }
@@ -157,12 +157,11 @@ contract Factory {
     function getTime() public view returns (uint256 _time) {
         _time = block.timestamp;
     }
-    
+
     /// @param _daysFromNow current timestamp plus days
     function getTime(uint256 _daysFromNow) public view returns (uint256 _time) {
         _time = block.timestamp + (_daysFromNow * 60 * 60 * 24);
     }
-
 
     function totalCollections() external view returns (uint256 _total) {
         _total = _totalCollections;

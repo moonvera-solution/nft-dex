@@ -32,7 +32,9 @@ contract TestSetUp is Test {
     function _initCollection(address _collection, uint256 mintFee) internal returns (bytes memory _data) {
         bytes memory nftData = abi.encode("TestName", "SYMBOL", "https://moonvera.io/nft/{id}", ".json");
         (address[] memory _initialOGMinters, address[] memory _initialWLMinters) = _getMintingUserLists();
-        ArtCollection(_collection).initialize(mintFee, nftData, _initialOGMinters, _initialWLMinters, _getMintingStages());
+        ArtCollection(_collection).initialize(
+            mintFee, nftData, _initialOGMinters, _initialWLMinters, _getMintingStages()
+        );
     }
 
     function _getMintingUserLists()

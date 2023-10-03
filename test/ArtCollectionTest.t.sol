@@ -42,7 +42,6 @@ contract ArtCollectionTest is Test, TestSetUp, GasSnapshot, Encoder {
 
         (address[] memory _initialOGMinters, address[] memory _initialWLMinters) = _getMintingUserLists();
 
-
         vm.startPrank(wallet1.addr, wallet1.addr);
         bytes memory nftData = abi.encode(50, 0, "TestName", "SYMBOL", "https://moonvera.io/nft/{id}");
 
@@ -59,7 +58,7 @@ contract ArtCollectionTest is Test, TestSetUp, GasSnapshot, Encoder {
 
     function test_calculateFee() external {
         uint256 fee = artCollectionInternalsTest.calculateFee(2 ether, 3000);
-        assertEq(fee,1994000000000000000);
+        assertEq(fee, 1994000000000000000);
     }
 
     function test_printEncode() external {

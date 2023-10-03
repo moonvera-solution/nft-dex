@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-import {Test, console2} from "forge-std/Test.sol";
+import {Test, console2} from "../lib/forge-std/src/Test.sol";
 import {Market} from "../src/Market.sol";
 //import {Exchange} from "../src/Exchange";
-import "solmate/tokens/ERC721.sol";
-import "solmate/tokens/ERC20.sol";
+import "../lib/solmate/src/tokens/ERC721.sol";
+import "../lib/solmate/src/tokens/ERC20.sol";
 
 /**
  * Functional Test

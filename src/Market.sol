@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT O
 pragma solidity ^0.8.5;
 
-import "openzeppelin-contracts-upgradeable/contracts/security/ReentrancyGuardUpgradeable.sol";
-import "openzeppelin-contracts-upgradeable/contracts/token/ERC721/IERC721ReceiverUpgradeable.sol";
-import "openzeppelin-contracts-upgradeable/contracts/access/OwnableUpgradeable.sol";
-import "openzeppelin-contracts/contracts/token/ERC721/ERC721.sol";
-import "openzeppelin-contracts/contracts/interfaces/IERC20.sol";
+import "../lib/openzeppelin-contracts-upgradeable/contracts/security/ReentrancyGuardUpgradeable.sol";
+import "../lib/openzeppelin-contracts-upgradeable/contracts/token/ERC721/IERC721ReceiverUpgradeable.sol";
+import "../lib/openzeppelin-contracts-upgradeable/contracts/access/OwnableUpgradeable.sol";
+import "../lib/openzeppelin-contracts/contracts/token/ERC721/ERC721.sol";
+import "../lib/openzeppelin-contracts/contracts/interfaces/IERC20.sol";
 
 contract Market is OwnableUpgradeable, IERC721ReceiverUpgradeable, ReentrancyGuardUpgradeable {
-    uint256 private _itemIds;
-    uint256 private _itemsSold;
+    uint256 public _itemIds;
+    uint256 public _itemsSold;
     uint256 public _listingPrice; // cost of NFT listing
 
     struct MarketItem {
@@ -68,11 +68,13 @@ contract Market is OwnableUpgradeable, IERC721ReceiverUpgradeable, ReentrancyGua
         override
         returns (bytes4)
     {
-        uint256 itemId = _itemIds + 1;
+        unchecked {
+            ++_itemIds;
+        }
         MarketItem memory _newItem = abi.decode(data, (MarketItem));
-        _newItem.itemId = itemId;
+        _newItem.itemId = _itemIds;
         _newItem.listingTime = block.timestamp;
-        idToMarketItem[itemId] = _newItem; // set new item
+        idToMarketItem[_itemIds] = _newItem; // set new item
         emit ListItem(_newItem);
         return Market.onERC721Received.selector;
     }

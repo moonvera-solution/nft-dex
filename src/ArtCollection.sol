@@ -1,15 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
 
-import "openzeppelin-contracts-upgradeable/contracts/utils/StringsUpgradeable.sol";
-import "openzeppelin-contracts/contracts/interfaces/IERC2981.sol";
-import "openzeppelin-contracts/contracts/utils/introspection/IERC165.sol";
-import "solady/src/utils/Clone.sol";
+import "../lib/openzeppelin-contracts-upgradeable/contracts/utils/StringsUpgradeable.sol";
+import "../lib/openzeppelin-contracts/contracts/interfaces/IERC2981.sol";
+import "../lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol";
+import "../lib/solady/src/utils/Clone.sol";
 
 import "./lib/FullMath.sol";
 import "./abstracts/MintingStages.sol";
 import "./tokens/ERC721A.sol";
-
 
 /// @title Art Collection ERC721A Upgradable
 /// @notice This contract is made only for the Arab Collectors Club ACC
