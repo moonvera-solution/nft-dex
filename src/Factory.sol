@@ -5,7 +5,6 @@ import {LibClone} from "../lib/solady/src/utils/LibClone.sol";
 import {Clone} from "../lib/solady/src/utils/Clone.sol";
 import {ArtCollection} from "./ArtCollection.sol";
 
-
 /**
  * @title Factory contract to create erc721's clones with immutable arguments
  * @author MoonveraLabs

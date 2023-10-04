@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT O
 pragma solidity ^0.8.4;
+
 import {Factory} from "../src/Factory.sol";
 import {ArtCollection} from "../src/ArtCollection.sol";
 import "../lib/forge-std/src/Script.sol";
@@ -26,6 +27,6 @@ contract Deployer is Script, Utils {
     /// @notice this is unic UUPS proxy of template not a minimal clone
     function deployTemplateProxy() internal {
         address implementation = address(new ArtCollection());
-        address proxy = address(new ERC1967Proxy(implementation,""));
+        address proxy = address(new ERC1967Proxy(0x1CB5908FCDAE2Ad5E628855cF25a30F8026F27df,""));
     }
 }

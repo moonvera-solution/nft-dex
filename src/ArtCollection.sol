@@ -19,15 +19,17 @@ contract ArtCollection is Clone, ERC721A, IERC2981, MintingStages {
     string public baseURI;
     string public _baseExtension;
     uint256 public _maxSupply;
-    uint256 public _mintFee; // basis points divided by 100%
-    uint256 public _royaltyFee; // basis points divided by 100%
+    uint256 public _mintFee; // basis points 
+    uint256 public _royaltyFee; // basis points
 
     // Cap number of mint per user
     mapping(address => uint256) public _mintsPerWallet;
 
-    event OGmintEvent(address indexed sender, uint256 tokenId);
-    event WLmintEvent(address indexed sender, uint256 tokenId);
-    event MintEvent(address indexed sender, uint256 tokenId);
+    event OGmintEvent(address indexed sender, uint256 value, address to, uint256 amount, uint256 _ogMintPrice);
+    event WLmintEvent(address indexed sender, uint256 value, address to, uint256 amount, uint256 wlMintPrice);
+    event MintEvent(address indexed sender, uint256 value, address to, uint256 amount, uint256 mintPrice);
+    event OwnerMintEvent(address indexed sender, address to, uint256 amount);
+
     event BurnEvent(address indexed sender, uint256 tokenId);
 
     /// @notice Called by Factory on Deployment
@@ -102,36 +104,46 @@ contract ArtCollection is Clone, ERC721A, IERC2981, MintingStages {
         baseURI = _baseURI();
     }
 
-    function mintForOwner(address to, uint256 mintAmount) external payable nonReentrant onlyRole(ADMIN_ROLE) {
-        require(totalSupply() + mintAmount <= _maxSupply, "Over mintMax error");
-        _safeMint(to, mintAmount);
+    /// @notice access: ADMIN_ROLE
+    /// @param to address to mint to
+    /// @param amount amount to mint (batch minting)
+    function mintForOwner(address to, uint256 amount) external payable nonReentrant onlyRole(ADMIN_ROLE) {
+        require(totalSupply() + amount <= _maxSupply, "Over mintMax error");
+        _safeMint(to, amount);
+        emit OwnerMintEvent(msg.sender, to, amount);
     }
 
+    /// @notice access: OG_MINTER_ROLE
     /// @param to address to mint to
-    /// @param mintAmount amount to mint (batch minting)
-    function mintForOG(address to, uint256 mintAmount) external payable nonReentrant onlyRole(OG_MINTER_ROLE) {
+    /// @param amount amount to mint (batch minting)
+    function mintForOG(address to, uint256 amount) external payable nonReentrant onlyRole(OG_MINTER_ROLE) {
         uint256 currentTime = block.timestamp;
-        require(totalSupply() + mintAmount <= _maxSupply, "Over mintMax error");
+        require(totalSupply() + amount <= _maxSupply, "Over mintMax error");
         require(currentTime >= _ogMintStart && currentTime <= _ogMintEnd, "Not OG mint time");
-        _internalSafeMint(msg.value, to, _ogMintPrice, mintAmount, _ogMintMax);
+        _internalSafeMint(msg.value, to, _ogMintPrice, amount, _ogMintMax);
+        emit OGmintEvent(msg.sender, msg.value, to, amount, _ogMintPrice);
     }
 
+    /// @notice access: WL_MINTER_ROLE
     /// @param to address to mint to
-    /// @param mintAmount amount to mint (batch minting)
-    function mintForWhitelist(address to, uint256 mintAmount) external payable onlyRole(WL_MINTER_ROLE) nonReentrant {
+    /// @param amount amount to mint (batch minting)
+    function mintForWhitelist(address to, uint256 amount) external payable onlyRole(WL_MINTER_ROLE) nonReentrant {
         uint256 currentTime = block.timestamp;
-        require(totalSupply() + mintAmount <= _maxSupply, "Over mintMax error");
+        require(totalSupply() + amount <= _maxSupply, "Over mintMax error");
         require(currentTime >= _whitelistMintStart && currentTime <= _whitelistMintEnd, "Not OG mint time");
-        _internalSafeMint(msg.value, to, _whitelistMintPrice, mintAmount, _ogMintMax);
+        _internalSafeMint(msg.value, to, _whitelistMintPrice, amount, _ogMintMax);
+        emit WLmintEvent(msg.sender, msg.value, to, amount, _whitelistMintPrice);
     }
 
+    /// @notice access: any
     /// @param to address to mint to
-    /// @param mintAmount amount to mint (batch minting)
-    function mintForRegular(address to, uint256 mintAmount) external payable nonReentrant {
+    /// @param amount amount to mint (batch minting)
+    function mintForRegular(address to, uint256 amount) external payable nonReentrant {
         uint256 currentTime = block.timestamp;
-        require(totalSupply() + mintAmount <= _maxSupply, "Over mintMax error");
+        require(totalSupply() + amount <= _maxSupply, "Over mintMax error");
         require(currentTime >= _mintStart && currentTime <= _mintEnd, "Not Regular minTime");
-        _internalSafeMint(msg.value, to, _mintPrice, mintAmount, _mintMax);
+        _internalSafeMint(msg.value, to, _mintPrice, amount, _mintMax);
+        emit MintEvent(msg.sender, msg.value, to, amount, _mintPrice);
     }
 
     /// @notice Checks for ether sent to this contract before calling _safeMint
@@ -150,7 +162,7 @@ contract ArtCollection is Clone, ERC721A, IERC2981, MintingStages {
         require(_mintsPerWallet[msg.sender] + mintAmount <= maxMintAmount, "Exceeds maxMint");
 
         uint256 price = mintAmount * mintPrice;
-        uint256 mintFee = _mintFee == 0 ? price : _calculateFee(price, _mintFee);
+        uint256 mintFee = _mintFee != 0 ? _calculateFee(price, _mintFee) : 0;
 
         require(msgValue >= (price + mintFee), "Insufficient mint payment");
 
@@ -158,11 +170,32 @@ contract ArtCollection is Clone, ERC721A, IERC2981, MintingStages {
         _safeMint(mintTo, mintAmount);
     }
 
+    /// @notice Quote based on current OG Mint price and amount
+    /// @param amount amount to mint
+    function quoteOgMints(uint256 amount) external view returns (uint256 quote) {
+        uint256 price = _ogMintPrice * amount;
+        quote = price + (_mintFee != 0 ? _calculateFee(price, _mintFee) : 0);
+    }
+
+    /// @notice Quote based on current WL Mint price and amount
+    /// @param amount amount to mint
+    function quoteWLMints(uint256 amount) external view returns (uint256 quote) {
+        uint256 price = _whitelistMintPrice * amount;
+        quote = price + (_mintFee != 0 ? _calculateFee(price, _mintFee) : 0);
+    }
+
+    /// @notice Quote based on current Regular Mint price and amount
+    /// @param amount amount to mint
+    function quoteMints(uint256 amount) external view returns (uint256 quote) {
+        uint256 price = _mintPrice * amount;
+        quote = price + (_mintFee != 0 ? _calculateFee(price, _mintFee) : 0);
+    }
+
     /// @notice Using basis Points as measurement units.
     /// @dev FullMath: core uniswap v3 to mittigate phantom overflow
-    function _calculateFee(uint256 price, uint256 feeOnMint) internal pure returns (uint256 mintFee) {
+    function _calculateFee(uint256 price, uint256 mintFee) internal pure returns (uint256 _fee) {
         // 0.003 (aka 0.3%) feeOnMint = 3000
-        mintFee = FullMath.mulDiv(uint256(price), 1e6 - feeOnMint, 1e6);
+        _fee = FullMath.mulDiv(uint256(price), 1e6 - mintFee, 1e6);
     }
 
     /// @notice IERC2981 compatible
@@ -173,7 +206,7 @@ contract ArtCollection is Clone, ERC721A, IERC2981, MintingStages {
         returns (address receiver, uint256 royaltyAmount)
     {
         // The receiver will be the contract owner
-        receiver = msg.sender;
+        receiver = _getArgAddress(0);
 
         royaltyAmount = FullMath.mulDiv(uint256(salePrice), 1e6 - _royaltyFee, 1e6);
     }
@@ -219,5 +252,19 @@ contract ArtCollection is Clone, ERC721A, IERC2981, MintingStages {
         returns (bool)
     {
         return interfaceId == type(IERC2981).interfaceId || super.supportsInterface(interfaceId);
+    }
+
+    function collectionVersion() external pure returns (bytes16) {
+        return "0.1";
+    }
+
+    function encodeNftParams(
+        uint256 maxSupply,
+        uint256 royaltyFee,
+        string memory name,
+        string memory symbol,
+        string memory initBaseURI
+    ) external view returns (bytes memory _data) {
+        _data = abi.encode(maxSupply, royaltyFee, name, symbol, initBaseURI);
     }
 }

@@ -43,7 +43,8 @@ contract ArtCollectionTest is Test, TestSetUp, GasSnapshot, Encoder {
         (address[] memory _initialOGMinters, address[] memory _initialWLMinters) = _getMintingUserLists();
 
         vm.startPrank(wallet1.addr, wallet1.addr);
-        bytes memory nftData = abi.encode(50, 0, "TestName", "SYMBOL", "https://moonvera.io/nft/{id}");
+        bytes memory nftData =
+            abi.encode(50, 3000, "TestName", "SYMBOL", "ipfs://QmXPHaxtTKxa58ise75a4vRAhLzZK3cANKV3zWb6KMoGUU");
 
         snapStart("init_clone");
         address collectionAddress = factory.createCollection{value: 0.5 ether}(

@@ -3,6 +3,7 @@ pragma solidity ^0.8.4;
 
 import "../src/Factory.sol";
 import {Test, console2} from "../lib/forge-std/src/Test.sol";
+
 contract Utils is Test {
     Factory public factory;
     ArtCollection public clone;

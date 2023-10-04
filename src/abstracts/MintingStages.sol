@@ -32,9 +32,6 @@ abstract contract MintingStages is AccessControlUpgradeable, ReentrancyGuardUpgr
     uint256 public _mintStart;
     uint256 public _mintEnd;
 
-    address[] public _whitelistMinters;
-    address[] public _ogMinters;
-
     event UpdateWLevent(address indexed sender, uint256 listLength);
     event UpdateOgEvent(address indexed sender, uint256 listLength);
 
