@@ -94,12 +94,13 @@ abstract contract MintingStages is AccessControlUpgradeable, ReentrancyGuardUpgr
     function updateMinterRoles(address[] calldata _minterList, uint8 _mintRole) public onlyRole(ADMIN_ROLE) {
         require(_mintRole == 0 || _mintRole == 1, "Error only OG=0,WL=1");
         uint256 minters = _minterList.length;
-        require(minters > 0, "Invalid minterList");
-        for (uint256 i; i < minters;) {
-            require(_minterList[i] != address(0x0), "Invalid Address");
-            _mintRole == 0 ? _grantRole(OG_MINTER_ROLE, _minterList[i]) : _grantRole(WL_MINTER_ROLE, _minterList[i]);
-            unchecked {
-                ++i;
+        if(minters > 0){
+            for (uint256 i; i < minters;) {
+                require(_minterList[i] != address(0x0), "Invalid Address");
+                _mintRole == 0 ? _grantRole(OG_MINTER_ROLE, _minterList[i]) : _grantRole(WL_MINTER_ROLE, _minterList[i]);
+                unchecked {
+                    ++i;
+                }
             }
         }
     }
