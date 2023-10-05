@@ -8,6 +8,7 @@ import "../src/Factory.sol";
 import "../src/ArtCollection.sol";
 import "./TestSetUp.sol";
 import "./utils/Encoder.sol";
+error InvalidColletion(uint8);
 
 contract ArtCollectionInternalsTest is ArtCollection {
     function calculateFee(uint256 price, uint256 feeOnMint) external returns (uint256 _mintFee) {
@@ -28,9 +29,11 @@ contract ArtCollectionInternalsTest is ArtCollection {
 contract ArtCollectionTest is Test, TestSetUp, GasSnapshot, Encoder {
     ArtCollection private _nftCollection;
     ArtCollectionInternalsTest private artCollectionInternalsTest;
+    ArtCollectionNotERC721A private artCollectionNotERC721A;
 
     function setUp() public {
         clone = new ArtCollection();
+        artCollectionNotERC721A = new ArtCollectionNotERC721A();
         artCollectionInternalsTest = new ArtCollectionInternalsTest();
         factory = new Factory(3000); // takes fee on mint 3%
         factory.setCollectionImpl(address(clone));
@@ -44,7 +47,7 @@ contract ArtCollectionTest is Test, TestSetUp, GasSnapshot, Encoder {
 
         vm.startPrank(wallet1.addr, wallet1.addr);
         bytes memory nftData =
-            abi.encode(50, 3000, "TestName", "SYMBOL", "ipfs://QmXPHaxtTKxa58ise75a4vRAhLzZK3cANKV3zWb6KMoGUU");
+            abi.encode(50, 3000, "TestName", "SYMBOL", "ipfs://QmXPHaxtTKxa58ise75a4vRAhLzZK3cANKV3zWb6KMoGUU/");
 
         snapStart("init_clone");
         address collectionAddress = factory.createCollection{value: 0.5 ether}(
@@ -55,6 +58,12 @@ contract ArtCollectionTest is Test, TestSetUp, GasSnapshot, Encoder {
 
         // grant ADMIN role to address(this) for minting fuzz
         _nftCollection.grantRole(ADMIN_ROLE, address(this));
+    }
+
+    function test_fail_setCollectionImpl() public {
+        vm.expectRevert(abi.encodeWithSelector(InvalidColletion.selector, 2));
+        vm.startPrank(address(this));
+        factory.setCollectionImpl(address(artCollectionNotERC721A));
     }
 
     function test_calculateFee() external {
@@ -84,7 +93,7 @@ contract ArtCollectionTest is Test, TestSetUp, GasSnapshot, Encoder {
         vm.deal(WLmember.addr, 10 ether);
         vm.assume(to != address(0x0));
         vm.assume(mintAmount > 0 && mintAmount <= _nftCollection._maxSupply());
-        _nftCollection.grantRole(WLmember.addr, 1); // OG=0, WL=1
+        _nftCollection.grantRole(WL_MINTER_ROLE, WLmember.addr); // OG=0, WL=1
         _nftCollection.updateWhitelistMintPrice(5 wei);
         assertTrue(_nftCollection.hasRole(WL_MINTER_ROLE, WLmember.addr));
 
@@ -92,6 +101,8 @@ contract ArtCollectionTest is Test, TestSetUp, GasSnapshot, Encoder {
 
         // paying one eth to mint as WL
         _nftCollection.mintForWhitelist{value: 1 ether}(to, mintAmount);
+        string memory uri = _nftCollection.tokenURI(mintAmount);
+        console.log("uri:", mintAmount);
         assert(_nftCollection.balanceOf(to) > 0);
     }
 
@@ -100,7 +111,7 @@ contract ArtCollectionTest is Test, TestSetUp, GasSnapshot, Encoder {
         vm.deal(OGmember.addr, 10 ether);
         vm.assume(to != address(0x0));
         vm.assume(mintAmount > 0 && mintAmount <= _nftCollection._maxSupply());
-        _nftCollection.grantRole(OGmember.addr, 0); // OG=0, WL=1
+        _nftCollection.grantRole(OG_MINTER_ROLE, OGmember.addr); // OG=0, WL=1
         _nftCollection.updateOGMintPrice(5 wei);
         assertTrue(_nftCollection.hasRole(OG_MINTER_ROLE, OGmember.addr));
 
@@ -193,5 +204,15 @@ contract ArtCollectionTest is Test, TestSetUp, GasSnapshot, Encoder {
     function test_addOgRole() public {
         _nftCollection.grantRole(OG_MINTER_ROLE, wallet1.addr);
         assert(_nftCollection.hasRole(OG_MINTER_ROLE, wallet1.addr));
+    }
+
+    // function test_tokenURI(uint256 tokenId) public{
+    //     _nftCollectio.tokenURI(5);
+    // }
+}
+
+contract ArtCollectionNotERC721A {
+    function supportsInterface(bytes4 id) external returns (bool) {
+        return false;
     }
 }

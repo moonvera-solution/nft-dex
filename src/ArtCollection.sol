@@ -19,7 +19,7 @@ contract ArtCollection is Clone, ERC721A, IERC2981, MintingStages {
     string public baseURI;
     string public _baseExtension;
     uint256 public _maxSupply;
-    uint256 public _mintFee; // basis points 
+    uint256 public _mintFee; // basis points
     uint256 public _royaltyFee; // basis points
 
     // Cap number of mint per user
@@ -63,7 +63,7 @@ contract ArtCollection is Clone, ERC721A, IERC2981, MintingStages {
         _setRoleAdmin(OG_MINTER_ROLE, ADMIN_ROLE); // set ADMIN_ROLE as admin of OG's
         _setRoleAdmin(WL_MINTER_ROLE, ADMIN_ROLE); // set ADMIN_ROLE as admin of WL's
 
-        setBaseURI(initBaseURI);
+        baseURI = initBaseURI;
         _baseExtension = ".json";
         _maxSupply = maxSupply;
         _royaltyFee = royaltyFee;
@@ -94,20 +94,10 @@ contract ArtCollection is Clone, ERC721A, IERC2981, MintingStages {
         revokeRole(ADMIN_ROLE, msg.sender);
     }
 
-    /// @param account user address to grant role to
-    /// @param role use 0 for OG, 1 for WL
-    function grantRole(address account, uint8 role) external onlyRole(ADMIN_ROLE) {
-        role == 0 ? _grantRole(OG_MINTER_ROLE, account) : _grantRole(WL_MINTER_ROLE, account);
-    }
-
-    function _baseURI() internal view override returns (string memory baseURI) {
-        baseURI = _baseURI();
-    }
-
     /// @notice access: ADMIN_ROLE
     /// @param to address to mint to
     /// @param amount amount to mint (batch minting)
-    function mintForOwner(address to, uint256 amount) external payable nonReentrant onlyRole(ADMIN_ROLE) {
+    function mintForOwner(address to, uint256 amount) external payable nonReentrant OnlyAdminOrOperator {
         require(totalSupply() + amount <= _maxSupply, "Over mintMax error");
         _safeMint(to, amount);
         emit OwnerMintEvent(msg.sender, to, amount);
@@ -215,6 +205,7 @@ contract ArtCollection is Clone, ERC721A, IERC2981, MintingStages {
         require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
 
         string memory current_baseURI = _baseURI();
+
         return bytes(current_baseURI).length > 0
             ? string(abi.encodePacked(current_baseURI, tokenId.toString(), _baseExtension))
             : "";
@@ -251,20 +242,11 @@ contract ArtCollection is Clone, ERC721A, IERC2981, MintingStages {
         override(ERC721A, AccessControlUpgradeable, IERC165)
         returns (bool)
     {
-        return interfaceId == type(IERC2981).interfaceId || super.supportsInterface(interfaceId);
+        return interfaceId == type(IERC721A).interfaceId || interfaceId == type(IERC2981).interfaceId
+            || super.supportsInterface(interfaceId);
     }
 
-    function collectionVersion() external pure returns (bytes16) {
+    function version() external pure returns (bytes16) {
         return "0.1";
-    }
-
-    function encodeNftParams(
-        uint256 maxSupply,
-        uint256 royaltyFee,
-        string memory name,
-        string memory symbol,
-        string memory initBaseURI
-    ) external view returns (bytes memory _data) {
-        _data = abi.encode(maxSupply, royaltyFee, name, symbol, initBaseURI);
     }
 }

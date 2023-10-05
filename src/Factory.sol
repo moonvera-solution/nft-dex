@@ -2,6 +2,7 @@
 pragma solidity ^0.8.4;
 
 import {LibClone} from "../lib/solady/src/utils/LibClone.sol";
+import "./interfaces/IERC721A.sol";
 import {Clone} from "../lib/solady/src/utils/Clone.sol";
 import {ArtCollection} from "./ArtCollection.sol";
 
@@ -32,6 +33,7 @@ contract Factory {
     uint256 _totalCollections;
 
     error CreateCloneError();
+    error InvalidColletion(uint8);
 
     event CreateCloneEvent(address indexed sender, address impl, address cloneAddress);
 
@@ -77,7 +79,9 @@ contract Factory {
     /// @param impl Clone's proxy implementation of ArtCollection logic
     /// @dev payable for gas saving
     function setCollectionImpl(address impl) external payable onlyOwner {
-        require(impl != address(0x0), "Address zero");
+        if (!ArtCollection(impl).supportsInterface(type(IERC721A).interfaceId)) {
+            revert InvalidColletion(2);
+        }
         _collectionImpl = impl;
     }
 
