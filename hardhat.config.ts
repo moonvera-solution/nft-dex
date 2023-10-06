@@ -8,41 +8,29 @@ const config: HardhatUserConfig = {
     compilers: [
       {
         version: "0.8.20",
+        settings: {
+          viaIR: true,
+          optimizer: {
+            enabled: true,
+            runs: 2000,
+          },
+        },
       },
       {
         version: "0.8.19",
       },
       {
         version: "0.8.4",
-        settings: {},
+        settings: {
+          viaIR: false,
+          optimizer: {
+            enabled: true,
+            runs: 2000,
+          },
+        },
       },
     ],
   },
-  preprocess: {
-    eachLine: (hre) => ({
-      transform: (line: string) => {
-        if (line.match(/^\s*import /i)) {
-          for (const [from, to] of getRemappings()) {
-            if (line.includes(from)) {
-              line = line.replace(from, to);
-              break;
-            }
-          }
-        }
-        return line;
-      },
-    }),
-  },
-  paths: {
-    sources: "./src",
-    cache: "./cache_hardhat",
-  },
+
 };
-function getRemappings() {
-  return fs
-    .readFileSync("remappings.txt", "utf8")
-    .split("\n")
-    .filter(Boolean) // remove empty lines
-    .map((line) => line.trim().split("="));
-}
 export default config;
