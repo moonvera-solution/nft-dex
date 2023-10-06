@@ -1,0 +1,14 @@
+@openzeppelin/=node_modules/@openzeppelin/
+aave-v3-core/=lib/aave-v3-core/
+ds-test/=lib/forge-std/lib/ds-test/src/
+erc4626-tests/=lib/openzeppelin-contracts-upgradeable/lib/erc4626-tests/
+erc721m/=lib/erc721m/contracts/
+eth-gas-reporter/=node_modules/eth-gas-reporter/
+forge-gas-snapshot/=lib/forge-gas-snapshot/src/
+forge-std/=lib/forge-std/src/
+hardhat/=node_modules/hardhat/
+openzeppelin-contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/
+openzeppelin-contracts/=lib/openzeppelin-contracts/
+openzeppelin/=lib/openzeppelin-contracts-upgradeable/contracts/
+solady/=lib/solady/
+solmate/=lib/solmate/src/

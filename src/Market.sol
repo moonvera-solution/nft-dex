@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT O
 pragma solidity ^0.8.4;
 
-import "../lib/openzeppelin-contracts-upgradeable/contracts/security/ReentrancyGuardUpgradeable.sol";
-import "../lib/openzeppelin-contracts-upgradeable/contracts/token/ERC721/IERC721ReceiverUpgradeable.sol";
-import "../lib/openzeppelin-contracts-upgradeable/contracts/access/OwnableUpgradeable.sol";
-import "../lib/openzeppelin-contracts/contracts/token/ERC721/ERC721.sol";
-import "../lib/openzeppelin-contracts/contracts/interfaces/IERC20.sol";
+import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/interfaces/IERC20.sol";
 
-contract Market is OwnableUpgradeable, IERC721ReceiverUpgradeable, ReentrancyGuardUpgradeable {
+contract Market is OwnableUpgradeable, IERC721Receiver, ReentrancyGuardUpgradeable {
     uint256 public _itemIds;
     uint256 public _itemsSold;
     uint256 public _listingPrice; // cost of NFT listing
@@ -34,7 +34,7 @@ contract Market is OwnableUpgradeable, IERC721ReceiverUpgradeable, ReentrancyGua
     mapping(uint256 => MarketItem) public idToMarketItem;
 
     function initialize(uint256 _initListingPrice) public initializer {
-        __Ownable_init();
+        __Ownable_init(_msgSender());
         updateListingPrice(_initListingPrice);
     }
 

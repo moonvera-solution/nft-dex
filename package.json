@@ -1,0 +1,36 @@
+{
+  "name": "nft-dex",
+  "version": "1.0.0",
+  "description": "***Project from [MoonveraLabs](https://moonvera.io/) for the [Arab collectors club.](https://arabcc.io/)*** <br> ### Decentralized market and launchpad for minting, listing and trading of non-fungible assets. #### CONTRACT COMPONENTS - Factory.sol:     - Factory to create ERC721A clone contracts with immutable arguments, solady implementation - ArtCollection.sol: ERC721AUpgradable Azuki ERC721 like implementation, supports the following features     - per-stage price     - per-stage walletLimit     - per-stage maxStageSupply     - multi stage minting     - multi role minting access     - artist royalties - Market.sol     - Nft listing     - Nft buy/sell with ERC20's & Eth - MarketLens.sol     - Contract to query Internal and 3rd Party market statistics",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/moonvera-solution/nft-dex.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/moonvera-solution/nft-dex/issues"
+  },
+  "homepage": "https://github.com/moonvera-solution/nft-dex#readme",
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.0",
+    "@openzeppelin/contracts-upgradeable": "^5.0.0",
+    "hardhat": "^2.18.0",
+    "solady": "^0.0.123"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^3.0.0",
+    "hardhat-preprocessor": "^0.1.5",
+    "typescript": "^5.2.2"
+  }
+}
