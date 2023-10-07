@@ -8,6 +8,7 @@ import "../src/Factory.sol";
 import "../src/ArtCollection.sol";
 import "./TestSetUp.sol";
 import "./utils/Encoder.sol";
+
 error InvalidColletion(uint8);
 
 contract ArtCollectionInternalsTest is ArtCollection {
@@ -142,7 +143,7 @@ contract ArtCollectionTest is Test, TestSetUp, GasSnapshot, Encoder {
     function test_updateOGMintMax(uint256 price) public {
         vm.assume(price > 0);
         _nftCollection.updateOGMintMax(price);
-        assert(_nftCollection._ogMintMax() == price);
+        assert(_nftCollection._ogMintMaxPerUser() == price);
     }
 
     // WL MINTING
@@ -164,7 +165,7 @@ contract ArtCollectionTest is Test, TestSetUp, GasSnapshot, Encoder {
         vm.assume(mintMax > 0);
         vm.assume(mintMax > _nftCollection._maxSupply());
         _nftCollection.updateWLMintMax(mintMax);
-        assert(_nftCollection._whitelistMintMax() == mintMax);
+        assert(_nftCollection._whitelistMintMaxPerUser() == mintMax);
     }
 
     function test_updateMinterRoles(uint256 index, address[] calldata minterList, uint8 role) public {
@@ -190,7 +191,7 @@ contract ArtCollectionTest is Test, TestSetUp, GasSnapshot, Encoder {
         vm.assume(mintMax > 0);
         vm.assume(mintMax < _nftCollection._maxSupply());
         _nftCollection.updateMintMax(mintMax);
-        assert(_nftCollection._mintMax() == mintMax);
+        assert(_nftCollection._mintMaxPerUser() == mintMax);
     }
 
     function test_updateTime(uint256 start, uint256 end) public {

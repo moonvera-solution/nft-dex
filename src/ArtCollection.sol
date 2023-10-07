@@ -6,7 +6,7 @@ import "../lib/openzeppelin-contracts/contracts/interfaces/IERC2981.sol";
 import "../lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol";
 import "../lib/solady/src/utils/Clone.sol";
 
-import "./lib/FullMath.sol";
+import "./libs/FullMath.sol";
 import "./abstracts/MintingStages.sol";
 import "./tokens/ERC721A.sol";
 
@@ -70,19 +70,19 @@ contract ArtCollection is Clone, ERC721A, IERC2981, MintingStages {
 
         // OG minting stage details
         _ogMintPrice = mintingStages[0];
-        _ogMintMax = mintingStages[1];
+        _ogMintMaxPerUser = mintingStages[1];
         _ogMintStart = mintingStages[2];
         _ogMintEnd = mintingStages[3];
 
         // WL minting stage details
         _whitelistMintPrice = mintingStages[4];
-        _whitelistMintMax = mintingStages[5];
+        _whitelistMintMaxPerUser = mintingStages[5];
         _whitelistMintStart = mintingStages[6];
         _whitelistMintEnd = mintingStages[7];
 
         // Regular minting stage details
         _mintPrice = mintingStages[8];
-        _mintMax = mintingStages[9];
+        _mintMaxPerUser = mintingStages[9];
         _mintStart = mintingStages[10];
         _mintEnd = mintingStages[11];
         // init minting roles OG=0, WL=1
@@ -108,9 +108,9 @@ contract ArtCollection is Clone, ERC721A, IERC2981, MintingStages {
     /// @param amount amount to mint (batch minting)
     function mintForOG(address to, uint256 amount) external payable nonReentrant onlyRole(OG_MINTER_ROLE) {
         uint256 currentTime = block.timestamp;
+        require(currentTime <= _ogMintEnd && currentTime >= _ogMintStart, "Not OG mint time");
         require(totalSupply() + amount <= _maxSupply, "Over mintMax error");
-        require(currentTime >= _ogMintStart && currentTime <= _ogMintEnd, "Not OG mint time");
-        _internalSafeMint(msg.value, to, _ogMintPrice, amount, _ogMintMax);
+        _internalSafeMint(msg.value, to, _ogMintPrice, amount, _ogMintMaxPerUser);
         emit OGmintEvent(msg.sender, msg.value, to, amount, _ogMintPrice);
     }
 
@@ -119,9 +119,9 @@ contract ArtCollection is Clone, ERC721A, IERC2981, MintingStages {
     /// @param amount amount to mint (batch minting)
     function mintForWhitelist(address to, uint256 amount) external payable onlyRole(WL_MINTER_ROLE) nonReentrant {
         uint256 currentTime = block.timestamp;
+        require(currentTime <= _whitelistMintEnd && currentTime >= _whitelistMintStart, "Not OG mint time");
         require(totalSupply() + amount <= _maxSupply, "Over mintMax error");
-        require(currentTime >= _whitelistMintStart && currentTime <= _whitelistMintEnd, "Not OG mint time");
-        _internalSafeMint(msg.value, to, _whitelistMintPrice, amount, _ogMintMax);
+        _internalSafeMint(msg.value, to, _whitelistMintPrice, amount, _whitelistMintMaxPerUser);
         emit WLmintEvent(msg.sender, msg.value, to, amount, _whitelistMintPrice);
     }
 
@@ -130,9 +130,9 @@ contract ArtCollection is Clone, ERC721A, IERC2981, MintingStages {
     /// @param amount amount to mint (batch minting)
     function mintForRegular(address to, uint256 amount) external payable nonReentrant {
         uint256 currentTime = block.timestamp;
+        require(currentTime <= _mintEnd && currentTime >= _mintStart, "Not Regular minTime");
         require(totalSupply() + amount <= _maxSupply, "Over mintMax error");
-        require(currentTime >= _mintStart && currentTime <= _mintEnd, "Not Regular minTime");
-        _internalSafeMint(msg.value, to, _mintPrice, amount, _mintMax);
+        _internalSafeMint(msg.value, to, _mintPrice, amount, _mintMaxPerUser);
         emit MintEvent(msg.sender, msg.value, to, amount, _mintPrice);
     }
 
@@ -156,7 +156,9 @@ contract ArtCollection is Clone, ERC721A, IERC2981, MintingStages {
 
         require(msgValue >= (price + mintFee), "Insufficient mint payment");
 
-        _mintsPerWallet[msg.sender] += mintAmount;
+        unchecked {
+            _mintsPerWallet[msg.sender] += mintAmount;
+        }
         _safeMint(mintTo, mintAmount);
     }
 
@@ -232,7 +234,7 @@ contract ArtCollection is Clone, ERC721A, IERC2981, MintingStages {
     }
 
     /// @notice only ADMIN access withdraw royalties
-    function withdraw() external onlyRole(ADMIN_ROLE) {
+    function withdraw() external payable onlyRole(ADMIN_ROLE) {
         payable(msg.sender).transfer(address(this).balance);
     }
 

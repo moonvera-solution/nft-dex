@@ -15,19 +15,19 @@ abstract contract MintingStages is AccessControlUpgradeable, ReentrancyGuardUpgr
 
     /* OG MINT DETAILS */
     uint256 public _ogMintPrice;
-    uint256 public _ogMintMax;
+    uint256 public _ogMintMaxPerUser;
     uint256 public _ogMintStart;
     uint256 public _ogMintEnd;
 
     /* WL MINT DETAILS */
     uint256 public _whitelistMintPrice;
-    uint256 public _whitelistMintMax;
+    uint256 public _whitelistMintMaxPerUser;
     uint256 public _whitelistMintStart;
     uint256 public _whitelistMintEnd;
 
     /* REGULAR MINT DETAILS*/
     uint256 public _mintPrice;
-    uint256 public _mintMax;
+    uint256 public _mintMaxPerUser;
     uint256 public _mintStart;
     uint256 public _mintEnd;
 
@@ -53,7 +53,7 @@ abstract contract MintingStages is AccessControlUpgradeable, ReentrancyGuardUpgr
 
     function updateOGMintMax(uint256 ogMintMax) external OnlyAdminOrOperator {
         require(ogMintMax > 0, "Invalid max amount");
-        _ogMintMax = ogMintMax;
+        _ogMintMaxPerUser = ogMintMax;
     }
 
     /// WL MINTING
@@ -71,7 +71,7 @@ abstract contract MintingStages is AccessControlUpgradeable, ReentrancyGuardUpgr
 
     function updateWLMintMax(uint256 whitelistMintMax) external OnlyAdminOrOperator {
         require(whitelistMintMax > 0, "Invalid max amount");
-        _whitelistMintMax = whitelistMintMax;
+        _whitelistMintMaxPerUser = whitelistMintMax;
     }
 
     // REGULAR MINTING
@@ -83,7 +83,7 @@ abstract contract MintingStages is AccessControlUpgradeable, ReentrancyGuardUpgr
 
     function updateMintMax(uint256 mintMax) external OnlyAdminOrOperator {
         require(mintMax > 0, "Invalid mint amount");
-        _mintMax = mintMax;
+        _mintMaxPerUser = mintMax;
     }
 
     function updateTime(uint256 start, uint256 end) external OnlyAdminOrOperator {
