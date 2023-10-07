@@ -5,6 +5,6 @@ import {Test, console2, Vm} from "forge-std/Test.sol";
 
 contract Encoder {
     function _encodeNftDetails() internal pure returns (bytes memory _data) {
-        _data = abi.encode(0, 50, "TestName", "SYMBOL", "https://moonvera.io/nft/{id}");
+        _data = abi.encode(50, 3000, "TestName", "SYMBOL", "ipfs://QmXPHaxtTKxa58ise75a4vRAhLzZK3cANKV3zWb6KMoGUU/");
     }
 }
