@@ -26,11 +26,8 @@ jobs:
         working-directory: ./
 
       - name: Install Foundry
-        run: curl -L https://foundry.paradigm.xyz | bash
+        run: curl -L https://foundry.paradigm.xyz && foundryup
         working-directory: ./
-    
-      - name: test Foundry
-        run: foundryup
 
       - name: Install Tenderly CLI
         run: curl https://raw.githubusercontent.com/Tenderly/tenderly-cli/master/scripts/install-linux.sh | sudo sh
