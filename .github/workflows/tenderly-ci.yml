@@ -23,14 +23,14 @@ jobs:
 
       - name: Install dependencies
         run: yarn install
-        working-directory: nft-dex
+        working-directory: ./
 
       - name: Install Tenderly CLI
         run: curl https://raw.githubusercontent.com/Tenderly/tenderly-cli/master/scripts/install-linux.sh | sudo sh
 
       - name: Run tests
-        run: yarn run test:devnet
-        working-directory: nft-dex
+        run: yarn run test
+        working-directory: ./
         env:
           TENDERLY_ACCESS_KEY: ${{ secrets.TENDERLY_ACCESS_KEY }}
           TENDERLY_PROJECT_SLUG: '???' # your project slug
