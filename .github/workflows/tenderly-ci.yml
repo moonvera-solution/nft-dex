@@ -36,7 +36,7 @@ jobs:
       - name: foundryUp
         run: foundryup
         working-directory: ./
-
+        
       - name: Install Tenderly CLI
         run: curl https://raw.githubusercontent.com/Tenderly/tenderly-cli/master/scripts/install-linux.sh | sudo sh
 
