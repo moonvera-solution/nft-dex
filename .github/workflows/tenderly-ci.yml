@@ -3,10 +3,10 @@ name: Smart Contract CI
 on:
   push:
     branches:
-      - main
+      - dev-ci
   pull_request:
     branches:
-      - main
+      - dev-ci
 
 jobs:
   build-and-test:
