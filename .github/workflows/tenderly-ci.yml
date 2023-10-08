@@ -25,13 +25,13 @@ jobs:
         run: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -y | sh
 
       - name: Install Foundry
-        run: curl -L https://foundry.paradigm.xyz | bash
-      
-      - name: source foundry
-        run: source /home/runner/.bashrc     
+        run: curl -L https://foundry.paradigm.xyz | bash 
 
-      - name: cat /home/runner/.bashrc     
-        run: cat /home/runner/.bashrc
+      - name: export PATH="$PATH:/home/runner/.config/.foundry/bin"     
+        run: export PATH="$PATH:/home/runner/.config/.foundry/bin"
+
+      - name: source foundry
+        run: source /home/runner/.bashrc
 
       - name: foundryup...
         run: foundryup
