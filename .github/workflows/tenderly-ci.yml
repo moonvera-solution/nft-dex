@@ -33,8 +33,8 @@ jobs:
       - name: source foundry
         run: source /home/runner/.bashrc
 
-      - name: foundryup...
-        run: foundryup
+      - name: ls /home/runner/.config/.foundry/...
+        run: ls /home/runner/.config/.foundry
 
       - name: Install Tenderly CLI
         run: curl https://raw.githubusercontent.com/Tenderly/tenderly-cli/master/scripts/install-linux.sh | sudo sh
