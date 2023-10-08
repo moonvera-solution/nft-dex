@@ -28,6 +28,10 @@ jobs:
       - name: Install Foundry
         run: curl -L https://foundry.paradigm.xyz | bash
         working-directory: ./
+      
+      - name: source foundry
+        run: source /home/runner/.bashrc
+        working-directory: ./
 
       - name: Install Tenderly CLI
         run: curl https://raw.githubusercontent.com/Tenderly/tenderly-cli/master/scripts/install-linux.sh | sudo sh
