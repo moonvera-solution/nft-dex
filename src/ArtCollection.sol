@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import "../lib/openzeppelin-contracts-upgradeable/contracts/utils/StringsUpgradeable.sol";
 import "../lib/openzeppelin-contracts/contracts/interfaces/IERC2981.sol";
 import "../lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol";
 import "../lib/solady/src/utils/Clone.sol";
@@ -14,7 +13,6 @@ import "./tokens/ERC721A.sol";
 /// @notice This contract is made only for the Arab Collectors Club ACC
 /// @author MoonveraLabs
 contract ArtCollection is Clone, ERC721A, IERC2981, MintingStages {
-    using StringsUpgradeable for uint256;
 
     string public baseURI;
     string public _baseExtension;
@@ -209,7 +207,7 @@ contract ArtCollection is Clone, ERC721A, IERC2981, MintingStages {
         string memory current_baseURI = _baseURI();
 
         return bytes(current_baseURI).length > 0
-            ? string(abi.encodePacked(current_baseURI, tokenId.toString(), _baseExtension))
+            ? string(abi.encodePacked(current_baseURI, _toString(tokenId), _baseExtension))
             : "";
     }
 
