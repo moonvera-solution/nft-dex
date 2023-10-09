@@ -5,6 +5,6 @@ forge verify-contract 0x335870163d9Bc397ADA314885478E13F1213BeC3 Factory --watch
 
 forge create src/ArtCollection.sol:ArtCollection  --rpc-url https://rpc.ankr.com/eth_goerli --private-key 7a3b2dc7d031efa7d9e7c5a069c5941f0488e2c7b44c188763be7300e0a907ec
 
-forge verify-contract 0xe624d05860ca425073a1A55acEDdc0B189ce02A1 ArtCollection --watch --chain-id 5
+forge verify-contract 0xd4BE3EbF591abE698aCC22549d41981d7477bd47 ArtCollection --watch --chain-id 5
 
  
