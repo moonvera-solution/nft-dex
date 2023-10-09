@@ -132,14 +132,6 @@ contract ArtCollectionTest is Test, TestSetUp, GasSnapshot, Encoder {
         assert(_nftCollection._ogMintPrice() == price);
     }
 
-    function test_updateOGMintTime(uint256 start, uint256 end) public {
-        vm.assume(start > block.timestamp);
-        vm.assume(end > start && end < block.timestamp + 5 days);
-        _nftCollection.updateOGMintTime(start, end);
-        assert(_nftCollection._ogMintStart() > block.timestamp);
-        assert(_nftCollection._ogMintEnd() > _nftCollection._ogMintStart());
-    }
-
     function test_updateOGMintMax(uint256 price) public {
         vm.assume(price > 0);
         _nftCollection.updateOGMintMax(price);
@@ -152,15 +144,6 @@ contract ArtCollectionTest is Test, TestSetUp, GasSnapshot, Encoder {
         _nftCollection.updateWhitelistMintPrice(price);
         assert(_nftCollection._whitelistMintPrice() == price);
     }
-
-    function test_updateWLMintTime(uint256 start, uint256 end) public {
-        vm.assume(start > block.timestamp);
-        vm.assume(end > start && end < block.timestamp + 5 days);
-        _nftCollection.updateWLMintTime(start, end);
-        assert(_nftCollection._whitelistMintStart() > block.timestamp);
-        assert(_nftCollection._whitelistMintEnd() > _nftCollection._whitelistMintStart());
-    }
-
     function test_updateWLMintMax(uint256 mintMax) public {
         vm.assume(mintMax > 0);
         vm.assume(mintMax > _nftCollection._maxSupply());
