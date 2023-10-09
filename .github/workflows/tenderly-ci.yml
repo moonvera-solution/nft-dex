@@ -21,20 +21,21 @@ jobs:
         with:
           node-version: 16
 
-      - name: Install Rust
-        run: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -y | sh
-
       - name: Install Foundry
-        run: curl -L https://foundry.paradigm.xyz | bash 
-
-      - name: export PATH="$PATH:/home/runner/.config/.foundry/bin"     
-        run: export PATH="$PATH:/home/runner/.config/.foundry/bin"
-
-      - name: source foundry
-        run: source /home/runner/.bashrc
-
-      - name: ls /home/runner/.config/.foundry/...
-        run: /home/runner/.config/.foundry/bin/foundryup
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+            version: nightly
+    
+      - name: Restore forge compilation cache
+        uses: actions/cache/restore@v3
+        with:
+            path: |
+              cache
+              out
+            key: forge-${{ github.ref_name }}
+            restore-keys: |
+              forge-${{ github.base_ref }}
+              forge-
 
       - name: Install Tenderly CLI
         run: curl https://raw.githubusercontent.com/Tenderly/tenderly-cli/master/scripts/install-linux.sh | sudo sh
