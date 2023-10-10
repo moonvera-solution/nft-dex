@@ -1,6 +1,6 @@
 # Nft Launchpad & Marketplace
 
-***Project from [MoonveraLabs](https://moonvera.io/) for the [Arab collectors club.](https://arabcc.io/)***
+***Project from [MoonveraLabs] ***
 <br>
 ### Decentralized market and launchpad for minting, listing and trading of non-fungible assets.
 #### CONTRACT COMPONENTS

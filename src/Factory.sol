@@ -123,7 +123,7 @@ contract Factory {
     /// @param initialWLMinters List of WL memeber addresses
     /// @param mintingStages Details of Regular,OG & WL minting stages
     function createCollection(
-        bytes memory nftsData,
+        bytes calldata nftsData,
         address[] calldata initialOGMinters,
         address[] calldata initialWLMinters,
         uint256[] calldata mintingStages
@@ -131,7 +131,9 @@ contract Factory {
         require(msg.value >= _deployFee, "Missing deploy fee");
 
         bytes memory data = abi.encodePacked(msg.sender);
+
         _clone = LibClone.clone(address(_collectionImpl), data);
+
         if (_clone == address(0x0)) revert CreateCloneError();
         collections[msg.sender] = _clone;
         emit CreateCollectionEvent(msg.sender, _collectionImpl, _clone);

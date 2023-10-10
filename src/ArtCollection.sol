@@ -9,6 +9,14 @@ import "./libs/FullMath.sol";
 import "./abstracts/MintingStages.sol";
 import "./tokens/ERC721A.sol";
 
+// 
+// ███╗   ███╗ ██████╗  ██████╗ ███╗   ██╗██╗   ██╗███████╗██████╗  █████╗     ██╗      █████╗ ██████╗ ███████╗
+// ████╗ ████║██╔═══██╗██╔═══██╗████╗  ██║██║   ██║██╔════╝██╔══██╗██╔══██╗    ██║     ██╔══██╗██╔══██╗██╔════╝
+// ██╔████╔██║██║   ██║██║   ██║██╔██╗ ██║██║   ██║█████╗  ██████╔╝███████║    ██║     ███████║██████╔╝███████╗
+// ██║╚██╔╝██║██║   ██║██║   ██║██║╚██╗██║╚██╗ ██╔╝██╔══╝  ██╔══██╗██╔══██║    ██║     ██╔══██║██╔══██╗╚════██║
+// ██║ ╚═╝ ██║╚██████╔╝╚██████╔╝██║ ╚████║ ╚████╔╝ ███████╗██║  ██║██║  ██║    ███████╗██║  ██║██████╔╝███████║
+// ╚═╝     ╚═╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═══╝  ╚═══╝  ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝    ╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝
+//                                                                                                             
 /// @title Art Collection ERC721A Upgradable
 /// @notice This contract is made only for the Arab Collectors Club ACC
 /// @author MoonveraLabs
@@ -38,7 +46,7 @@ contract ArtCollection is Clone, ERC721A, IERC2981, MintingStages {
     /// @param mintingStages description
     function initialize(
         uint256 mintFee,
-        bytes memory nftData,
+        bytes calldata nftData,
         address[] calldata initialOGMinters,
         address[] calldata initialWLMinters,
         uint256[] calldata mintingStages
