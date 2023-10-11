@@ -4,11 +4,12 @@
     "test": "forge test"
   },
   "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^2.0.2",
+    "@nomicfoundation/hardhat-toolbox": "^3.0.0",
     "hardhat": "^2.18.0"
   },
   "dependencies": {
     "@tenderly/hardhat-tenderly": "^1.7.7",
+    "@types/mocha": "^10.0.2",
     "dotenv": "^16.3.1"
   }
 }

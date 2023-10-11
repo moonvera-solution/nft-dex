@@ -1,41 +1,21 @@
 // SPDX-License-Identifier: MIT O
-pragma solidity ^0.8.5;
+pragma solidity ^0.8.20;
 
 import {Test, console, console2, Vm} from "forge-std/Test.sol";
 import {GasSnapshot} from "forge-gas-snapshot/GasSnapshot.sol";
-
-import "../src/Factory.sol";
-import "../src/ArtCollection.sol";
-import "./TestSetUp.sol";
-import "./utils/Encoder.sol";
+import "../../../src/Factory.sol";
+import "../../../src/ArtCollection.sol";
+import "./helpers/BaseTest.sol";
 
 error InvalidColletion(uint8);
 
-contract ArtCollectionInternalsTest is ArtCollection {
-    function calculateFee(uint256 price, uint256 feeOnMint) external returns (uint256 _mintFee) {
-        _mintFee = _calculateFee(price, feeOnMint);
-    }
-
-    function internalSafeMint(
-        uint256 msgValue,
-        address mintTo,
-        uint256 mintPrice,
-        uint256 mintAmount,
-        uint256 maxMintAmount
-    ) external {
-        _internalSafeMint(msgValue, mintTo, mintPrice, mintAmount, maxMintAmount);
-    }
-}
-
-contract ArtCollectionTest is Test, TestSetUp, GasSnapshot, Encoder {
+contract ArtCollectionTest is Test, BaseTest, GasSnapshot {
     ArtCollection private _nftCollection;
-    ArtCollectionInternalsTest private artCollectionInternalsTest;
     ArtCollectionNotERC721A private artCollectionNotERC721A;
 
     function setUp() public {
         clone = new ArtCollection();
         artCollectionNotERC721A = new ArtCollectionNotERC721A();
-        artCollectionInternalsTest = new ArtCollectionInternalsTest();
         factory = new Factory(3000); // takes fee on mint 3%
         factory.setCollectionImpl(address(clone));
         factory.updateMember(wallet1.addr, block.timestamp + 5 days);
@@ -65,16 +45,6 @@ contract ArtCollectionTest is Test, TestSetUp, GasSnapshot, Encoder {
         vm.expectRevert(abi.encodeWithSelector(InvalidColletion.selector, 2));
         vm.startPrank(address(this));
         factory.setCollectionImpl(address(artCollectionNotERC721A));
-    }
-
-    function test_calculateFee() external {
-        uint256 fee = artCollectionInternalsTest.calculateFee(2 ether, 3000);
-        assertEq(fee, 1994000000000000000);
-    }
-
-    function test_printEncode() external {
-        bytes memory data = _encodeNftDetails();
-        // console2.logBytes(data);
     }
 
     /// @notice deployer is Clone/Art Collection Admin

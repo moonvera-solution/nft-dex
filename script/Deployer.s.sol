@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT O
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.20;
 
 import {Factory} from "../src/Factory.sol";
 import {ArtCollection} from "../src/ArtCollection.sol";

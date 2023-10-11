@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT O
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.20;
 
 import "../src/Factory.sol";
 import {Test, console2} from "../lib/forge-std/src/Test.sol";

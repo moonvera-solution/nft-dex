@@ -3,13 +3,13 @@ pragma solidity ^0.8.5;
 
 import {Test, console, console2, Vm} from "forge-std/Test.sol";
 import {GasSnapshot} from "forge-gas-snapshot/GasSnapshot.sol";
-import "./TestSetUp.sol";
-import "./utils/Encoder.sol";
+import "./helpers/BaseTest.sol";
 
-import "../src/Factory.sol";
-import {ArtCollection} from "../src/ArtCollection.sol";
 
-contract Factorytest is Test, TestSetUp, GasSnapshot, Encoder {
+import {Factory} from  "../../src/Factory.sol";
+import {ArtCollection} from "../../src/ArtCollection.sol";
+
+contract Factorytest is BaseTest, GasSnapshot {
     uint160 public constant ALLOW_LAUNCH_PERIOD = 7 days;
 
     function setUp() public {

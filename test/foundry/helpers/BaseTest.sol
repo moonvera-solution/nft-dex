@@ -2,9 +2,9 @@
 pragma solidity ^0.8.5;
 
 import {Test, console2, Vm} from "forge-std/Test.sol";
-import "../src/Factory.sol";
+import "../../../src/Factory.sol";
 
-contract TestSetUp is Test {
+contract BaseTest is Test {
     Factory public factory;
     ArtCollection public clone;
 
@@ -65,5 +65,10 @@ contract TestSetUp is Test {
         _mintStageDetails[11] = block.timestamp + 5 * 60 * 60 * 24; //_mintEnd
     }
 
-    fallback() external payable {}
+    function _encodeNftDetails() internal pure returns (bytes memory _data) {
+        _data = abi.encode(50, 3000, "TestName", "SYMBOL", "ipfs://QmXPHaxtTKxa58ise75a4vRAhLzZK3cANKV3zWb6KMoGUU/");
+    }
+    function _encodeNftDetails(uint256 maxSupply, uint256 royaltyFee, string memory name, string memory symbol, string memory initBaseURI) internal pure returns(bytes memory _data){
+        _data = abi.encode(maxSupply, royaltyFee, name,  symbol,initBaseURI);
+    }
 }

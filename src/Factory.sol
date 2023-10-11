@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT O
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.20;
 
 import {LibClone} from "../lib/solady/src/utils/LibClone.sol";
 import "./interfaces/IERC721A.sol";

@@ -1,10 +1,10 @@
-import {HardhatUserConfig} from "hardhat/config";
+import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 import * as tdly from "@tenderly/hardhat-tenderly";
 import * as dotenv from "dotenv";
 
 dotenv.config();
-tdly.setup({automaticVerifications: true})
+tdly.setup({ automaticVerifications: true })
 
 const {
     TENDERLY_ACCESS_KEY,
@@ -13,7 +13,24 @@ const {
 } = process.env;
 
 const config: HardhatUserConfig = {
-    solidity: "0.8.18",
+    solidity: {
+        compilers: [
+            {
+                version: "0.8.20",
+                settings: {
+                    optimizer: {
+                        enabled: true,
+                        runs: 200,
+                    },
+                    outputSelection: {
+                        "*": {
+                            "*": ["storageLayout"],
+                        },
+                    },
+                },
+            },
+        ],
+    }
     networks: {
         tenderly: {
             url: DEVNET_RPC_URL,
