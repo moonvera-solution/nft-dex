@@ -3,7 +3,7 @@ cache/
 out/
 lib/
 typechain-types/
-
+flats/artifacts
 # Remix
 remix-compiler.config.js
 
