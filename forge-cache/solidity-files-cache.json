@@ -2757,7 +2757,7 @@
       }
     },
     "script/Deployer.s.sol": {
-      "lastModificationDate": 1697137373405,
+      "lastModificationDate": 1697139769157,
       "contentHash": "9caca5885e722d83b2e409ee7d32058a",
       "sourceName": "script/Deployer.s.sol",
       "solcConfig": {
@@ -2990,8 +2990,8 @@
       }
     },
     "src/MvxCollection.sol": {
-      "lastModificationDate": 1697137578939,
-      "contentHash": "8ba81cf7d8133a545035d488d904ecd0",
+      "lastModificationDate": 1697139799362,
+      "contentHash": "e12b63b1d20ffb094cf12fe34028e3b6",
       "sourceName": "src/MvxCollection.sol",
       "solcConfig": {
         "settings": {
@@ -3497,7 +3497,7 @@
       }
     },
     "test/foundry/MvxCollectionTest.t.sol": {
-      "lastModificationDate": 1697137843282,
+      "lastModificationDate": 1697139769157,
       "contentHash": "7f3ec74f1dc901879910383fe0ad1827",
       "sourceName": "test/foundry/MvxCollectionTest.t.sol",
       "solcConfig": {
@@ -3585,7 +3585,7 @@
       }
     },
     "test/foundry/MvxFactoryTest.sol": {
-      "lastModificationDate": 1697137443477,
+      "lastModificationDate": 1697139769156,
       "contentHash": "8f3cad164c88f23a84a3e7fd8c0cc38e",
       "sourceName": "test/foundry/MvxFactoryTest.sol",
       "solcConfig": {
@@ -3839,7 +3839,7 @@
       }
     },
     "test/foundry/internal/InternalTestArtCollection.sol": {
-      "lastModificationDate": 1697137492396,
+      "lastModificationDate": 1697139769154,
       "contentHash": "fba5779c08615ce568fdaaedad3fc252",
       "sourceName": "test/foundry/internal/InternalTestArtCollection.sol",
       "solcConfig": {

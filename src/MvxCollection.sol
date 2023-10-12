@@ -7,10 +7,10 @@ import {IERC165} from "@openzeppelin-contracts/utils/introspection/IERC165.sol";
 import {Clone} from "@solady/utils/Clone.sol";
 import {FullMath} from "./libs/FullMath.sol";
 import {MintingStages} from "./abstracts/MintingStages.sol";
-import {ERC721A} from "./tokens/ERC721A.sol";
+import {ERC721A, IERC721A} from "./tokens/ERC721A.sol";
 
 //
-// ███╗   ███╗ ██████╗  ██████╗ ███╗   ██╗██╗   ██╗███████╗██████╗  █████╗ 
+// ███╗   ███╗ ██████╗  ██████╗ ███╗   ██╗██╗   ██╗███████╗██████╗  █████╗
 // ████╗ ████║██╔═══██╗██╔═══██╗████╗  ██║██║   ██║██╔════╝██╔══██╗██╔══██╗
 // ██╔████╔██║██║   ██║██║   ██║██╔██╗ ██║██║   ██║█████╗  ██████╔╝███████║
 // ██║╚██╔╝██║██║   ██║██║   ██║██║╚██╗██║╚██╗ ██╔╝██╔══╝  ██╔══██╗██╔══██║
@@ -249,7 +249,8 @@ contract MvxCollection is Clone, ERC721A, IERC2981, MintingStages {
         override(ERC721A, AccessControlUpgradeable, IERC165)
         returns (bool)
     {
-        return super.supportsInterface(interfaceId);
+        return interfaceId == type(IERC721A).interfaceId || interfaceId == type(IERC2981).interfaceId
+            || super.supportsInterface(interfaceId);
     }
 
     function version() external pure returns (bytes16) {
