@@ -22,8 +22,8 @@ const config: HardhatUserConfig = {
                 settings: {
                     optimizer: {
                         enabled: true,
-                        runs: 200,
-                    },
+                        runs: 100000,
+                      },
                     outputSelection: {
                         "*": {
                             "*": ["storageLayout"],
@@ -62,7 +62,8 @@ const config: HardhatUserConfig = {
                 return line;
             },
         }),
-    }
+    },
+    
 };
 
 function getRemappings() {

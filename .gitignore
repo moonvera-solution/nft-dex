@@ -2,6 +2,7 @@
 cache/
 out/
 lib/
+typechain-types/
 
 # Ignores development broadcast logs
 !/broadcast
