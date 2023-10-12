@@ -4,6 +4,9 @@ out/
 lib/
 typechain-types/
 
+# Remix
+remix-compiler.config.js
+
 # Ignores development broadcast logs
 !/broadcast
 /broadcast/*/31337/
