@@ -1080,7 +1080,7 @@
       "versionRequirement": "^0.8.0",
       "artifacts": {
         "IERC20": {
-          "0.8.21+commit.d9974bed.Darwin.appleclang": "interfaces/IERC20.sol/IERC20.json"
+          "0.8.21+commit.d9974bed.Darwin.appleclang": "IERC20.sol/IERC20.json"
         }
       }
     },
@@ -2848,7 +2848,7 @@
       }
     },
     "script/Encoder.s.sol": {
-      "lastModificationDate": 1697130966185,
+      "lastModificationDate": 1697139769155,
       "contentHash": "b52cd417a31e8ab8e4876d96341ef345",
       "sourceName": "script/Encoder.s.sol",
       "solcConfig": {
@@ -2909,7 +2909,7 @@
       }
     },
     "script/Utils.sol": {
-      "lastModificationDate": 1697137729086,
+      "lastModificationDate": 1697139769158,
       "contentHash": "643c0a7ddd635ec1c171a05cba827a5d",
       "sourceName": "script/Utils.sol",
       "solcConfig": {
@@ -2990,7 +2990,7 @@
       }
     },
     "src/MvxCollection.sol": {
-      "lastModificationDate": 1697139799362,
+      "lastModificationDate": 1697142202027,
       "contentHash": "e12b63b1d20ffb094cf12fe34028e3b6",
       "sourceName": "src/MvxCollection.sol",
       "solcConfig": {
@@ -3050,8 +3050,8 @@
       }
     },
     "src/MvxFactory.sol": {
-      "lastModificationDate": 1697137562692,
-      "contentHash": "f5f92ed02401a6ff57ce8a5b4468a829",
+      "lastModificationDate": 1697142729965,
+      "contentHash": "14cfd1e2081ebfddce905b093854e839",
       "sourceName": "src/MvxFactory.sol",
       "solcConfig": {
         "settings": {
@@ -3112,7 +3112,7 @@
       }
     },
     "src/MvxMarket.sol": {
-      "lastModificationDate": 1697137617715,
+      "lastModificationDate": 1697139769156,
       "contentHash": "28a3656caa857fc7f9838968f1d5b69f",
       "sourceName": "src/MvxMarket.sol",
       "solcConfig": {
@@ -3173,7 +3173,7 @@
       }
     },
     "src/abstracts/MintingStages.sol": {
-      "lastModificationDate": 1697130966185,
+      "lastModificationDate": 1697139769157,
       "contentHash": "719786ceba6a0d3249b7028193c53ce0",
       "sourceName": "src/abstracts/MintingStages.sol",
       "solcConfig": {
@@ -3226,7 +3226,7 @@
       }
     },
     "src/dex/OrderMatcher.sol": {
-      "lastModificationDate": 1697130966195,
+      "lastModificationDate": 1697139769161,
       "contentHash": "e3a80609bab3222fdc4305eeb60edc42",
       "sourceName": "src/dex/OrderMatcher.sol",
       "solcConfig": {
@@ -3287,7 +3287,7 @@
       }
     },
     "src/dex/OrderStructs.sol": {
-      "lastModificationDate": 1697130966185,
+      "lastModificationDate": 1697139769154,
       "contentHash": "8e1810c6bea5730c902e4df47768b253",
       "sourceName": "src/dex/OrderStructs.sol",
       "solcConfig": {
@@ -3328,7 +3328,7 @@
       }
     },
     "src/interfaces/IDutchAuction.sol": {
-      "lastModificationDate": 1697130966190,
+      "lastModificationDate": 1697139769157,
       "contentHash": "7985059d7cbcf4a4c69b895847b39e34",
       "sourceName": "src/interfaces/IDutchAuction.sol",
       "solcConfig": {
@@ -3369,7 +3369,7 @@
       }
     },
     "src/interfaces/IERC721A.sol": {
-      "lastModificationDate": 1697130966187,
+      "lastModificationDate": 1697139769154,
       "contentHash": "e2bd882b05d84d4abc16bd284d546d69",
       "sourceName": "src/interfaces/IERC721A.sol",
       "solcConfig": {
@@ -3410,7 +3410,7 @@
       }
     },
     "src/libs/FullMath.sol": {
-      "lastModificationDate": 1697130966188,
+      "lastModificationDate": 1697139769155,
       "contentHash": "a9d3665e8a310b8611992cab2a47aaae",
       "sourceName": "src/libs/FullMath.sol",
       "solcConfig": {
@@ -3451,7 +3451,7 @@
       }
     },
     "src/tokens/ERC721A.sol": {
-      "lastModificationDate": 1697130966251,
+      "lastModificationDate": 1697139769204,
       "contentHash": "37fc251f01b8a28769e9e45011fe1332",
       "sourceName": "src/tokens/ERC721A.sol",
       "solcConfig": {
@@ -3497,8 +3497,8 @@
       }
     },
     "test/foundry/MvxCollectionTest.t.sol": {
-      "lastModificationDate": 1697139769157,
-      "contentHash": "7f3ec74f1dc901879910383fe0ad1827",
+      "lastModificationDate": 1697148711817,
+      "contentHash": "24aaf9c8a549b08e74ac4087152c33ec",
       "sourceName": "test/foundry/MvxCollectionTest.t.sol",
       "solcConfig": {
         "settings": {
@@ -3585,8 +3585,8 @@
       }
     },
     "test/foundry/MvxFactoryTest.sol": {
-      "lastModificationDate": 1697139769156,
-      "contentHash": "8f3cad164c88f23a84a3e7fd8c0cc38e",
+      "lastModificationDate": 1697142674241,
+      "contentHash": "98106285fc42971ac1b3364a991d08b0",
       "sourceName": "test/foundry/MvxFactoryTest.sol",
       "solcConfig": {
         "settings": {
@@ -3670,7 +3670,7 @@
       }
     },
     "test/foundry/MvxMarketTest.t.sol": {
-      "lastModificationDate": 1697137683275,
+      "lastModificationDate": 1697139769154,
       "contentHash": "03ed3907256c4a995f3f169d3c2b3c5f",
       "sourceName": "test/foundry/MvxMarketTest.t.sol",
       "solcConfig": {
@@ -3758,7 +3758,7 @@
       }
     },
     "test/foundry/helpers/BaseTest.sol": {
-      "lastModificationDate": 1697137478193,
+      "lastModificationDate": 1697139769159,
       "contentHash": "8d347545457c383a50b96c5529813523",
       "sourceName": "test/foundry/helpers/BaseTest.sol",
       "solcConfig": {
@@ -3839,7 +3839,7 @@
       }
     },
     "test/foundry/internal/InternalTestArtCollection.sol": {
-      "lastModificationDate": 1697139769154,
+      "lastModificationDate": 1697147966275,
       "contentHash": "fba5779c08615ce568fdaaedad3fc252",
       "sourceName": "test/foundry/internal/InternalTestArtCollection.sol",
       "solcConfig": {

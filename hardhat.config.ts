@@ -4,6 +4,8 @@ import "@nomicfoundation/hardhat-toolbox";
 import * as tdly from "@tenderly/hardhat-tenderly";
 import * as dotenv from "dotenv";
 import fs from "fs";
+import "hardhat-contract-sizer";
+
 
 dotenv.config();
 tdly.setup({ automaticVerifications: true })
@@ -48,6 +50,12 @@ const config: HardhatUserConfig = {
         sources: "./src",
         cache: "./forge_hardhat",
     },
+    contractSizer: {
+        alphaSort: true,
+        disambiguatePaths: false,
+        runOnCompile: true,
+        strict: true,
+      },
     preprocess: {
         eachLine: (hre) => ({
             transform: (line: string) => {

@@ -164,7 +164,7 @@ contract MvxFactory {
 
     /// @param _daysFromNow current timestamp plus days
     function getTime(uint256 _daysFromNow) public view returns (uint256 _time) {
-        _time = block.timestamp + (_daysFromNow * 60 * 60 * 24);
+        _time = block.timestamp + (_daysFromNow* 60 * 60 * 24);
     }
 
     function totalCollections() external view returns (uint256 _total) {

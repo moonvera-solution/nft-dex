@@ -5,7 +5,8 @@
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^3.0.0",
-    "hardhat": "^2.18.0"
+    "hardhat": "^2.18.0",
+    "hardhat-contract-sizer": "^2.10.0"
   },
   "dependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",

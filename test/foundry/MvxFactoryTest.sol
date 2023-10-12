@@ -47,8 +47,8 @@ contract MvxFactorytest is BaseTest, GasSnapshot {
     }
 
     function test_getTime() public {
-        vm.warp(block.timestamp + 5 days);
         assertEq(factory.getTime(), block.timestamp);
+        vm.warp(block.timestamp);
         assertEq(factory.getTime(5), block.timestamp + (5 * 60 * 60 * 24));
     }
 }

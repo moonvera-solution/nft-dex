@@ -27,8 +27,9 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         (address[] memory _initialOGMinters, address[] memory _initialWLMinters) = _getMintingUserLists();
 
         vm.startPrank(wallet1.addr, wallet1.addr);
+        // maxSupply 50, royaltyFee 5%
         bytes memory nftData =
-            abi.encode(50, 3000, "TestName", "SYMBOL", "ipfs://QmXPHaxtTKxa58ise75a4vRAhLzZK3cANKV3zWb6KMoGUU/");
+            abi.encode(50, 500, "TestName", "SYMBOL", "ipfs://QmXPHaxtTKxa58ise75a4vRAhLzZK3cANKV3zWb6KMoGUU/");
 
         snapStart("init_clone");
         address collectionAddress = factory.createCollection{value: 0.5 ether}(
@@ -73,7 +74,6 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         // paying one eth to mint as WL
         _nftCollection.mintForWhitelist{value: 1 ether}(to, mintAmount);
         string memory uri = _nftCollection.tokenURI(mintAmount);
-        console.log("uri:", mintAmount);
         assert(_nftCollection.balanceOf(to) > 0);
     }
 
@@ -90,6 +90,15 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         // paying one eth to mint as OG
         _nftCollection.mintForOG{value: 1 ether}(to, mintAmount);
         assert(_nftCollection.balanceOf(to) > 0);
+    }
+
+    function test_royaltyFees(
+        uint256 salePrice
+    ) external{
+        vm.assume(salePrice > 0 && salePrice < 10 ether);
+        uint256 percentWl = FullMath.mulDiv(uint256(salePrice), 1e6 - _nftCollection._royaltyFee(), 1e6);
+        (address receiver, uint256 royaltyAmount) = _nftCollection.royaltyInfo(0,salePrice);
+        assertEq(royaltyAmount, percentWl);
     }
 
     /* 
