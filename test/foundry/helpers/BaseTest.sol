@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT O
 pragma solidity ^0.8.5;
 
-import {Test, console2, Vm} from "forge-std/Test.sol";
-import "../../../src/Factory.sol";
+import {Test, console2, Vm} from "@forge-std/Test.sol";
+import "@src/MvxFactory.sol";
 
 contract BaseTest is Test {
-    Factory public factory;
-    ArtCollection public clone;
+    MvxFactory public factory;
+    MvxCollection public clone;
 
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant WL_MINTER_ROLE = keccak256("WL_MINTER_ROLE");
@@ -23,16 +23,16 @@ contract BaseTest is Test {
     address public user9 = address(9);
     address public user10 = address(10);
 
-    function _initCollectionFromFactory(Factory _factory) internal {
+    function _initCollectionFromMvxFactory(MvxFactory factory) internal {
         (address[] memory _initialOGMinters, address[] memory _initialWLMinters) = _getMintingUserLists();
         bytes memory nftData = abi.encode("TestName", "SYMBOL", "https://moonvera.io/nft/{id}", ".json");
-        _factory.createCollection{value: 0.05 ether}(nftData, _initialOGMinters, _initialWLMinters, _getMintingStages()); // createCollection fee
+        factory.createCollection{value: 0.05 ether}(nftData, _initialOGMinters, _initialWLMinters, _getMintingStages()); // createCollection fee
     }
 
     function _initCollection(address _collection, uint256 mintFee) internal returns (bytes memory _data) {
         bytes memory nftData = abi.encode("TestName", "SYMBOL", "https://moonvera.io/nft/{id}", ".json");
         (address[] memory _initialOGMinters, address[] memory _initialWLMinters) = _getMintingUserLists();
-        ArtCollection(_collection).initialize(
+        MvxCollection(_collection).initialize(
             mintFee, nftData, _initialOGMinters, _initialWLMinters, _getMintingStages()
         );
     }
@@ -68,7 +68,14 @@ contract BaseTest is Test {
     function _encodeNftDetails() internal pure returns (bytes memory _data) {
         _data = abi.encode(50, 3000, "TestName", "SYMBOL", "ipfs://QmXPHaxtTKxa58ise75a4vRAhLzZK3cANKV3zWb6KMoGUU/");
     }
-    function _encodeNftDetails(uint256 maxSupply, uint256 royaltyFee, string memory name, string memory symbol, string memory initBaseURI) internal pure returns(bytes memory _data){
-        _data = abi.encode(maxSupply, royaltyFee, name,  symbol,initBaseURI);
+
+    function _encodeNftDetails(
+        uint256 maxSupply,
+        uint256 royaltyFee,
+        string memory name,
+        string memory symbol,
+        string memory initBaseURI
+    ) internal pure returns (bytes memory _data) {
+        _data = abi.encode(maxSupply, royaltyFee, name, symbol, initBaseURI);
     }
 }

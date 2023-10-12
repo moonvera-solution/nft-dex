@@ -30,7 +30,7 @@ File: tokens/ERC721A.sol
 
 *Instances (230)*:
 ```solidity
-File: ArtCollection.sol
+File: MvxCollection.sol
 
 3: import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
@@ -115,7 +115,7 @@ File: ArtCollection.sol
 ```
 
 ```solidity
-File: Factory.sol
+File: MvxFactory.sol
 
 4: import {LibClone} from "solady/src/utils/LibClone.sol";
 
@@ -133,7 +133,7 @@ File: Factory.sol
 
 6: import {Clone} from "solady/src/utils/Clone.sol";
 
-7: import {ArtCollection} from "./ArtCollection.sol";
+7: import {MvxCollection} from "./MvxCollection.sol";
 
 113:         uint256 validUntil = block.timestamp + (expire * 60 * 60 * 24);
 
@@ -151,9 +151,9 @@ File: Factory.sol
 
 142:         delete members[msg.sender]; // only one time create clone
 
-146:             _mintFee, // set by factory owner
+146:             _mintFee, // set by MvxFactory owner
 
-146:             _mintFee, // set by factory owner
+146:             _mintFee, // set by MvxFactory owner
 
 154:             _totalCollections = _totalCollections + 1;
 
@@ -530,7 +530,7 @@ Instead of using error strings, to reduce deployment and runtime cost, you shoul
 
 *Instances (32)*:
 ```solidity
-File: ArtCollection.sol
+File: MvxCollection.sol
 
 109:         require(totalSupply() + amount <= _maxSupply, "Over mintMax error");
 
@@ -557,7 +557,7 @@ File: ArtCollection.sol
 ```
 
 ```solidity
-File: Factory.sol
+File: MvxFactory.sol
 
 53:         revert("Unsupported");
 
@@ -617,7 +617,7 @@ File: abstracts/MintingStages.sol
 
 *Instances (1)*:
 ```solidity
-File: ArtCollection.sol
+File: MvxCollection.sol
 
 213:         require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
 
@@ -628,7 +628,7 @@ If a function modifier such as `onlyOwner` is used, the function will revert if 
 
 *Instances (2)*:
 ```solidity
-File: ArtCollection.sol
+File: MvxCollection.sol
 
 243:     function withdraw() external onlyRole(ADMIN_ROLE) {
 
@@ -684,7 +684,7 @@ File: abstracts/MintingStages.sol
 
 *Instances (3)*:
 ```solidity
-File: ArtCollection.sol
+File: MvxCollection.sol
 
 120:         require(currentTime >= _ogMintStart && currentTime <= _ogMintEnd, "Not OG mint time");
 
@@ -698,14 +698,14 @@ File: ArtCollection.sol
 
 *Instances (13)*:
 ```solidity
-File: ArtCollection.sol
+File: MvxCollection.sol
 
 217:         return bytes(current_baseURI).length > 0
 
 ```
 
 ```solidity
-File: Factory.sol
+File: MvxFactory.sol
 
 104:         require(_newFee > 0, "Invalid Fee");
 
@@ -792,7 +792,7 @@ File: tokens/ERC721A.sol
 
 *Instances (5)*:
 ```solidity
-File: Factory.sol
+File: MvxFactory.sol
 
 50:     receive() external payable {}
 
@@ -816,7 +816,7 @@ Initializers could be front-run, allowing an attacker to either set their own va
 
 *Instances (9)*:
 ```solidity
-File: ArtCollection.sol
+File: MvxCollection.sol
 
 49:     function initialize(
 
@@ -829,9 +829,9 @@ File: ArtCollection.sol
 ```
 
 ```solidity
-File: Factory.sol
+File: MvxFactory.sol
 
-145:         ArtCollection(_clone).initialize(
+145:         MvxCollection(_clone).initialize(
 
 ```
 
@@ -857,14 +857,14 @@ File: tokens/ERC721A.sol
 
 *Instances (6)*:
 ```solidity
-File: ArtCollection.sol
+File: MvxCollection.sol
 
 244:         payable(msg.sender).transfer(address(this).balance);
 
 ```
 
 ```solidity
-File: Factory.sol
+File: MvxFactory.sol
 
 98:         payable(msg.sender).transfer(address(this).balance);
 
@@ -897,7 +897,7 @@ Contracts have owners with privileged rights to perform admin tasks and need to 
 
 *Instances (10)*:
 ```solidity
-File: ArtCollection.sol
+File: MvxCollection.sol
 
 117:     function mintForOG(address to, uint256 amount) external payable nonReentrant onlyRole(OG_MINTER_ROLE) {
 
@@ -908,7 +908,7 @@ File: ArtCollection.sol
 ```
 
 ```solidity
-File: Factory.sol
+File: MvxFactory.sol
 
 74:     function updateMintFee(uint256 fee) external payable onlyOwner {
 

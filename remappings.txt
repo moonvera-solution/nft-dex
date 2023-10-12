@@ -1,0 +1,8 @@
+@solady/=lib/solady/src/
+@solmate/=lib/solmate/src/
+@openzeppelin-contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/
+@openzeppelin-contracts/=lib/openzeppelin-contracts/contracts/
+@src/=src/
+@forge-std/=lib/forge-std/src/
+@forge-gas-snapshot/=lib/forge-gas-snapshot/src/
+@crytic/properties/=lib/properties/src/

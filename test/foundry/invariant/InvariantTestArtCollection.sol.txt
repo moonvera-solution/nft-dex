@@ -1,0 +1,21 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+/**
+ * Core invariants of ERC721
+ *     From Trail of Bits testing properties
+ *     Same properties as echidna fuzz harness
+ */
+import {MvxCollection} from "@src/MvxMvxCollection.sol";
+import {ERC721ExternalPropertyTests} from
+    "@crytic/ERC721/external/ERC721ExternalPropertyTests.sol";
+import {MockReceiver} from "../../../lib/properties/contracts/ERC721/external/util/MockReceiver.sol";
+
+contract InvariantTestMvxCollection is ERC721ExternalPropertyTests {
+    constructor() {
+        // Deploy ERC721
+        token = IERC721Internal(address(new MvxCollection()));
+        mockSafeReceiver = new MockReceiver(true);
+        mockUnsafeReceiver = new MockReceiver(false);
+    }
+}

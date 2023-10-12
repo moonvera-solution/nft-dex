@@ -6,7 +6,7 @@ async function main() {
 
   const lockedAmount = ethers.utils.parseEther("0.001");
 
-  const Lock = await ethers.getContractFactory("Lock");
+  const Lock = await ethers.getContractMvxFactory("Lock");
   const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
 
   await lock.deployed();

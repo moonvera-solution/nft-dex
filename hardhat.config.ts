@@ -1,7 +1,9 @@
 import { HardhatUserConfig } from "hardhat/config";
+import "hardhat-preprocessor";
 import "@nomicfoundation/hardhat-toolbox";
 import * as tdly from "@tenderly/hardhat-tenderly";
 import * as dotenv from "dotenv";
+import fs from "fs";
 
 dotenv.config();
 tdly.setup({ automaticVerifications: true })
@@ -30,7 +32,7 @@ const config: HardhatUserConfig = {
                 },
             },
         ],
-    }
+    },
     networks: {
         tenderly: {
             url: DEVNET_RPC_URL,
@@ -41,7 +43,34 @@ const config: HardhatUserConfig = {
         project: TENDERLY_PROJECT_SLUG || "devnet-example",
         username: "danielleseng",
         accessKey: TENDERLY_ACCESS_KEY,
+    },
+    paths: {
+        sources: "./src",
+        cache: "./forge_hardhat",
+    },
+    preprocess: {
+        eachLine: (hre) => ({
+            transform: (line: string) => {
+                if (line.match(/^\s*import /i)) {
+                    for (const [from, to] of getRemappings()) {
+                        if (line.includes(from)) {
+                            line = line.replace(from, to);
+                            break;
+                        }
+                    }
+                }
+                return line;
+            },
+        }),
     }
 };
+
+function getRemappings() {
+    return fs
+        .readFileSync("remappings.txt", "utf8")
+        .split("\n")
+        .filter(Boolean) // remove empty lines
+        .map((line) => line.trim().split("="));
+}
 
 export default config;

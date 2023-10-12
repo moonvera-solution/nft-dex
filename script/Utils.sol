@@ -1,21 +1,21 @@
 // SPDX-License-Identifier: MIT O
 pragma solidity ^0.8.20;
 
-import "../src/Factory.sol";
-import {Test, console2} from "../lib/forge-std/src/Test.sol";
+import "@src/MvxFactory.sol";
+import {Test, console2} from "@forge-std/Test.sol";
 
 contract Utils is Test {
-    Factory public factory;
-    ArtCollection public clone;
+    MvxFactory public factory;
+    MvxCollection public clone;
 
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant WL_MINTER_ROLE = keccak256("WL_MINTER_ROLE");
     bytes32 public constant OG_MINTER_ROLE = keccak256("OG_MINTER_ROLE");
 
-    function _initCollection(Factory _factory) internal returns (address _collection) {
+    function _initCollection(MvxFactory factory) internal returns (address _collection) {
         (address[] memory _initialOGMinters, address[] memory _initialWLMinters) = _getMintingUserLists();
         bytes memory nftData = abi.encode("TestName", "SYMBOL", "https://moonvera.io/nft/{id}", ".json");
-        _collection = _factory.createCollection{value: 0.05 ether}( // createCollection fee
+        _collection = factory.createCollection{value: 0.05 ether}( // createCollection fee
         nftData, _initialOGMinters, _initialWLMinters, _getMintingStages());
     }
 

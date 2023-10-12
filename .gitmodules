@@ -22,6 +22,3 @@
 [submodule "aave-v3-core"]
 	path = aave-v3-core
 	url = https://github.com/aave/aave-v3-core
-[submodule "lib/properties"]
-	path = lib/properties
-	url = https://github.com/crytic/properties

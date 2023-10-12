@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "../../lib/openzeppelin-contracts-upgradeable/contracts/access/AccessControlUpgradeable.sol";
-import "../../lib/openzeppelin-contracts-upgradeable/contracts/security/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin-contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "@openzeppelin-contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 
 abstract contract MintingStages is AccessControlUpgradeable, ReentrancyGuardUpgradeable {
     /* ACCESS ROLES */
