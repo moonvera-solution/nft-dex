@@ -27,7 +27,7 @@ contract MvxFactory {
     uint256 public _deployFee;
 
     // Fee to charge for any mint
-    uint256 public _mintFee;
+    uint96 public platformFee;
 
     // count of total number of collections
     uint256 _totalCollections;
@@ -41,9 +41,9 @@ contract MvxFactory {
     event InitCollectionEvent(address sender, address collection);
     event CreateCollectionEvent(address sender, address template, address clone);
 
-    constructor(uint256 freeOnMint) {
+    constructor(uint96 _platformFee) {
         _owner = payable(msg.sender);
-        _mintFee = freeOnMint;
+        platformFee = _platformFee;
         emit InitOwnerEvent(_owner);
     }
 
@@ -69,10 +69,10 @@ contract MvxFactory {
     }
 
     /// @notice Access: only Owner
-    /// @param fee new fee on mint
+    /// @param _fee new fee on mint
     /// @dev payable for gas saving
-    function updateMintFee(uint256 fee) external payable onlyOwner {
-        _mintFee = fee;
+    function updatePlatformFee(uint96 _fee) external payable onlyOwner {
+        platformFee = _fee;
     }
 
     /// @notice Access: only Owner
@@ -145,7 +145,7 @@ contract MvxFactory {
 
         // Init Art collection proxy clone
         MvxCollection(_clone).initialize(
-            _mintFee, // set by MvxFactory owner
+            platformFee, // set by MvxFactory owner
             nftsData,
             initialOGMinters,
             initialWLMinters,
@@ -164,7 +164,7 @@ contract MvxFactory {
 
     /// @param _daysFromNow current timestamp plus days
     function getTime(uint256 _daysFromNow) public view returns (uint256 _time) {
-        _time = block.timestamp + (_daysFromNow* 60 * 60 * 24);
+        _time = block.timestamp + (_daysFromNow * 60 * 60 * 24);
     }
 
     function totalCollections() external view returns (uint256 _total) {

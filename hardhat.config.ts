@@ -16,6 +16,8 @@ const {
     DEVNET_RPC_URL,
     MAINNET_NODE,
     GOERLY_NODE,
+    MAINNET_DEPLOYER_PK,
+    TES_DEPLOYER
 } = process.env;
 
 const config: HardhatUserConfig = {
@@ -41,12 +43,12 @@ const config: HardhatUserConfig = {
         mainnet:{
             url: MAINNET_NODE,
             chainId: 1,
-            accounts:["e55667d2a94addaf9854613406976f032d7cf1f8a190c5ed36f1ff773bd92b5d"]
+            accounts:[`${MAINNET_DEPLOYER_PK}`]
         },
         goerli:{
             url: GOERLY_NODE,
             chainId: 5,
-            accounts:["7a3b2dc7d031efa7d9e7c5a069c5941f0488e2c7b44c188763be7300e0a907ec"]
+            accounts:[`${TES_DEPLOYER}`]
         },
         tenderly: {
             url: DEVNET_RPC_URL,

@@ -750,7 +750,7 @@
       }
     },
     "lib/forge-std/src/Vm.sol": {
-      "lastModificationDate": 1697133540772,
+      "lastModificationDate": 1697166589448,
       "contentHash": "99c76f92020cc3d67eca52e07eea5d77",
       "sourceName": "lib/forge-std/src/Vm.sol",
       "solcConfig": {
@@ -1080,7 +1080,7 @@
       "versionRequirement": "^0.8.0",
       "artifacts": {
         "IERC20": {
-          "0.8.21+commit.d9974bed.Darwin.appleclang": "IERC20.sol/IERC20.json"
+          "0.8.21+commit.d9974bed.Darwin.appleclang": "interfaces/IERC20.sol/IERC20.json"
         }
       }
     },
@@ -2671,6 +2671,47 @@
         }
       }
     },
+    "lib/solady/src/utils/LibString.sol": {
+      "lastModificationDate": 1697133546603,
+      "contentHash": "2f126f9d30fdf899ea1edb2f21470151",
+      "sourceName": "lib/solady/src/utils/LibString.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [],
+      "versionRequirement": "^0.8.4",
+      "artifacts": {
+        "LibString": {
+          "0.8.21+commit.d9974bed.Darwin.appleclang": "LibString.sol/LibString.json"
+        }
+      }
+    },
     "lib/solmate/src/tokens/ERC20.sol": {
       "lastModificationDate": 1697133547047,
       "contentHash": "0c7c7ada139062536af09d69d96d395c",
@@ -2757,8 +2798,8 @@
       }
     },
     "script/Deployer.s.sol": {
-      "lastModificationDate": 1697167208784,
-      "contentHash": "e949c07f7d2ea6b5d452c1604ba2a768",
+      "lastModificationDate": 1697216919287,
+      "contentHash": "59faaad02c3f26525d48764299e21b2a",
       "sourceName": "script/Deployer.s.sol",
       "solcConfig": {
         "settings": {
@@ -2848,7 +2889,7 @@
       }
     },
     "script/Encoder.s.sol": {
-      "lastModificationDate": 1697139769155,
+      "lastModificationDate": 1697216919281,
       "contentHash": "b52cd417a31e8ab8e4876d96341ef345",
       "sourceName": "script/Encoder.s.sol",
       "solcConfig": {
@@ -2909,7 +2950,7 @@
       }
     },
     "script/Utils.sol": {
-      "lastModificationDate": 1697139769158,
+      "lastModificationDate": 1697216919292,
       "contentHash": "643c0a7ddd635ec1c171a05cba827a5d",
       "sourceName": "script/Utils.sol",
       "solcConfig": {
@@ -2990,8 +3031,8 @@
       }
     },
     "src/MvxCollection.sol": {
-      "lastModificationDate": 1697142202027,
-      "contentHash": "e12b63b1d20ffb094cf12fe34028e3b6",
+      "lastModificationDate": 1697217545078,
+      "contentHash": "763d9e3b9d7d625467b25d61ea4a9acc",
       "sourceName": "src/MvxCollection.sol",
       "solcConfig": {
         "settings": {
@@ -3050,8 +3091,8 @@
       }
     },
     "src/MvxFactory.sol": {
-      "lastModificationDate": 1697142729965,
-      "contentHash": "14cfd1e2081ebfddce905b093854e839",
+      "lastModificationDate": 1697216972701,
+      "contentHash": "a4c4cd6f0d6e5306c43b480941ad6d69",
       "sourceName": "src/MvxFactory.sol",
       "solcConfig": {
         "settings": {
@@ -3112,7 +3153,7 @@
       }
     },
     "src/MvxMarket.sol": {
-      "lastModificationDate": 1697139769156,
+      "lastModificationDate": 1697216919283,
       "contentHash": "28a3656caa857fc7f9838968f1d5b69f",
       "sourceName": "src/MvxMarket.sol",
       "solcConfig": {
@@ -3173,8 +3214,8 @@
       }
     },
     "src/abstracts/MintingStages.sol": {
-      "lastModificationDate": 1697139769157,
-      "contentHash": "719786ceba6a0d3249b7028193c53ce0",
+      "lastModificationDate": 1697216919287,
+      "contentHash": "7b2e90d2d975244533f869d9f8efe52e",
       "sourceName": "src/abstracts/MintingStages.sol",
       "solcConfig": {
         "settings": {
@@ -3226,7 +3267,7 @@
       }
     },
     "src/dex/OrderMatcher.sol": {
-      "lastModificationDate": 1697139769161,
+      "lastModificationDate": 1697216919294,
       "contentHash": "e3a80609bab3222fdc4305eeb60edc42",
       "sourceName": "src/dex/OrderMatcher.sol",
       "solcConfig": {
@@ -3287,7 +3328,7 @@
       }
     },
     "src/dex/OrderStructs.sol": {
-      "lastModificationDate": 1697139769154,
+      "lastModificationDate": 1697216972699,
       "contentHash": "8e1810c6bea5730c902e4df47768b253",
       "sourceName": "src/dex/OrderStructs.sol",
       "solcConfig": {
@@ -3328,7 +3369,7 @@
       }
     },
     "src/interfaces/IDutchAuction.sol": {
-      "lastModificationDate": 1697139769157,
+      "lastModificationDate": 1697216919288,
       "contentHash": "7985059d7cbcf4a4c69b895847b39e34",
       "sourceName": "src/interfaces/IDutchAuction.sol",
       "solcConfig": {
@@ -3369,7 +3410,7 @@
       }
     },
     "src/interfaces/IERC721A.sol": {
-      "lastModificationDate": 1697139769154,
+      "lastModificationDate": 1697216972700,
       "contentHash": "e2bd882b05d84d4abc16bd284d546d69",
       "sourceName": "src/interfaces/IERC721A.sol",
       "solcConfig": {
@@ -3410,7 +3451,7 @@
       }
     },
     "src/libs/FullMath.sol": {
-      "lastModificationDate": 1697139769155,
+      "lastModificationDate": 1697216972700,
       "contentHash": "a9d3665e8a310b8611992cab2a47aaae",
       "sourceName": "src/libs/FullMath.sol",
       "solcConfig": {
@@ -3451,7 +3492,7 @@
       }
     },
     "src/tokens/ERC721A.sol": {
-      "lastModificationDate": 1697139769204,
+      "lastModificationDate": 1697216919388,
       "contentHash": "37fc251f01b8a28769e9e45011fe1332",
       "sourceName": "src/tokens/ERC721A.sol",
       "solcConfig": {
@@ -3497,8 +3538,8 @@
       }
     },
     "test/foundry/MvxCollectionTest.t.sol": {
-      "lastModificationDate": 1697148955659,
-      "contentHash": "24aaf9c8a549b08e74ac4087152c33ec",
+      "lastModificationDate": 1697220676651,
+      "contentHash": "a424cd8e544a30d2ac2706a5b1113194",
       "sourceName": "test/foundry/MvxCollectionTest.t.sol",
       "solcConfig": {
         "settings": {
@@ -3566,6 +3607,7 @@
         "lib/openzeppelin-contracts-upgradeable/contracts/utils/math/SignedMathUpgradeable.sol",
         "lib/solady/src/utils/Clone.sol",
         "lib/solady/src/utils/LibClone.sol",
+        "lib/solady/src/utils/LibString.sol",
         "src/MvxCollection.sol",
         "src/MvxFactory.sol",
         "src/abstracts/MintingStages.sol",
@@ -3585,7 +3627,7 @@
       }
     },
     "test/foundry/MvxFactoryTest.sol": {
-      "lastModificationDate": 1697142674241,
+      "lastModificationDate": 1697216919291,
       "contentHash": "98106285fc42971ac1b3364a991d08b0",
       "sourceName": "test/foundry/MvxFactoryTest.sol",
       "solcConfig": {
@@ -3670,7 +3712,7 @@
       }
     },
     "test/foundry/MvxMarketTest.t.sol": {
-      "lastModificationDate": 1697139769154,
+      "lastModificationDate": 1697216972701,
       "contentHash": "03ed3907256c4a995f3f169d3c2b3c5f",
       "sourceName": "test/foundry/MvxMarketTest.t.sol",
       "solcConfig": {
@@ -3758,8 +3800,8 @@
       }
     },
     "test/foundry/helpers/BaseTest.sol": {
-      "lastModificationDate": 1697150220587,
-      "contentHash": "2e62fc8cfd66a00748d14b7feefff7be",
+      "lastModificationDate": 1697219984453,
+      "contentHash": "4f5ebd94684e4810cec134622a7c2eac",
       "sourceName": "test/foundry/helpers/BaseTest.sol",
       "solcConfig": {
         "settings": {
@@ -3839,8 +3881,8 @@
       }
     },
     "test/foundry/internal/InternalTestArtCollection.sol": {
-      "lastModificationDate": 1697147966275,
-      "contentHash": "fba5779c08615ce568fdaaedad3fc252",
+      "lastModificationDate": 1697218480684,
+      "contentHash": "b9142194ab5d7c8181c64a38ec8cb4f0",
       "sourceName": "test/foundry/internal/InternalTestArtCollection.sol",
       "solcConfig": {
         "settings": {
@@ -3908,6 +3950,7 @@
         "lib/openzeppelin-contracts-upgradeable/contracts/utils/math/SignedMathUpgradeable.sol",
         "lib/solady/src/utils/Clone.sol",
         "lib/solady/src/utils/LibClone.sol",
+        "lib/solady/src/utils/LibString.sol",
         "src/MvxCollection.sol",
         "src/MvxFactory.sol",
         "src/abstracts/MintingStages.sol",

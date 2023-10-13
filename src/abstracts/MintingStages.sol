@@ -14,22 +14,22 @@ abstract contract MintingStages is AccessControlUpgradeable, ReentrancyGuardUpgr
     bytes32 public constant OG_MINTER_ROLE = keccak256("OG_MINTER_ROLE");
 
     /* OG MINT DETAILS */
-    uint256 public _ogMintPrice;
-    uint256 public _ogMintMaxPerUser;
-    uint256 public _ogMintStart;
-    uint256 public _ogMintEnd;
+    uint256 public ogMintPrice;
+    uint256 public ogMintMaxPerUser;
+    uint256 public ogMintStart;
+    uint256 public ogMintEnd;
 
     /* WL MINT DETAILS */
-    uint256 public _whitelistMintPrice;
-    uint256 public _whitelistMintMaxPerUser;
-    uint256 public _whitelistMintStart;
-    uint256 public _whitelistMintEnd;
+    uint256 public whitelistMintPrice;
+    uint256 public whitelistMintMaxPerUser;
+    uint256 public whitelistMintStart;
+    uint256 public whitelistMintEnd;
 
     /* REGULAR MINT DETAILS*/
-    uint256 public _mintPrice;
-    uint256 public _mintMaxPerUser;
-    uint256 public _mintStart;
-    uint256 public _mintEnd;
+    uint256 public mintPrice;
+    uint256 public mintMaxPerUser;
+    uint256 public mintStart;
+    uint256 public mintEnd;
 
     event UpdateWLevent(address indexed sender, uint256 listLength);
     event UpdateOgEvent(address indexed sender, uint256 listLength);
@@ -40,42 +40,42 @@ abstract contract MintingStages is AccessControlUpgradeable, ReentrancyGuardUpgr
     }
 
     /// OG MINTING
-    function updateOGMintPrice(uint256 price) external OnlyAdminOrOperator {
-        require(price > 0, "Invalid price amount");
-        _ogMintPrice = price;
+    function updateOGMintPrice(uint256 _price) external OnlyAdminOrOperator {
+        require(_price > 0, "Invalid price amount");
+        ogMintPrice = _price;
     }
 
-    function updateOGMintMax(uint256 ogMintMax) external OnlyAdminOrOperator {
-        require(ogMintMax > 0, "Invalid max amount");
-        _ogMintMaxPerUser = ogMintMax;
+    function updateOGMintMax(uint256 _ogMintMax) external OnlyAdminOrOperator {
+        require(_ogMintMax > 0, "Invalid max amount");
+        ogMintMaxPerUser = _ogMintMax;
     }
 
     /// WL MINTING
-    function updateWhitelistMintPrice(uint256 whitelistMintPrice) external OnlyAdminOrOperator {
-        require(whitelistMintPrice > 0, "Invalid price amount");
-        _whitelistMintPrice = whitelistMintPrice;
+    function updateWhitelistMintPrice(uint256 _whitelistMintPrice) external OnlyAdminOrOperator {
+        require(_whitelistMintPrice > 0, "Invalid price amount");
+        whitelistMintPrice = _whitelistMintPrice;
     }
 
-    function updateWLMintMax(uint256 whitelistMintMax) external OnlyAdminOrOperator {
-        require(whitelistMintMax > 0, "Invalid max amount");
-        _whitelistMintMaxPerUser = whitelistMintMax;
+    function updateWLMintMax(uint256 _whitelistMintMax) external OnlyAdminOrOperator {
+        require(_whitelistMintMax > 0, "Invalid max amount");
+        whitelistMintMaxPerUser = _whitelistMintMax;
     }
 
     // REGULAR MINTING
-    function updateMintPrice(uint256 mintPrice) external OnlyAdminOrOperator {
-        require(mintPrice > 0, "Invalid price amount");
-        _mintPrice = mintPrice;
+    function updateMintPrice(uint256 _mintPrice) external OnlyAdminOrOperator {
+        require(_mintPrice > 0, "Invalid price amount");
+        mintPrice = _mintPrice;
     }
 
-    function updateMintMax(uint256 mintMax) external OnlyAdminOrOperator {
-        require(mintMax > 0, "Invalid mint amount");
-        _mintMaxPerUser = mintMax;
+    function updateMintMax(uint256 _mintMax) external OnlyAdminOrOperator {
+        require(_mintMax > 0, "Invalid mint amount");
+        mintMaxPerUser = _mintMax;
     }
 
-    function updateTime(uint256 start, uint256 end) external OnlyAdminOrOperator {
-        require(end > start, "End not > start");
-        _mintStart = start;
-        _mintEnd = end;
+    function updateTime(uint256 _start, uint256 _end) external OnlyAdminOrOperator {
+        require(_end > _start, "End not > start");
+        mintStart = _start;
+        mintEnd = _end;
     }
 
     /// @param _minterList array of addresses

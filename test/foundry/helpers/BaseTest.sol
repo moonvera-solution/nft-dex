@@ -13,6 +13,8 @@ contract BaseTest is Test {
     bytes32 public constant OG_MINTER_ROLE = keccak256("OG_MINTER_ROLE");
 
     Vm.Wallet public wallet1 = vm.createWallet("wallet::user1");
+        Vm.Wallet public wallet5 = vm.createWallet("wallet::user5");
+
     address public user2 = address(2);
     address public user3 = address(3);
     address public user4 = address(4);
@@ -29,11 +31,11 @@ contract BaseTest is Test {
         factory.createCollection{value: 0.05 ether}(nftData, _initialOGMinters, _initialWLMinters, _getMintingStages()); // createCollection fee
     }
 
-    function _initCollection(address _collection, uint256 mintFee) internal returns (bytes memory _data) {
+    function _initCollection(address _collection, uint96 platformFee) internal returns (bytes memory _data) {
         bytes memory nftData = abi.encode("TestName", "SYMBOL", "https://moonvera.io/nft/{id}", ".json");
         (address[] memory _initialOGMinters, address[] memory _initialWLMinters) = _getMintingUserLists();
         MvxCollection(_collection).initialize(
-            mintFee, nftData, _initialOGMinters, _initialWLMinters, _getMintingStages()
+            platformFee, nftData, _initialOGMinters, _initialWLMinters, _getMintingStages()
         );
     }
 
