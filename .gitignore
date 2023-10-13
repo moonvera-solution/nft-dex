@@ -6,7 +6,7 @@ typechain-types/
 flats/artifacts
 # Remix
 remix-compiler.config.js
-
+artifacts/
 # Ignores development broadcast logs
 !/broadcast
 /broadcast/*/31337/
