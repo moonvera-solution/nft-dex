@@ -2757,8 +2757,8 @@
       }
     },
     "script/Deployer.s.sol": {
-      "lastModificationDate": 1697139769157,
-      "contentHash": "9caca5885e722d83b2e409ee7d32058a",
+      "lastModificationDate": 1697167208784,
+      "contentHash": "e949c07f7d2ea6b5d452c1604ba2a768",
       "sourceName": "script/Deployer.s.sol",
       "solcConfig": {
         "settings": {
@@ -3497,7 +3497,7 @@
       }
     },
     "test/foundry/MvxCollectionTest.t.sol": {
-      "lastModificationDate": 1697148711817,
+      "lastModificationDate": 1697148955659,
       "contentHash": "24aaf9c8a549b08e74ac4087152c33ec",
       "sourceName": "test/foundry/MvxCollectionTest.t.sol",
       "solcConfig": {
@@ -3758,8 +3758,8 @@
       }
     },
     "test/foundry/helpers/BaseTest.sol": {
-      "lastModificationDate": 1697139769159,
-      "contentHash": "8d347545457c383a50b96c5529813523",
+      "lastModificationDate": 1697150220587,
+      "contentHash": "2e62fc8cfd66a00748d14b7feefff7be",
       "sourceName": "test/foundry/helpers/BaseTest.sol",
       "solcConfig": {
         "settings": {

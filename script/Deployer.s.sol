@@ -5,14 +5,20 @@ import {MvxFactory} from "@src/MvxFactory.sol";
 import {MvxCollection} from "@src/MvxCollection.sol";
 import "@forge-std/Script.sol";
 import {ERC1967Proxy} from "openzeppelin-contracts/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+import {Test, console} from "@forge-std/Test.sol";
+
 
 import "./Utils.sol";
 
-contract Deployer is Script, Utils {
+contract Deployer is Script {
     string internal GOERLI_RPC_URL = vm.envString("GOERLI_RPC_URL");
     uint256 internal BLOCK_NUM = vm.envUint("BLOCK_NUM");
+    address internal constant FACTORY_GOERLI = 0x335870163d9Bc397ADA314885478E13F1213BeC3;
+    function run() external{
 
-    function run() external {
+    }
+
+    function deploy() external {
         address regularMinter = vm.addr(vm.envUint("REG_MINTER_KEY"));
         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_KEY");
         vm.startBroadcast(deployerPrivateKey);
@@ -30,3 +36,6 @@ contract Deployer is Script, Utils {
         address proxy = address(new ERC1967Proxy(0x1CB5908FCDAE2Ad5E628855cF25a30F8026F27df,""));
     }
 }
+
+/**
+ */

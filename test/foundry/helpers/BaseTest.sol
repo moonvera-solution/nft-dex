@@ -51,15 +51,15 @@ contract BaseTest is Test {
 
     function _getMintingStages() public returns (uint256[] memory _mintStageDetails) {
         _mintStageDetails = new uint256[](12);
-        _mintStageDetails[0] = 1; //_ogMintPrice
+        _mintStageDetails[0] = 30000000000000000; //_ogMintPrice
         _mintStageDetails[1] = 50; //_ogMintMax
         _mintStageDetails[2] = block.timestamp; //_ogMintStart
         _mintStageDetails[3] = block.timestamp + 5 * 60 * 60 * 24; //_ogMintEnd
-        _mintStageDetails[4] = 1; //_whitelistMintPrice
+        _mintStageDetails[4] = 30000000000000000; //_whitelistMintPrice
         _mintStageDetails[5] = 50; //_whitelistMintMax
         _mintStageDetails[6] = block.timestamp; //_whitelistMintStart
         _mintStageDetails[7] = block.timestamp + 5 * 60 * 60 * 24; //_whitelistMintEnd
-        _mintStageDetails[8] = 1; //_mintPrice
+        _mintStageDetails[8] = 30000000000000000; //_mintPrice
         _mintStageDetails[9] = 50; //_mintMax
         _mintStageDetails[10] = block.timestamp; //_mintStart
         _mintStageDetails[11] = block.timestamp + 5 * 60 * 60 * 24; //_mintEnd
