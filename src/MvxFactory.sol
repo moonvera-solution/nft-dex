@@ -5,6 +5,7 @@ import {LibClone} from "@solady/utils/LibClone.sol";
 import {Clone} from "@solady/utils/Clone.sol";
 import {IERC721A} from "./interfaces/IERC721A.sol";
 import {MvxCollection} from "./MvxCollection.sol";
+import {Stages, Collection} from "@src/libs/MvxStruct.sol";
 
 /**
  * @title MvxFactory contract to create erc721's clones with immutable arguments
@@ -18,33 +19,32 @@ contract MvxFactory {
     mapping(address => uint256) public members;
 
     // Current MvxCollection template
-    address public _collectionImpl;
+    address public collectionImpl;
 
     // ownable by deployer
-    address public _owner;
+    address public owner;
 
-    // default art collection deploy fee
-    uint256 public _deployFee;
+    // nft collection deploy fee
+    uint256 public deployFee;
 
-    // Fee to charge for any mint
+    // Minting fee
     uint96 public platformFee;
 
     // count of total number of collections
-    uint256 _totalCollections;
+    uint256 collectionCount;
 
     error CreateCloneError();
     error InvalidColletion(uint8);
 
     event CreateCloneEvent(address indexed sender, address impl, address cloneAddress);
-
     event InitOwnerEvent(address sender);
     event InitCollectionEvent(address sender, address collection);
     event CreateCollectionEvent(address sender, address template, address clone);
 
     constructor(uint96 _platformFee) {
-        _owner = payable(msg.sender);
+        owner = payable(msg.sender);
         platformFee = _platformFee;
-        emit InitOwnerEvent(_owner);
+        emit InitOwnerEvent(owner);
     }
 
     receive() external payable {}
@@ -54,7 +54,7 @@ contract MvxFactory {
     }
 
     modifier onlyOwner() {
-        require(msg.sender == _owner, "Only owner");
+        require(msg.sender == owner, "Only owner");
         _;
     }
 
@@ -64,7 +64,7 @@ contract MvxFactory {
     }
 
     modifier auth() {
-        require(msg.sender == _owner || members[msg.sender] >= block.timestamp, "Only Auth");
+        require(msg.sender == owner || members[msg.sender] >= block.timestamp, "Only Auth");
         _;
     }
 
@@ -76,20 +76,20 @@ contract MvxFactory {
     }
 
     /// @notice Access: only Owner
-    /// @param impl Clone's proxy implementation of MvxCollection logic
+    /// @param _impl Clone's proxy implementation of MvxCollection logic
     /// @dev payable for gas saving
-    function setCollectionImpl(address impl) external payable onlyOwner {
-        if (!MvxCollection(impl).supportsInterface(type(IERC721A).interfaceId)) {
+    function setCollectionImpl(address _impl) external payable onlyOwner {
+        if (!MvxCollection(_impl).supportsInterface(type(IERC721A).interfaceId)) {
             revert InvalidColletion(2);
         }
-        _collectionImpl = impl;
+        collectionImpl = _impl;
     }
 
     /// @notice Access: only Owner
     /// @dev payable for gas saving
-    function transferOwnerShip(address newOner) external payable onlyOwner {
-        require(newOner != address(0x0), "Zero address");
-        _owner = newOner;
+    function transferOwnerShip(address _newOner) external payable onlyOwner {
+        require(_newOner != address(0x0), "Zero address");
+        owner = _newOner;
     }
 
     /// @notice Access: only Owner
@@ -102,7 +102,7 @@ contract MvxFactory {
     /// @dev payable for gas saving
     function updateDeployFee(uint256 _newFee) external payable onlyOwner {
         require(_newFee > 0, "Invalid Fee");
-        _deployFee = _newFee;
+        deployFee = _newFee;
     }
 
     /// @notice Access: only Owner
@@ -115,45 +115,48 @@ contract MvxFactory {
         members[user] = validUntil;
     }
 
-    /// @notice Deploys MvxCollection Immutable proxy clone and call initialize
-    /// @dev access: Admin or Current member
-    /// @dev _deployFee & _mintFee are set by MvxFactory ADMIN
-    /// @param nftsData only Owner
-    /// @param initialOGMinters  List of OG memeber addresses
-    /// @param initialWLMinters List of WL memeber addresses
-    /// @param mintingStages Details of Regular,OG & WL minting stages
+    /// @param _nftsData collection name, symbol baseuri, max supply etc..
+    /// @param _mintingStages mint times per stage og wl reg
+    /// @param _ogs address[]og,
+    /// @param _wls address[] wl
     function createCollection(
-        bytes calldata nftsData,
-        address[] calldata initialOGMinters,
-        address[] calldata initialWLMinters,
-        uint256[] calldata mintingStages
+        Collection calldata _nftsData,
+        Stages calldata _mintingStages,
+        address[] calldata _ogs,
+        address[] calldata _wls
     ) external payable auth returns (address _clone) {
-        require(msg.value >= _deployFee, "Missing deploy fee");
+        require(msg.value >= deployFee, "Missing deploy fee");
 
+        // encode seder to clone immutable arg
         bytes memory data = abi.encodePacked(msg.sender);
 
-        _clone = LibClone.clone(address(_collectionImpl), data);
+        // Lib clone minimal proxy with immutable args
+        _clone = LibClone.clone(address(collectionImpl), data);
 
         if (_clone == address(0x0)) revert CreateCloneError();
-        collections[msg.sender] = _clone;
-        emit CreateCollectionEvent(msg.sender, _collectionImpl, _clone);
 
-        if (msg.value - _deployFee > 0) {
-            payable(msg.sender).transfer(msg.value - _deployFee);
+        // set clone address to member mapping
+        collections[msg.sender] = _clone;
+        emit CreateCollectionEvent(msg.sender, collectionImpl, _clone);
+
+        // return dust
+        uint256 dust = msg.value - deployFee;
+        if (dust > 0) {
+            payable(msg.sender).transfer(dust);
         }
         delete members[msg.sender]; // only one time create clone
 
-        // Init Art collection proxy clone
+        // Init Art collection minimal proxy clone
         MvxCollection(_clone).initialize(
             platformFee, // set by MvxFactory owner
-            nftsData,
-            initialOGMinters,
-            initialWLMinters,
-            mintingStages
+            _nftsData,
+            _mintingStages,
+            _ogs,
+            _wls
         );
 
         unchecked {
-            _totalCollections = _totalCollections + 1;
+            collectionCount = collectionCount + 1;
         }
         emit InitCollectionEvent(msg.sender, _clone);
     }
@@ -168,6 +171,6 @@ contract MvxFactory {
     }
 
     function totalCollections() external view returns (uint256 _total) {
-        _total = _totalCollections;
+        _total = collectionCount;
     }
 }

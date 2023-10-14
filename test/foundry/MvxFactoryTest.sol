@@ -20,8 +20,6 @@ contract MvxFactorytest is BaseTest, GasSnapshot {
     }
 
     function test_createCollection() public {
-        (address[] memory _initialOGMinters, address[] memory _initialWLMinters) = _getMintingUserLists();
-
         Vm.Wallet memory regularWallet = vm.createWallet("member");
         factory.updateMember(regularWallet.addr, 5);
 
@@ -29,14 +27,11 @@ contract MvxFactorytest is BaseTest, GasSnapshot {
 
         vm.startPrank(regularWallet.addr, regularWallet.addr);
         vm.deal(regularWallet.addr, 1 ether);
-
-        address MvxCollectionAddr = factory.createCollection{value: 0.5 ether}(
-            _encodeNftDetails(), _initialOGMinters, _initialWLMinters, _getMintingStages()
-        );
+        _factoryCreate(factory, regularWallet.addr);
     }
 
     function test_owner() public {
-        assertTrue(factory._owner() == address(this));
+        assertTrue(factory.owner() == address(this));
     }
 
     function test_addMember(address _member, uint256 _allowedPeriod) public {

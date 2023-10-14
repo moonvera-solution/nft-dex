@@ -23,24 +23,95 @@ import type {
   TypedContractMethod,
 } from "../common";
 
+export type CollectionStruct = {
+  name: string;
+  symbol: string;
+  baseURI: string;
+  baseExt: string;
+  maxSupply: BigNumberish;
+  royaltyFee: BigNumberish;
+  royaltyReceiver: AddressLike;
+};
+
+export type CollectionStructOutput = [
+  name: string,
+  symbol: string,
+  baseURI: string,
+  baseExt: string,
+  maxSupply: bigint,
+  royaltyFee: bigint,
+  royaltyReceiver: string
+] & {
+  name: string;
+  symbol: string;
+  baseURI: string;
+  baseExt: string;
+  maxSupply: bigint;
+  royaltyFee: bigint;
+  royaltyReceiver: string;
+};
+
+export type StagesStruct = {
+  ogMintPrice: BigNumberish;
+  whitelistMintPrice: BigNumberish;
+  mintPrice: BigNumberish;
+  mintMaxPerUser: BigNumberish;
+  ogMintMaxPerUser: BigNumberish;
+  whitelistMintMaxPerUser: BigNumberish;
+  mintStart: BigNumberish;
+  mintEnd: BigNumberish;
+  ogMintStart: BigNumberish;
+  ogMintEnd: BigNumberish;
+  whitelistMintStart: BigNumberish;
+  whitelistMintEnd: BigNumberish;
+};
+
+export type StagesStructOutput = [
+  ogMintPrice: bigint,
+  whitelistMintPrice: bigint,
+  mintPrice: bigint,
+  mintMaxPerUser: bigint,
+  ogMintMaxPerUser: bigint,
+  whitelistMintMaxPerUser: bigint,
+  mintStart: bigint,
+  mintEnd: bigint,
+  ogMintStart: bigint,
+  ogMintEnd: bigint,
+  whitelistMintStart: bigint,
+  whitelistMintEnd: bigint
+] & {
+  ogMintPrice: bigint;
+  whitelistMintPrice: bigint;
+  mintPrice: bigint;
+  mintMaxPerUser: bigint;
+  ogMintMaxPerUser: bigint;
+  whitelistMintMaxPerUser: bigint;
+  mintStart: bigint;
+  mintEnd: bigint;
+  ogMintStart: bigint;
+  ogMintEnd: bigint;
+  whitelistMintStart: bigint;
+  whitelistMintEnd: bigint;
+};
+
 export interface MvxFactoryInterface extends Interface {
   getFunction(
     nameOrSignature:
-      | "_collectionImpl"
-      | "_deployFee"
-      | "_mintFee"
-      | "_owner"
+      | "collectionImpl"
       | "collections"
       | "createCollection"
+      | "deployFee"
       | "getTime()"
       | "getTime(uint256)"
       | "members"
+      | "owner"
+      | "platformFee"
       | "setCollectionImpl"
       | "totalCollections"
       | "transferOwnerShip"
       | "updateDeployFee"
       | "updateMember"
-      | "updateMintFee"
+      | "updatePlatformFee"
       | "withdraw"
   ): FunctionFragment;
 
@@ -53,23 +124,18 @@ export interface MvxFactoryInterface extends Interface {
   ): EventFragment;
 
   encodeFunctionData(
-    functionFragment: "_collectionImpl",
+    functionFragment: "collectionImpl",
     values?: undefined
   ): string;
-  encodeFunctionData(
-    functionFragment: "_deployFee",
-    values?: undefined
-  ): string;
-  encodeFunctionData(functionFragment: "_mintFee", values?: undefined): string;
-  encodeFunctionData(functionFragment: "_owner", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "collections",
     values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "createCollection",
-    values: [BytesLike, AddressLike[], AddressLike[], BigNumberish[]]
+    values: [CollectionStruct, StagesStruct, AddressLike[], AddressLike[]]
   ): string;
+  encodeFunctionData(functionFragment: "deployFee", values?: undefined): string;
   encodeFunctionData(functionFragment: "getTime()", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "getTime(uint256)",
@@ -78,6 +144,11 @@ export interface MvxFactoryInterface extends Interface {
   encodeFunctionData(
     functionFragment: "members",
     values: [AddressLike]
+  ): string;
+  encodeFunctionData(functionFragment: "owner", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "platformFee",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "setCollectionImpl",
@@ -100,18 +171,15 @@ export interface MvxFactoryInterface extends Interface {
     values: [AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "updateMintFee",
+    functionFragment: "updatePlatformFee",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "withdraw", values?: undefined): string;
 
   decodeFunctionResult(
-    functionFragment: "_collectionImpl",
+    functionFragment: "collectionImpl",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "_deployFee", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "_mintFee", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "_owner", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "collections",
     data: BytesLike
@@ -120,12 +188,18 @@ export interface MvxFactoryInterface extends Interface {
     functionFragment: "createCollection",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "deployFee", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "getTime()", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getTime(uint256)",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "members", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "platformFee",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "setCollectionImpl",
     data: BytesLike
@@ -147,7 +221,7 @@ export interface MvxFactoryInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "updateMintFee",
+    functionFragment: "updatePlatformFee",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "withdraw", data: BytesLike): Result;
@@ -261,26 +335,22 @@ export interface MvxFactory extends BaseContract {
     event?: TCEvent
   ): Promise<this>;
 
-  _collectionImpl: TypedContractMethod<[], [string], "view">;
-
-  _deployFee: TypedContractMethod<[], [bigint], "view">;
-
-  _mintFee: TypedContractMethod<[], [bigint], "view">;
-
-  _owner: TypedContractMethod<[], [string], "view">;
+  collectionImpl: TypedContractMethod<[], [string], "view">;
 
   collections: TypedContractMethod<[arg0: AddressLike], [string], "view">;
 
   createCollection: TypedContractMethod<
     [
-      nftsData: BytesLike,
-      initialOGMinters: AddressLike[],
-      initialWLMinters: AddressLike[],
-      mintingStages: BigNumberish[]
+      _nftsData: CollectionStruct,
+      _mintingStages: StagesStruct,
+      _ogs: AddressLike[],
+      _wls: AddressLike[]
     ],
     [string],
     "payable"
   >;
+
+  deployFee: TypedContractMethod<[], [bigint], "view">;
 
   "getTime()": TypedContractMethod<[], [bigint], "view">;
 
@@ -292,8 +362,12 @@ export interface MvxFactory extends BaseContract {
 
   members: TypedContractMethod<[arg0: AddressLike], [bigint], "view">;
 
+  owner: TypedContractMethod<[], [string], "view">;
+
+  platformFee: TypedContractMethod<[], [bigint], "view">;
+
   setCollectionImpl: TypedContractMethod<
-    [impl: AddressLike],
+    [_impl: AddressLike],
     [void],
     "payable"
   >;
@@ -301,7 +375,7 @@ export interface MvxFactory extends BaseContract {
   totalCollections: TypedContractMethod<[], [bigint], "view">;
 
   transferOwnerShip: TypedContractMethod<
-    [newOner: AddressLike],
+    [_newOner: AddressLike],
     [void],
     "payable"
   >;
@@ -318,7 +392,11 @@ export interface MvxFactory extends BaseContract {
     "payable"
   >;
 
-  updateMintFee: TypedContractMethod<[fee: BigNumberish], [void], "payable">;
+  updatePlatformFee: TypedContractMethod<
+    [_fee: BigNumberish],
+    [void],
+    "payable"
+  >;
 
   withdraw: TypedContractMethod<[], [void], "payable">;
 
@@ -327,16 +405,7 @@ export interface MvxFactory extends BaseContract {
   ): T;
 
   getFunction(
-    nameOrSignature: "_collectionImpl"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "_deployFee"
-  ): TypedContractMethod<[], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "_mintFee"
-  ): TypedContractMethod<[], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "_owner"
+    nameOrSignature: "collectionImpl"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
     nameOrSignature: "collections"
@@ -345,14 +414,17 @@ export interface MvxFactory extends BaseContract {
     nameOrSignature: "createCollection"
   ): TypedContractMethod<
     [
-      nftsData: BytesLike,
-      initialOGMinters: AddressLike[],
-      initialWLMinters: AddressLike[],
-      mintingStages: BigNumberish[]
+      _nftsData: CollectionStruct,
+      _mintingStages: StagesStruct,
+      _ogs: AddressLike[],
+      _wls: AddressLike[]
     ],
     [string],
     "payable"
   >;
+  getFunction(
+    nameOrSignature: "deployFee"
+  ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "getTime()"
   ): TypedContractMethod<[], [bigint], "view">;
@@ -363,14 +435,20 @@ export interface MvxFactory extends BaseContract {
     nameOrSignature: "members"
   ): TypedContractMethod<[arg0: AddressLike], [bigint], "view">;
   getFunction(
+    nameOrSignature: "owner"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "platformFee"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
     nameOrSignature: "setCollectionImpl"
-  ): TypedContractMethod<[impl: AddressLike], [void], "payable">;
+  ): TypedContractMethod<[_impl: AddressLike], [void], "payable">;
   getFunction(
     nameOrSignature: "totalCollections"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "transferOwnerShip"
-  ): TypedContractMethod<[newOner: AddressLike], [void], "payable">;
+  ): TypedContractMethod<[_newOner: AddressLike], [void], "payable">;
   getFunction(
     nameOrSignature: "updateDeployFee"
   ): TypedContractMethod<[_newFee: BigNumberish], [void], "payable">;
@@ -382,8 +460,8 @@ export interface MvxFactory extends BaseContract {
     "payable"
   >;
   getFunction(
-    nameOrSignature: "updateMintFee"
-  ): TypedContractMethod<[fee: BigNumberish], [void], "payable">;
+    nameOrSignature: "updatePlatformFee"
+  ): TypedContractMethod<[_fee: BigNumberish], [void], "payable">;
   getFunction(
     nameOrSignature: "withdraw"
   ): TypedContractMethod<[], [void], "payable">;

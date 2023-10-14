@@ -1,13 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "@openzeppelin-contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import {IERC2981} from "@openzeppelin-contracts/interfaces/IERC2981.sol";
-import {IERC165} from "@openzeppelin-contracts/utils/introspection/IERC165.sol";
-import {Clone} from "@solady/utils/Clone.sol";
-import {FullMath} from "./libs/FullMath.sol";
-import {MintingStages} from "./abstracts/MintingStages.sol";
-import {ERC721A, IERC721A} from "./tokens/ERC721A.sol";
+import "@src/abstracts/MintingStages.sol";
 
 //
 // ███╗   ███╗ ██████╗  ██████╗ ███╗   ██╗██╗   ██╗███████╗██████╗  █████╗
@@ -20,26 +14,11 @@ import {ERC721A, IERC721A} from "./tokens/ERC721A.sol";
 /// @title Art Collection ERC721A Upgradable
 /// @notice This contract is made only for the Arab Collectors Club ACC
 /// @author MoonveraLabs
-contract MvxCollection is Clone, ERC721A, IERC2981, MintingStages {
-    string public baseURI;
-    string public baseExtension;
-    uint256 public maxSupply;
-    uint96 public platformFee; // basis points
-    address private platformFeeReceiver;
-
-    struct RoyaltyInfo {
-        address receiver;
-        uint96 royaltyFraction;
-    }
-
-    RoyaltyInfo public royaltyData;
-
+contract MvxCollection is MintingStages {
     // Cap number of mint per user
     mapping(address => uint256) public mintsPerWallet;
 
-    event WithdrawEvent(
-        address indexed sender, uint256 balanceAfterFee, address platformFeeReceiver, uint256 platformFee
-    );
+    event WithdrawEvent(address indexed, uint256, address, uint256);
     event OGmintEvent(address indexed sender, uint256 value, address to, uint256 amount, uint256 _ogMintPrice);
     event WLmintEvent(address indexed sender, uint256 value, address to, uint256 amount, uint256 wlMintPrice);
     event MintEvent(address indexed sender, uint256 value, address to, uint256 amount, uint256 mintPrice);
@@ -47,74 +26,47 @@ contract MvxCollection is Clone, ERC721A, IERC2981, MintingStages {
     event RoyaltyFeeUpdate(address indexed sender, address receiver, uint96 royaltyFee);
     event BurnEvent(address indexed sender, uint256 tokenId);
 
-    /// @notice Called by MvxFactory on Deployment
-    /// @param _platformFee description
-    /// @param _nftData description
-    /// @param _initialOGMinters description
-    /// @param _initialWLMinters description
-    /// @param _mintingStages description
+    /// @notice Called by MvxFactory on clone Deployment
+    /// @param platformFee uint96 fee in basis points
+    /// @param _nftData maxSupply,royaltyFee,name,symbol,baseURI,baseExt
+    /// @param _ogs address[]og,
+    /// @param _wls address[] wl
     function initialize(
-        uint96 _platformFee,
-        bytes calldata _nftData,
-        address[] calldata _initialOGMinters,
-        address[] calldata _initialWLMinters,
-        uint256[] calldata _mintingStages
+        uint96 platformFee,
+        Collection calldata _nftData,
+        Stages calldata _mintingStages,
+        address[] calldata _ogs,
+        address[] calldata _wls
     ) public initializer {
-        (uint256 _maxSupply, uint96 _royaltyFee, string memory _name, string memory _symbol, string memory _initBaseURI)
-        = abi.decode(_nftData, (uint256, uint96, string, string, string));
-        __ERC721A_init(_name, _symbol);
+        address _owner = _getArgAddress(0); // immutable arguments
+        address _mvxFactory = msg.sender;
+
+        __ERC721A_init(_nftData.name, _nftData.symbol);
         __AccessControl_init();
+        __ReentrancyGuard_init();
+
         _setRoleAdmin(ADMIN_ROLE, ADMIN_ROLE);
-        // Granting Admin to MvxFactory to be able to grant roles for user
-        // since user is not msg.sender, but revoking at the end of function
-        // Trade-off to manage minting roles with OZ AccessControl  
-            
-        // ADMIN is onlyOwner that can add OPERATORS
-        _grantRole(ADMIN_ROLE, msg.sender); // not caching due to Stack error
-        platformFeeReceiver = msg.sender;
-        // immutable arguments set at clone deployment, storage slot 0 always = collection owner/admin
-        _grantRole(ADMIN_ROLE, _getArgAddress(0));
-        _updateRoyaltyInfo(_getArgAddress(0), _royaltyFee);
-        _setRoleAdmin(OG_MINTER_ROLE, ADMIN_ROLE); // set ADMIN_ROLE as admin of OG's
-        _setRoleAdmin(WL_MINTER_ROLE, ADMIN_ROLE); // set ADMIN_ROLE as admin of WL's
+        _setRoleAdmin(OG_MINTER_ROLE, ADMIN_ROLE);
+        _setRoleAdmin(WL_MINTER_ROLE, ADMIN_ROLE);
 
-        baseURI = _initBaseURI;
-        baseExtension = ".json";
-        maxSupply = _maxSupply;
+        _grantRole(ADMIN_ROLE, _mvxFactory);
+        _grantRole(ADMIN_ROLE, _owner);
+        updateMinterRoles(_ogs, 0); // OG = 0
+        updateMinterRoles(_wls, 1); // WL = 1
 
-        // OG minting stage details
-        ogMintPrice = _mintingStages[0];
-        ogMintMaxPerUser = _mintingStages[1];
-        ogMintStart = _mintingStages[2];
-        ogMintEnd = _mintingStages[3];
-
-        // WL minting stage details
-        whitelistMintPrice = _mintingStages[4];
-        whitelistMintMaxPerUser = _mintingStages[5];
-        whitelistMintStart = _mintingStages[6];
-        whitelistMintEnd = _mintingStages[7];
-
-        // Regular minting stage details
-        mintPrice = _mintingStages[8];
-        mintMaxPerUser = _mintingStages[9];
-        mintStart = _mintingStages[10];
-        mintEnd = _mintingStages[11];
-        // init minting roles OG=0, WL=1
-        updateMinterRoles(_initialOGMinters, 0);
-        updateMinterRoles(_initialWLMinters, 1);
-
-        require(_platformFee < _feeDenominator(), "Invalid PF");
-        platformFee = _platformFee;
-
-        // revoke ADMIN_ROLE to MvxFactory, ADMIN is the OWNER of collection
-        revokeRole(ADMIN_ROLE, platformFeeReceiver);
+        _updateRoyaltyInfo(_owner, _nftData.royaltyFee);
+        collectionData = _nftData;
+        mintingStages = _mintingStages;
+        _platformFee = platformFee;
+        _platformFeeReceiver = _mvxFactory;
+        revokeRole(ADMIN_ROLE, _mvxFactory);
     }
 
     /// @notice access: ADMIN_ROLE
     /// @param _to address to mint to
     /// @param _amount amount to mint (batch minting)
     function mintForOwner(address _to, uint256 _amount) external payable nonReentrant OnlyAdminOrOperator {
-        require(totalSupply() + _amount <= maxSupply, "Over mintMax error");
+        require(totalSupply() + _amount <= collectionData.maxSupply, "Over mintMax error");
         _safeMint(_to, _amount);
         emit OwnerMintEvent(msg.sender, _to, _amount);
     }
@@ -124,10 +76,12 @@ contract MvxCollection is Clone, ERC721A, IERC2981, MintingStages {
     /// @param _amount amount to mint (batch minting)
     function mintForOG(address _to, uint256 _amount) external payable nonReentrant onlyRole(OG_MINTER_ROLE) {
         uint256 _currentTime = block.timestamp;
-        require(_currentTime <= ogMintEnd && _currentTime >= ogMintStart, "Not OG mint time");
-        require(totalSupply() + _amount <= maxSupply, "Over mintMax error");
-        _internalSafeMint(msg.value, _to, ogMintPrice, _amount, ogMintMaxPerUser);
-        emit OGmintEvent(msg.sender, msg.value, _to, _amount, ogMintPrice);
+        require(
+            _currentTime <= mintingStages.ogMintEnd && _currentTime >= mintingStages.ogMintStart, "Not OG mint time"
+        );
+        require(totalSupply() + _amount <= collectionData.maxSupply, "Over mintMax error");
+        _internalSafeMint(msg.value, _to, mintingStages.ogMintPrice, _amount, mintingStages.ogMintMaxPerUser);
+        emit OGmintEvent(msg.sender, msg.value, _to, _amount, mintingStages.ogMintPrice);
     }
 
     /// @notice access: WL_MINTER_ROLE
@@ -135,10 +89,15 @@ contract MvxCollection is Clone, ERC721A, IERC2981, MintingStages {
     /// @param _amount amount to mint (batch minting)
     function mintForWhitelist(address _to, uint256 _amount) external payable onlyRole(WL_MINTER_ROLE) nonReentrant {
         uint256 _currentTime = block.timestamp;
-        require(_currentTime <= whitelistMintEnd && _currentTime >= whitelistMintStart, "Not OG mint time");
-        require(totalSupply() + _amount <= maxSupply, "Over mintMax error");
-        _internalSafeMint(msg.value, _to, whitelistMintPrice, _amount, whitelistMintMaxPerUser);
-        emit WLmintEvent(msg.sender, msg.value, _to, _amount, whitelistMintPrice);
+        require(
+            _currentTime <= mintingStages.whitelistMintEnd && _currentTime >= mintingStages.whitelistMintStart,
+            "Not OG mint time"
+        );
+        require(totalSupply() + _amount <= collectionData.maxSupply, "Over mintMax error");
+        _internalSafeMint(
+            msg.value, _to, mintingStages.whitelistMintPrice, _amount, mintingStages.whitelistMintMaxPerUser
+        );
+        emit WLmintEvent(msg.sender, msg.value, _to, _amount, mintingStages.whitelistMintPrice);
     }
 
     /// @notice access: any
@@ -146,10 +105,10 @@ contract MvxCollection is Clone, ERC721A, IERC2981, MintingStages {
     /// @param _amount amount to mint (batch minting)
     function mintForRegular(address _to, uint256 _amount) external payable nonReentrant {
         uint256 _currentTime = block.timestamp;
-        require(_currentTime <= mintEnd && _currentTime >= mintStart, "Not Regular minTime");
-        require(totalSupply() + _amount <= maxSupply, "Over mintMax error");
-        _internalSafeMint(msg.value, _to, mintPrice, _amount, mintMaxPerUser);
-        emit MintEvent(msg.sender, msg.value, _to, _amount, mintPrice);
+        require(_currentTime <= mintingStages.mintEnd && _currentTime >= mintingStages.mintStart, "Not Regular minTime");
+        require(totalSupply() + _amount <= collectionData.maxSupply, "Over mintMax error");
+        _internalSafeMint(msg.value, _to, mintingStages.mintPrice, _amount, mintingStages.mintMaxPerUser);
+        emit MintEvent(msg.sender, msg.value, _to, _amount, mintingStages.mintPrice);
     }
 
     /// @notice Checks for ether sent to this contract before calling _safeMint
@@ -177,12 +136,13 @@ contract MvxCollection is Clone, ERC721A, IERC2981, MintingStages {
     function _updateRoyaltyInfo(address _receiver, uint96 _royaltyFee) internal {
         require(_royaltyFee <= _feeDenominator(), "ERC2981: fee exceed salePrice");
         require(_receiver != address(0), "ERC2981: invalid receiver");
-        royaltyData = RoyaltyInfo(_receiver, _royaltyFee);
+        collectionData.royaltyReceiver = _receiver;
+        collectionData.royaltyFee = _royaltyFee;
     }
 
     // @dev Inherits IERC2981
     function royaltyInfo(uint256 tokenId, uint256 _salePrice) external view override returns (address, uint256) {
-        return (royaltyData.receiver, (_salePrice * royaltyData.royaltyFraction) / _feeDenominator());
+        return (collectionData.royaltyReceiver, (_salePrice * collectionData.royaltyFee) / _feeDenominator());
     }
 
     /// @notice The denominator with which to interpret the fee set in {_setTokenRoyalty} and {_setDefaultRoyalty} as a
@@ -192,18 +152,26 @@ contract MvxCollection is Clone, ERC721A, IERC2981, MintingStages {
         return 10_000;
     }
 
+    function baseURI() public view returns (string memory) {
+        return _baseURI();
+    }
+
+    function _baseURI() internal view override returns (string memory) {
+        return collectionData.baseURI;
+    }
+
     function tokenURI(uint256 _tokenId) public view virtual override returns (string memory) {
         require(_exists(_tokenId), "ERC721Metadata: URI query for nonexistent token");
 
-        string memory current_baseURI = baseURI;
+        string memory currentBaseURI = baseURI();
 
-        return bytes(baseURI).length > 0
-            ? string(abi.encodePacked(current_baseURI, _toString(_tokenId), baseExtension))
+        return bytes(currentBaseURI).length > 0
+            ? string(abi.encodePacked(currentBaseURI, _toString(_tokenId), collectionData.baseExt))
             : "";
     }
 
     function setBaseURI(string memory _newBaseURI) public {
-        baseURI = _newBaseURI;
+        collectionData.baseURI = _newBaseURI;
     }
 
     function getMintCountOf(address _user) public view returns (uint256) {
@@ -211,7 +179,7 @@ contract MvxCollection is Clone, ERC721A, IERC2981, MintingStages {
     }
 
     function setBaseExtension(string memory _newBaseExtension) public {
-        baseExtension = _newBaseExtension;
+        collectionData.baseExt = _newBaseExtension;
     }
 
     function burn(uint256 _tokenId) external {
@@ -222,30 +190,19 @@ contract MvxCollection is Clone, ERC721A, IERC2981, MintingStages {
 
     /// @notice only ADMIN access withdraw royalties
     function withdraw() external payable nonReentrant onlyRole(ADMIN_ROLE) {
-        require(platformFeeReceiver != address(0x0), "Address Zero");
         uint256 _balance = address(this).balance;
-        uint256 _platformFee = _balance * platformFee / _feeDenominator();
-        uint256 _balanceAfterFee = _balance - _platformFee;
+        uint256 platformFee = _balance * _platformFee / _feeDenominator();
+        uint256 _balanceAfterFee = _balance - platformFee;
 
-        (bool feeSent,) = payable(platformFeeReceiver).call{value: _platformFee}("");
+        (bool feeSent,) = payable(_platformFeeReceiver).call{value: platformFee}("");
         require(feeSent, "Withdraw _platformFee fail");
 
         (bool sent,) = payable(msg.sender).call{value: _balanceAfterFee}("");
         require(sent, "Withdraw _balanceAfterFee fail");
-        emit WithdrawEvent(msg.sender, _balanceAfterFee, platformFeeReceiver, _platformFee);
-    }
-
-    function supportsInterface(bytes4 _interfaceId)
-        public
-        view
-        override(ERC721A, AccessControlUpgradeable,IERC165)
-        returns (bool)
-    {
-        return _interfaceId == type(IERC721A).interfaceId || _interfaceId == type(IERC2981).interfaceId
-            || super.supportsInterface(_interfaceId);
+        emit WithdrawEvent(msg.sender, _balanceAfterFee, _platformFeeReceiver, _platformFee);
     }
 
     function version() external pure returns (uint8 _version) {
-        _version = 1;
+        _version = 2;
     }
 }

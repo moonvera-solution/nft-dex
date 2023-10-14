@@ -2,6 +2,7 @@
 pragma solidity ^0.8.20;
 
 import "@src/MvxFactory.sol";
+
 import {Test, console2} from "@forge-std/Test.sol";
 
 contract Utils is Test {
@@ -15,8 +16,6 @@ contract Utils is Test {
     function _initCollection(MvxFactory factory) internal returns (address _collection) {
         (address[] memory _initialOGMinters, address[] memory _initialWLMinters) = _getMintingUserLists();
         bytes memory nftData = abi.encode("TestName", "SYMBOL", "https://moonvera.io/nft/{id}", ".json");
-        _collection = factory.createCollection{value: 0.05 ether}( // createCollection fee
-        nftData, _initialOGMinters, _initialWLMinters, _getMintingStages());
     }
 
     function _getMintingUserLists()
@@ -43,6 +42,7 @@ contract Utils is Test {
      *         7 regMintStartTime
      *         8 regMintEndTime
      */
+
     function _getMintingStages() public returns (uint256[] memory _mintStageDetails) {
         _mintStageDetails = new uint256[](12);
         _mintStageDetails[0] = 500; //_ogMintPrice

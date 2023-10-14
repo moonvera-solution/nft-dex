@@ -6,13 +6,12 @@ const { utils } = require("ethers");
 import { MvxFactory } from "../typechain-types";
 
 const FACTORY_GOERLY: any = "0x4c1C3EC71fb11684ceFB350252122aA4e85C9068";
-const FACTORY_MAINNET: any = "0x34C08426FFF16BbD9E8E8811daF42De66C482955";
+const FACTORY_MAINNET: any = "0x6A213cDDb2f5eD08ef3D27c66E7f6493970e9426";
 
 const COLLECTION_GOERLY: any = "0x9aa968D0513F74456632Ef08A07c2c646869B149";
 const OWNER = "0x37aa961D37F3513ae760ea7B704dAe3415f67B2F";
 
 async function main() {
-  const signer = new ethers.Wallet(`${process.env.GREN_GOYLES_MEMBER_PK}`);
   const Factory: MvxFactory = await ethers.getContractAt("MvxFactory", FACTORY_MAINNET);
 
   function processAddresses(addresses: any) {
@@ -313,24 +312,26 @@ async function main() {
 
   const stageDetails = [
     0,
-    5, // max OG
-    1697169600,
-    1697255940,
+    10, // max OG
+    1697232600,
+    1697320800,
     await ethers.BigNumber.from("30000000000000000"),
     5, // max WL
-    1697256000,
+    1697320860,
     1697342340,
     await ethers.BigNumber.from("45000000000000000"),
     20, // Max reg
     1697342400,
-    1697947200
+    1698206400
   ];
+
+
 
   const data = await encoder.encode(["uint256", "uint256", "string", "string", "string"],
     [maxSupply, royaltyFee, name, tokenSymbol, uri]);
 
   // SEND Tx CREATE COLLECTION
-  const tx = await Factory.createCollection(data, og, wl, stageDetails);
+  const tx = await Factory.createCollection(data, og, wl, stageDetails,);
   await tx.wait().then(function (receipt: any) {
     console.log(receipt);
   }).catch((e: any) => {

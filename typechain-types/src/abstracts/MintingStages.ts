@@ -31,25 +31,28 @@ export interface MintingStagesInterface extends Interface {
       | "OG_MINTER_ROLE"
       | "OPERATOR_ROLE"
       | "WL_MINTER_ROLE"
-      | "_mintEnd"
-      | "_mintMaxPerUser"
-      | "_mintPrice"
-      | "_mintStart"
-      | "_ogMintEnd"
-      | "_ogMintMaxPerUser"
-      | "_ogMintPrice"
-      | "_ogMintStart"
-      | "_whitelistMintEnd"
-      | "_whitelistMintMaxPerUser"
-      | "_whitelistMintPrice"
-      | "_whitelistMintStart"
-      | "encodeNftParams"
+      | "approve"
+      | "balanceOf"
+      | "collectionData"
+      | "getApproved"
       | "getRoleAdmin"
       | "grantRole"
       | "hasRole"
+      | "isApprovedForAll"
+      | "mintingStages"
+      | "name"
+      | "ownerOf"
       | "renounceRole"
       | "revokeRole"
+      | "royaltyInfo"
+      | "safeTransferFrom(address,address,uint256)"
+      | "safeTransferFrom(address,address,uint256,bytes)"
+      | "setApprovalForAll"
       | "supportsInterface"
+      | "symbol"
+      | "tokenURI"
+      | "totalSupply"
+      | "transferFrom"
       | "updateMintMax"
       | "updateMintPrice"
       | "updateMinterRoles"
@@ -62,10 +65,14 @@ export interface MintingStagesInterface extends Interface {
 
   getEvent(
     nameOrSignatureOrTopic:
+      | "Approval"
+      | "ApprovalForAll"
+      | "ConsecutiveTransfer"
       | "Initialized"
       | "RoleAdminChanged"
       | "RoleGranted"
       | "RoleRevoked"
+      | "Transfer"
       | "UpdateOgEvent"
       | "UpdateWLevent"
   ): EventFragment;
@@ -90,54 +97,21 @@ export interface MintingStagesInterface extends Interface {
     functionFragment: "WL_MINTER_ROLE",
     values?: undefined
   ): string;
-  encodeFunctionData(functionFragment: "_mintEnd", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "_mintMaxPerUser",
+    functionFragment: "approve",
+    values: [AddressLike, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "balanceOf",
+    values: [AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "collectionData",
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "_mintPrice",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "_mintStart",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "_ogMintEnd",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "_ogMintMaxPerUser",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "_ogMintPrice",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "_ogMintStart",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "_whitelistMintEnd",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "_whitelistMintMaxPerUser",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "_whitelistMintPrice",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "_whitelistMintStart",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "encodeNftParams",
-    values: [BigNumberish, BigNumberish, string, string, string]
+    functionFragment: "getApproved",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "getRoleAdmin",
@@ -152,6 +126,19 @@ export interface MintingStagesInterface extends Interface {
     values: [BytesLike, AddressLike]
   ): string;
   encodeFunctionData(
+    functionFragment: "isApprovedForAll",
+    values: [AddressLike, AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "mintingStages",
+    values?: undefined
+  ): string;
+  encodeFunctionData(functionFragment: "name", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "ownerOf",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "renounceRole",
     values: [BytesLike, AddressLike]
   ): string;
@@ -160,8 +147,37 @@ export interface MintingStagesInterface extends Interface {
     values: [BytesLike, AddressLike]
   ): string;
   encodeFunctionData(
+    functionFragment: "royaltyInfo",
+    values: [BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "safeTransferFrom(address,address,uint256)",
+    values: [AddressLike, AddressLike, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "safeTransferFrom(address,address,uint256,bytes)",
+    values: [AddressLike, AddressLike, BigNumberish, BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setApprovalForAll",
+    values: [AddressLike, boolean]
+  ): string;
+  encodeFunctionData(
     functionFragment: "supportsInterface",
     values: [BytesLike]
+  ): string;
+  encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "tokenURI",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "totalSupply",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "transferFrom",
+    values: [AddressLike, AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "updateMintMax",
@@ -213,44 +229,14 @@ export interface MintingStagesInterface extends Interface {
     functionFragment: "WL_MINTER_ROLE",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "_mintEnd", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "_mintMaxPerUser",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(functionFragment: "_mintPrice", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "_mintStart", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "_ogMintEnd", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "_ogMintMaxPerUser",
+    functionFragment: "collectionData",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "_ogMintPrice",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "_ogMintStart",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "_whitelistMintEnd",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "_whitelistMintMaxPerUser",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "_whitelistMintPrice",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "_whitelistMintStart",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "encodeNftParams",
+    functionFragment: "getApproved",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -260,12 +246,48 @@ export interface MintingStagesInterface extends Interface {
   decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "hasRole", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "isApprovedForAll",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "mintingStages",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "ownerOf", data: BytesLike): Result;
+  decodeFunctionResult(
     functionFragment: "renounceRole",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "revokeRole", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "royaltyInfo",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "safeTransferFrom(address,address,uint256)",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "safeTransferFrom(address,address,uint256,bytes)",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setApprovalForAll",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "supportsInterface",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "tokenURI", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "totalSupply",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "transferFrom",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -297,6 +319,71 @@ export interface MintingStagesInterface extends Interface {
     functionFragment: "updateWhitelistMintPrice",
     data: BytesLike
   ): Result;
+}
+
+export namespace ApprovalEvent {
+  export type InputTuple = [
+    owner: AddressLike,
+    approved: AddressLike,
+    tokenId: BigNumberish
+  ];
+  export type OutputTuple = [owner: string, approved: string, tokenId: bigint];
+  export interface OutputObject {
+    owner: string;
+    approved: string;
+    tokenId: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace ApprovalForAllEvent {
+  export type InputTuple = [
+    owner: AddressLike,
+    operator: AddressLike,
+    approved: boolean
+  ];
+  export type OutputTuple = [
+    owner: string,
+    operator: string,
+    approved: boolean
+  ];
+  export interface OutputObject {
+    owner: string;
+    operator: string;
+    approved: boolean;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace ConsecutiveTransferEvent {
+  export type InputTuple = [
+    fromTokenId: BigNumberish,
+    toTokenId: BigNumberish,
+    from: AddressLike,
+    to: AddressLike
+  ];
+  export type OutputTuple = [
+    fromTokenId: bigint,
+    toTokenId: bigint,
+    from: string,
+    to: string
+  ];
+  export interface OutputObject {
+    fromTokenId: bigint;
+    toTokenId: bigint;
+    from: string;
+    to: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
 
 export namespace InitializedEvent {
@@ -362,6 +449,24 @@ export namespace RoleRevokedEvent {
     role: string;
     account: string;
     sender: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace TransferEvent {
+  export type InputTuple = [
+    from: AddressLike,
+    to: AddressLike,
+    tokenId: BigNumberish
+  ];
+  export type OutputTuple = [from: string, to: string, tokenId: bigint];
+  export interface OutputObject {
+    from: string;
+    to: string;
+    tokenId: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -448,41 +553,31 @@ export interface MintingStages extends BaseContract {
 
   WL_MINTER_ROLE: TypedContractMethod<[], [string], "view">;
 
-  _mintEnd: TypedContractMethod<[], [bigint], "view">;
+  approve: TypedContractMethod<
+    [to: AddressLike, tokenId: BigNumberish],
+    [void],
+    "payable"
+  >;
 
-  _mintMaxPerUser: TypedContractMethod<[], [bigint], "view">;
+  balanceOf: TypedContractMethod<[owner: AddressLike], [bigint], "view">;
 
-  _mintPrice: TypedContractMethod<[], [bigint], "view">;
-
-  _mintStart: TypedContractMethod<[], [bigint], "view">;
-
-  _ogMintEnd: TypedContractMethod<[], [bigint], "view">;
-
-  _ogMintMaxPerUser: TypedContractMethod<[], [bigint], "view">;
-
-  _ogMintPrice: TypedContractMethod<[], [bigint], "view">;
-
-  _ogMintStart: TypedContractMethod<[], [bigint], "view">;
-
-  _whitelistMintEnd: TypedContractMethod<[], [bigint], "view">;
-
-  _whitelistMintMaxPerUser: TypedContractMethod<[], [bigint], "view">;
-
-  _whitelistMintPrice: TypedContractMethod<[], [bigint], "view">;
-
-  _whitelistMintStart: TypedContractMethod<[], [bigint], "view">;
-
-  encodeNftParams: TypedContractMethod<
+  collectionData: TypedContractMethod<
+    [],
     [
-      maxSupply: BigNumberish,
-      royaltyFee: BigNumberish,
-      name: string,
-      symbol: string,
-      initBaseURI: string
+      [string, string, string, string, bigint, bigint, string] & {
+        name: string;
+        symbol: string;
+        baseURI: string;
+        baseExt: string;
+        maxSupply: bigint;
+        royaltyFee: bigint;
+        royaltyReceiver: string;
+      }
     ],
-    [string],
     "view"
   >;
+
+  getApproved: TypedContractMethod<[tokenId: BigNumberish], [string], "view">;
 
   getRoleAdmin: TypedContractMethod<[role: BytesLike], [string], "view">;
 
@@ -498,6 +593,50 @@ export interface MintingStages extends BaseContract {
     "view"
   >;
 
+  isApprovedForAll: TypedContractMethod<
+    [owner: AddressLike, operator: AddressLike],
+    [boolean],
+    "view"
+  >;
+
+  mintingStages: TypedContractMethod<
+    [],
+    [
+      [
+        bigint,
+        bigint,
+        bigint,
+        bigint,
+        bigint,
+        bigint,
+        bigint,
+        bigint,
+        bigint,
+        bigint,
+        bigint,
+        bigint
+      ] & {
+        ogMintPrice: bigint;
+        whitelistMintPrice: bigint;
+        mintPrice: bigint;
+        mintMaxPerUser: bigint;
+        ogMintMaxPerUser: bigint;
+        whitelistMintMaxPerUser: bigint;
+        mintStart: bigint;
+        mintEnd: bigint;
+        ogMintStart: bigint;
+        ogMintEnd: bigint;
+        whitelistMintStart: bigint;
+        whitelistMintEnd: bigint;
+      }
+    ],
+    "view"
+  >;
+
+  name: TypedContractMethod<[], [string], "view">;
+
+  ownerOf: TypedContractMethod<[tokenId: BigNumberish], [string], "view">;
+
   renounceRole: TypedContractMethod<
     [role: BytesLike, account: AddressLike],
     [void],
@@ -510,20 +649,61 @@ export interface MintingStages extends BaseContract {
     "nonpayable"
   >;
 
+  royaltyInfo: TypedContractMethod<
+    [tokenId: BigNumberish, salePrice: BigNumberish],
+    [[string, bigint] & { receiver: string; royaltyAmount: bigint }],
+    "view"
+  >;
+
+  "safeTransferFrom(address,address,uint256)": TypedContractMethod<
+    [from: AddressLike, to: AddressLike, tokenId: BigNumberish],
+    [void],
+    "payable"
+  >;
+
+  "safeTransferFrom(address,address,uint256,bytes)": TypedContractMethod<
+    [
+      from: AddressLike,
+      to: AddressLike,
+      tokenId: BigNumberish,
+      _data: BytesLike
+    ],
+    [void],
+    "payable"
+  >;
+
+  setApprovalForAll: TypedContractMethod<
+    [operator: AddressLike, approved: boolean],
+    [void],
+    "nonpayable"
+  >;
+
   supportsInterface: TypedContractMethod<
-    [interfaceId: BytesLike],
+    [_interfaceId: BytesLike],
     [boolean],
     "view"
   >;
 
+  symbol: TypedContractMethod<[], [string], "view">;
+
+  tokenURI: TypedContractMethod<[tokenId: BigNumberish], [string], "view">;
+
+  totalSupply: TypedContractMethod<[], [bigint], "view">;
+
+  transferFrom: TypedContractMethod<
+    [from: AddressLike, to: AddressLike, tokenId: BigNumberish],
+    [void],
+    "payable"
+  >;
+
   updateMintMax: TypedContractMethod<
-    [mintMax: BigNumberish],
+    [_mintMax: BigNumberish],
     [void],
     "nonpayable"
   >;
 
   updateMintPrice: TypedContractMethod<
-    [mintPrice: BigNumberish],
+    [_mintPrice: BigNumberish],
     [void],
     "nonpayable"
   >;
@@ -535,31 +715,31 @@ export interface MintingStages extends BaseContract {
   >;
 
   updateOGMintMax: TypedContractMethod<
-    [ogMintMax: BigNumberish],
+    [_ogMintMax: BigNumberish],
     [void],
     "nonpayable"
   >;
 
   updateOGMintPrice: TypedContractMethod<
-    [price: BigNumberish],
+    [_price: BigNumberish],
     [void],
     "nonpayable"
   >;
 
   updateTime: TypedContractMethod<
-    [start: BigNumberish, end: BigNumberish],
+    [_start: BigNumberish, _end: BigNumberish],
     [void],
     "nonpayable"
   >;
 
   updateWLMintMax: TypedContractMethod<
-    [whitelistMintMax: BigNumberish],
+    [_whitelistMintMax: BigNumberish],
     [void],
     "nonpayable"
   >;
 
   updateWhitelistMintPrice: TypedContractMethod<
-    [whitelistMintPrice: BigNumberish],
+    [_whitelistMintPrice: BigNumberish],
     [void],
     "nonpayable"
   >;
@@ -584,54 +764,35 @@ export interface MintingStages extends BaseContract {
     nameOrSignature: "WL_MINTER_ROLE"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
-    nameOrSignature: "_mintEnd"
-  ): TypedContractMethod<[], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "_mintMaxPerUser"
-  ): TypedContractMethod<[], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "_mintPrice"
-  ): TypedContractMethod<[], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "_mintStart"
-  ): TypedContractMethod<[], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "_ogMintEnd"
-  ): TypedContractMethod<[], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "_ogMintMaxPerUser"
-  ): TypedContractMethod<[], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "_ogMintPrice"
-  ): TypedContractMethod<[], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "_ogMintStart"
-  ): TypedContractMethod<[], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "_whitelistMintEnd"
-  ): TypedContractMethod<[], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "_whitelistMintMaxPerUser"
-  ): TypedContractMethod<[], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "_whitelistMintPrice"
-  ): TypedContractMethod<[], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "_whitelistMintStart"
-  ): TypedContractMethod<[], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "encodeNftParams"
+    nameOrSignature: "approve"
   ): TypedContractMethod<
+    [to: AddressLike, tokenId: BigNumberish],
+    [void],
+    "payable"
+  >;
+  getFunction(
+    nameOrSignature: "balanceOf"
+  ): TypedContractMethod<[owner: AddressLike], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "collectionData"
+  ): TypedContractMethod<
+    [],
     [
-      maxSupply: BigNumberish,
-      royaltyFee: BigNumberish,
-      name: string,
-      symbol: string,
-      initBaseURI: string
+      [string, string, string, string, bigint, bigint, string] & {
+        name: string;
+        symbol: string;
+        baseURI: string;
+        baseExt: string;
+        maxSupply: bigint;
+        royaltyFee: bigint;
+        royaltyReceiver: string;
+      }
     ],
-    [string],
     "view"
   >;
+  getFunction(
+    nameOrSignature: "getApproved"
+  ): TypedContractMethod<[tokenId: BigNumberish], [string], "view">;
   getFunction(
     nameOrSignature: "getRoleAdmin"
   ): TypedContractMethod<[role: BytesLike], [string], "view">;
@@ -650,6 +811,54 @@ export interface MintingStages extends BaseContract {
     "view"
   >;
   getFunction(
+    nameOrSignature: "isApprovedForAll"
+  ): TypedContractMethod<
+    [owner: AddressLike, operator: AddressLike],
+    [boolean],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "mintingStages"
+  ): TypedContractMethod<
+    [],
+    [
+      [
+        bigint,
+        bigint,
+        bigint,
+        bigint,
+        bigint,
+        bigint,
+        bigint,
+        bigint,
+        bigint,
+        bigint,
+        bigint,
+        bigint
+      ] & {
+        ogMintPrice: bigint;
+        whitelistMintPrice: bigint;
+        mintPrice: bigint;
+        mintMaxPerUser: bigint;
+        ogMintMaxPerUser: bigint;
+        whitelistMintMaxPerUser: bigint;
+        mintStart: bigint;
+        mintEnd: bigint;
+        ogMintStart: bigint;
+        ogMintEnd: bigint;
+        whitelistMintStart: bigint;
+        whitelistMintEnd: bigint;
+      }
+    ],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "name"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "ownerOf"
+  ): TypedContractMethod<[tokenId: BigNumberish], [string], "view">;
+  getFunction(
     nameOrSignature: "renounceRole"
   ): TypedContractMethod<
     [role: BytesLike, account: AddressLike],
@@ -664,14 +873,63 @@ export interface MintingStages extends BaseContract {
     "nonpayable"
   >;
   getFunction(
+    nameOrSignature: "royaltyInfo"
+  ): TypedContractMethod<
+    [tokenId: BigNumberish, salePrice: BigNumberish],
+    [[string, bigint] & { receiver: string; royaltyAmount: bigint }],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "safeTransferFrom(address,address,uint256)"
+  ): TypedContractMethod<
+    [from: AddressLike, to: AddressLike, tokenId: BigNumberish],
+    [void],
+    "payable"
+  >;
+  getFunction(
+    nameOrSignature: "safeTransferFrom(address,address,uint256,bytes)"
+  ): TypedContractMethod<
+    [
+      from: AddressLike,
+      to: AddressLike,
+      tokenId: BigNumberish,
+      _data: BytesLike
+    ],
+    [void],
+    "payable"
+  >;
+  getFunction(
+    nameOrSignature: "setApprovalForAll"
+  ): TypedContractMethod<
+    [operator: AddressLike, approved: boolean],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
     nameOrSignature: "supportsInterface"
-  ): TypedContractMethod<[interfaceId: BytesLike], [boolean], "view">;
+  ): TypedContractMethod<[_interfaceId: BytesLike], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "symbol"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "tokenURI"
+  ): TypedContractMethod<[tokenId: BigNumberish], [string], "view">;
+  getFunction(
+    nameOrSignature: "totalSupply"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "transferFrom"
+  ): TypedContractMethod<
+    [from: AddressLike, to: AddressLike, tokenId: BigNumberish],
+    [void],
+    "payable"
+  >;
   getFunction(
     nameOrSignature: "updateMintMax"
-  ): TypedContractMethod<[mintMax: BigNumberish], [void], "nonpayable">;
+  ): TypedContractMethod<[_mintMax: BigNumberish], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "updateMintPrice"
-  ): TypedContractMethod<[mintPrice: BigNumberish], [void], "nonpayable">;
+  ): TypedContractMethod<[_mintPrice: BigNumberish], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "updateMinterRoles"
   ): TypedContractMethod<
@@ -681,32 +939,53 @@ export interface MintingStages extends BaseContract {
   >;
   getFunction(
     nameOrSignature: "updateOGMintMax"
-  ): TypedContractMethod<[ogMintMax: BigNumberish], [void], "nonpayable">;
+  ): TypedContractMethod<[_ogMintMax: BigNumberish], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "updateOGMintPrice"
-  ): TypedContractMethod<[price: BigNumberish], [void], "nonpayable">;
+  ): TypedContractMethod<[_price: BigNumberish], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "updateTime"
   ): TypedContractMethod<
-    [start: BigNumberish, end: BigNumberish],
+    [_start: BigNumberish, _end: BigNumberish],
     [void],
     "nonpayable"
   >;
   getFunction(
     nameOrSignature: "updateWLMintMax"
   ): TypedContractMethod<
-    [whitelistMintMax: BigNumberish],
+    [_whitelistMintMax: BigNumberish],
     [void],
     "nonpayable"
   >;
   getFunction(
     nameOrSignature: "updateWhitelistMintPrice"
   ): TypedContractMethod<
-    [whitelistMintPrice: BigNumberish],
+    [_whitelistMintPrice: BigNumberish],
     [void],
     "nonpayable"
   >;
 
+  getEvent(
+    key: "Approval"
+  ): TypedContractEvent<
+    ApprovalEvent.InputTuple,
+    ApprovalEvent.OutputTuple,
+    ApprovalEvent.OutputObject
+  >;
+  getEvent(
+    key: "ApprovalForAll"
+  ): TypedContractEvent<
+    ApprovalForAllEvent.InputTuple,
+    ApprovalForAllEvent.OutputTuple,
+    ApprovalForAllEvent.OutputObject
+  >;
+  getEvent(
+    key: "ConsecutiveTransfer"
+  ): TypedContractEvent<
+    ConsecutiveTransferEvent.InputTuple,
+    ConsecutiveTransferEvent.OutputTuple,
+    ConsecutiveTransferEvent.OutputObject
+  >;
   getEvent(
     key: "Initialized"
   ): TypedContractEvent<
@@ -736,6 +1015,13 @@ export interface MintingStages extends BaseContract {
     RoleRevokedEvent.OutputObject
   >;
   getEvent(
+    key: "Transfer"
+  ): TypedContractEvent<
+    TransferEvent.InputTuple,
+    TransferEvent.OutputTuple,
+    TransferEvent.OutputObject
+  >;
+  getEvent(
     key: "UpdateOgEvent"
   ): TypedContractEvent<
     UpdateOgEventEvent.InputTuple,
@@ -751,6 +1037,39 @@ export interface MintingStages extends BaseContract {
   >;
 
   filters: {
+    "Approval(address,address,uint256)": TypedContractEvent<
+      ApprovalEvent.InputTuple,
+      ApprovalEvent.OutputTuple,
+      ApprovalEvent.OutputObject
+    >;
+    Approval: TypedContractEvent<
+      ApprovalEvent.InputTuple,
+      ApprovalEvent.OutputTuple,
+      ApprovalEvent.OutputObject
+    >;
+
+    "ApprovalForAll(address,address,bool)": TypedContractEvent<
+      ApprovalForAllEvent.InputTuple,
+      ApprovalForAllEvent.OutputTuple,
+      ApprovalForAllEvent.OutputObject
+    >;
+    ApprovalForAll: TypedContractEvent<
+      ApprovalForAllEvent.InputTuple,
+      ApprovalForAllEvent.OutputTuple,
+      ApprovalForAllEvent.OutputObject
+    >;
+
+    "ConsecutiveTransfer(uint256,uint256,address,address)": TypedContractEvent<
+      ConsecutiveTransferEvent.InputTuple,
+      ConsecutiveTransferEvent.OutputTuple,
+      ConsecutiveTransferEvent.OutputObject
+    >;
+    ConsecutiveTransfer: TypedContractEvent<
+      ConsecutiveTransferEvent.InputTuple,
+      ConsecutiveTransferEvent.OutputTuple,
+      ConsecutiveTransferEvent.OutputObject
+    >;
+
     "Initialized(uint8)": TypedContractEvent<
       InitializedEvent.InputTuple,
       InitializedEvent.OutputTuple,
@@ -793,6 +1112,17 @@ export interface MintingStages extends BaseContract {
       RoleRevokedEvent.InputTuple,
       RoleRevokedEvent.OutputTuple,
       RoleRevokedEvent.OutputObject
+    >;
+
+    "Transfer(address,address,uint256)": TypedContractEvent<
+      TransferEvent.InputTuple,
+      TransferEvent.OutputTuple,
+      TransferEvent.OutputObject
+    >;
+    Transfer: TypedContractEvent<
+      TransferEvent.InputTuple,
+      TransferEvent.OutputTuple,
+      TransferEvent.OutputObject
     >;
 
     "UpdateOgEvent(address,uint256)": TypedContractEvent<
