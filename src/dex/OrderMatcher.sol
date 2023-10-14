@@ -2,14 +2,14 @@
 
 pragma solidity ^0.8.0;
 
-import "../../lib/openzeppelin-contracts/contracts/security/ReentrancyGuard.sol";
-import "../../lib/openzeppelin-contracts/contracts/access/Ownable.sol";
-import "../../lib/openzeppelin-contracts/contracts/token/ERC721/IERC721.sol";
-import "../../lib/openzeppelin-contracts/contracts/token/ERC721/IERC721Receiver.sol";
-import "../../lib/openzeppelin-contracts/contracts/token/ERC721/ERC721.sol";
-import "../../lib/openzeppelin-contracts/contracts/interfaces/IERC2981.sol";
-import "../../lib/openzeppelin-contracts/contracts/security/Pausable.sol";
-import "../../lib/openzeppelin-contracts/contracts/utils/introspection/ERC165Checker.sol";
+import "@openzeppelin-contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin-contracts/access/Ownable.sol";
+import "@openzeppelin-contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin-contracts/token/ERC721/IERC721Receiver.sol";
+import "@openzeppelin-contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin-contracts/interfaces/IERC2981.sol";
+import "@openzeppelin-contracts/security/Pausable.sol";
+import "@openzeppelin-contracts/utils/introspection/ERC165Checker.sol";
 
 interface ERC2981 is IERC721 {
     // ERC2981 is a standard for royalty payments, allowing smart contracts to pay royalty fees to the creator whener their is a sale on secondary market

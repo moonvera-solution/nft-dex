@@ -1,10 +1,15 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.20;
 
-import "../../lib/openzeppelin-contracts-upgradeable/contracts/access/AccessControlUpgradeable.sol";
-import "../../lib/openzeppelin-contracts-upgradeable/contracts/security/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin-contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "@openzeppelin-contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import {IERC2981, IERC165} from "@openzeppelin-contracts/interfaces/IERC2981.sol";
 
-abstract contract MintingStages is AccessControlUpgradeable, ReentrancyGuardUpgradeable {
+import {Stages, Collection} from "@src/libs/MvxStruct.sol";
+import {Clone} from "@solady/utils/Clone.sol";
+import {ERC721A, IERC721A} from "@src/tokens/ERC721A.sol";
+
+abstract contract MintingStages is Clone, ERC721A, IERC2981, AccessControlUpgradeable, ReentrancyGuardUpgradeable {
     /* ACCESS ROLES */
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
@@ -13,23 +18,10 @@ abstract contract MintingStages is AccessControlUpgradeable, ReentrancyGuardUpgr
     bytes32 public constant WL_MINTER_ROLE = keccak256("WL_MINTER_ROLE");
     bytes32 public constant OG_MINTER_ROLE = keccak256("OG_MINTER_ROLE");
 
-    /* OG MINT DETAILS */
-    uint256 public _ogMintPrice;
-    uint256 public _ogMintMaxPerUser;
-    uint256 public _ogMintStart;
-    uint256 public _ogMintEnd;
-
-    /* WL MINT DETAILS */
-    uint256 public _whitelistMintPrice;
-    uint256 public _whitelistMintMaxPerUser;
-    uint256 public _whitelistMintStart;
-    uint256 public _whitelistMintEnd;
-
-    /* REGULAR MINT DETAILS*/
-    uint256 public _mintPrice;
-    uint256 public _mintMaxPerUser;
-    uint256 public _mintStart;
-    uint256 public _mintEnd;
+    Stages public mintingStages;
+    Collection public collectionData;
+    address internal _platformFeeReceiver;
+    uint96 internal _platformFee;
 
     event UpdateWLevent(address indexed sender, uint256 listLength);
     event UpdateOgEvent(address indexed sender, uint256 listLength);
@@ -40,45 +32,45 @@ abstract contract MintingStages is AccessControlUpgradeable, ReentrancyGuardUpgr
     }
 
     /// OG MINTING
-    function updateOGMintPrice(uint256 price) external OnlyAdminOrOperator {
-        require(price > 0, "Invalid price amount");
-        _ogMintPrice = price;
+    function updateOGMintPrice(uint256 _price) external OnlyAdminOrOperator {
+        require(_price > 0, "Invalid price amount");
+        mintingStages.ogMintPrice = _price;
     }
 
-    function updateOGMintMax(uint256 ogMintMax) external OnlyAdminOrOperator {
-        require(ogMintMax > 0, "Invalid max amount");
-        _ogMintMaxPerUser = ogMintMax;
+    function updateOGMintMax(uint256 _ogMintMax) external OnlyAdminOrOperator {
+        require(_ogMintMax > 0, "Invalid max amount");
+        mintingStages.ogMintMaxPerUser = _ogMintMax;
     }
 
     /// WL MINTING
-    function updateWhitelistMintPrice(uint256 whitelistMintPrice) external OnlyAdminOrOperator {
-        require(whitelistMintPrice > 0, "Invalid price amount");
-        _whitelistMintPrice = whitelistMintPrice;
+    function updateWhitelistMintPrice(uint256 _whitelistMintPrice) external OnlyAdminOrOperator {
+        require(_whitelistMintPrice > 0, "Invalid price amount");
+        mintingStages.whitelistMintPrice = _whitelistMintPrice;
     }
 
-    function updateWLMintMax(uint256 whitelistMintMax) external OnlyAdminOrOperator {
-        require(whitelistMintMax > 0, "Invalid max amount");
-        _whitelistMintMaxPerUser = whitelistMintMax;
+    function updateWLMintMax(uint256 _whitelistMintMax) external OnlyAdminOrOperator {
+        require(_whitelistMintMax > 0, "Invalid max amount");
+        mintingStages.whitelistMintMaxPerUser = _whitelistMintMax;
     }
 
     // REGULAR MINTING
-    function updateMintPrice(uint256 mintPrice) external OnlyAdminOrOperator {
-        require(mintPrice > 0, "Invalid price amount");
-        _mintPrice = mintPrice;
+    function updateMintPrice(uint256 _mintPrice) external OnlyAdminOrOperator {
+        require(_mintPrice > 0, "Invalid price amount");
+        mintingStages.mintPrice = _mintPrice;
     }
 
-    function updateMintMax(uint256 mintMax) external OnlyAdminOrOperator {
-        require(mintMax > 0, "Invalid mint amount");
-        _mintMaxPerUser = mintMax;
+    function updateMintMax(uint256 _mintMax) external OnlyAdminOrOperator {
+        require(_mintMax > 0, "Invalid mint amount");
+        mintingStages.mintMaxPerUser = _mintMax;
     }
 
-    function updateTime(uint256 start, uint256 end) external OnlyAdminOrOperator {
-        require(end > start, "End not > start");
-        _mintStart = start;
-        _mintEnd = end;
+    function updateTime(uint256 _start, uint256 _end) external OnlyAdminOrOperator {
+        require(_end > _start, "End not > start");
+        mintingStages.mintStart = _start;
+        mintingStages.mintEnd = _end;
     }
 
-    /// @param _minterList array of addresses
+    /// @param _minterList address array of OG's or WL's
     /// @param _mintRole 0 = OG, 1 = WL
     /// @dev reverts if any address in the array is address zero
     function updateMinterRoles(address[] calldata _minterList, uint8 _mintRole) public OnlyAdminOrOperator {
@@ -95,13 +87,13 @@ abstract contract MintingStages is AccessControlUpgradeable, ReentrancyGuardUpgr
         }
     }
 
-    function encodeNftParams(
-        uint256 maxSupply,
-        uint256 royaltyFee,
-        string memory name,
-        string memory symbol,
-        string memory initBaseURI
-    ) external pure returns (bytes memory _data) {
-        _data = abi.encode(maxSupply, royaltyFee, name, symbol, initBaseURI);
+    function supportsInterface(bytes4 _interfaceId)
+        public
+        view
+        override(ERC721A, AccessControlUpgradeable, IERC165)
+        returns (bool)
+    {
+        return _interfaceId == type(IERC721A).interfaceId || _interfaceId == type(IERC2981).interfaceId
+            || super.supportsInterface(_interfaceId);
     }
 }

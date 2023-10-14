@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: MIT
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.20;
 
 interface IDutchAuction {
     error InvalidStartEndTime(uint64 startTime, uint64 endTime);

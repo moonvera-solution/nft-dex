@@ -4,9 +4,9 @@
 <br>
 ### Decentralized market and launchpad for minting, listing and trading of non-fungible assets.
 #### CONTRACT COMPONENTS
-- Factory.sol:
-    - Factory to create ERC721A clone contracts with immutable arguments, solady implementation
-- ArtCollection.sol: ERC721AUpgradable Azuki ERC721 like implementation, supports the following features
+- MvxFactory.sol:
+    - MvxFactory to create ERC721A clone contracts with immutable arguments, solady implementation
+- MvxCollection.sol: ERC721AUpgradable Azuki ERC721 like implementation, supports the following features
     - per-stage price
     - per-stage walletLimit
     - per-stage maxStageSupply

@@ -1,0 +1,347 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - lcov.info - src/src/MvxCollection.sol</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="title">LCOV - code coverage report</td></tr>
+            <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+            <tr>
+              <td width="100%">
+                <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="10%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">src/src</a> - MvxCollection.sol<span style="font-size: 80%;"> (source / <a href="MvxCollection.sol.func-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="5%"></td>
+            <td width="5%" class="headerCovTableHead">Coverage</td>
+            <td width="5%" class="headerCovTableHead" title="Covered + Uncovered code">Total</td>
+            <td width="5%" class="headerCovTableHead" title="Exercised code only">Hit</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">lcov.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntryLo">72.7&nbsp;%</td>
+            <td class="headerCovTableEntry">77</td>
+            <td class="headerCovTableEntry">56</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test Date:</td>
+            <td class="headerValue">2023-10-13 07:52:09</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntryLo">35.0&nbsp;%</td>
+            <td class="headerCovTableEntry">20</td>
+            <td class="headerCovTableEntry">7</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntryLo">40.9&nbsp;%</td>
+            <td class="headerCovTableEntry">22</td>
+            <td class="headerCovTableEntry">9</td>
+          </tr>
+                  <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+                </table>
+              </td>
+            </tr>
+
+            <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+          </table>
+
+          <table cellpadding=0 cellspacing=0 border=0>
+            <tr>
+              <td><br></td>
+            </tr>
+            <tr>
+              <td>
+<pre class="sourceHeading">             Branch data     Line data    Source code</pre>
+<pre class="source">
+<span id="L1"><span class="lineNum">       1</span>                 :             : // SPDX-License-Identifier: MIT</span>
+<span id="L2"><span class="lineNum">       2</span>                 :             : pragma solidity ^0.8.20;</span>
+<span id="L3"><span class="lineNum">       3</span>                 :             : </span>
+<span id="L4"><span class="lineNum">       4</span>                 :             : import &quot;@openzeppelin-contracts-upgradeable/access/AccessControlUpgradeable.sol&quot;;</span>
+<span id="L5"><span class="lineNum">       5</span>                 :             : import {IERC2981} from &quot;@openzeppelin-contracts/interfaces/IERC2981.sol&quot;;</span>
+<span id="L6"><span class="lineNum">       6</span>                 :             : import {IERC165} from &quot;@openzeppelin-contracts/utils/introspection/IERC165.sol&quot;;</span>
+<span id="L7"><span class="lineNum">       7</span>                 :             : import {Clone} from &quot;@solady/utils/Clone.sol&quot;;</span>
+<span id="L8"><span class="lineNum">       8</span>                 :             : import {FullMath} from &quot;./libs/FullMath.sol&quot;;</span>
+<span id="L9"><span class="lineNum">       9</span>                 :             : import {MintingStages} from &quot;./abstracts/MintingStages.sol&quot;;</span>
+<span id="L10"><span class="lineNum">      10</span>                 :             : import {ERC721A, IERC721A} from &quot;./tokens/ERC721A.sol&quot;;</span>
+<span id="L11"><span class="lineNum">      11</span>                 :             : </span>
+<span id="L12"><span class="lineNum">      12</span>                 :             : //</span>
+<span id="L13"><span class="lineNum">      13</span>                 :             : // ███╗   ███╗ ██████╗  ██████╗ ███╗   ██╗██╗   ██╗███████╗██████╗  █████╗</span>
+<span id="L14"><span class="lineNum">      14</span>                 :             : // ████╗ ████║██╔═══██╗██╔═══██╗████╗  ██║██║   ██║██╔════╝██╔══██╗██╔══██╗</span>
+<span id="L15"><span class="lineNum">      15</span>                 :             : // ██╔████╔██║██║   ██║██║   ██║██╔██╗ ██║██║   ██║█████╗  ██████╔╝███████║</span>
+<span id="L16"><span class="lineNum">      16</span>                 :             : // ██║╚██╔╝██║██║   ██║██║   ██║██║╚██╗██║╚██╗ ██╔╝██╔══╝  ██╔══██╗██╔══██║</span>
+<span id="L17"><span class="lineNum">      17</span>                 :             : // ██║ ╚═╝ ██║╚██████╔╝╚██████╔╝██║ ╚████║ ╚████╔╝ ███████╗██║  ██║██║  ██║</span>
+<span id="L18"><span class="lineNum">      18</span>                 :             : // ╚═╝     ╚═╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═══╝  ╚═══╝  ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝</span>
+<span id="L19"><span class="lineNum">      19</span>                 :             : //</span>
+<span id="L20"><span class="lineNum">      20</span>                 :             : /// @title Art Collection ERC721A Upgradable</span>
+<span id="L21"><span class="lineNum">      21</span>                 :             : /// @notice This contract is made only for the Arab Collectors Club ACC</span>
+<span id="L22"><span class="lineNum">      22</span>                 :             : /// @author MoonveraLabs</span>
+<span id="L23"><span class="lineNum">      23</span>                 :             : contract MvxCollection is Clone, ERC721A, IERC2981, MintingStages {</span>
+<span id="L24"><span class="lineNum">      24</span>                 :             :     string public baseURI;</span>
+<span id="L25"><span class="lineNum">      25</span>                 :             :     string public _baseExtension;</span>
+<span id="L26"><span class="lineNum">      26</span>                 :             :     uint256 public _maxSupply;</span>
+<span id="L27"><span class="lineNum">      27</span>                 :             :     uint256 public _mintFee; // basis points</span>
+<span id="L28"><span class="lineNum">      28</span>                 :             :     uint256 public _royaltyFee; // basis points</span>
+<span id="L29"><span class="lineNum">      29</span>                 :             : </span>
+<span id="L30"><span class="lineNum">      30</span>                 :             :     // Cap number of mint per user</span>
+<span id="L31"><span class="lineNum">      31</span>                 :             :     mapping(address =&gt; uint256) public _mintsPerWallet;</span>
+<span id="L32"><span class="lineNum">      32</span>                 :             : </span>
+<span id="L33"><span class="lineNum">      33</span>                 :             :     event OGmintEvent(address indexed sender, uint256 value, address to, uint256 amount, uint256 _ogMintPrice);</span>
+<span id="L34"><span class="lineNum">      34</span>                 :             :     event WLmintEvent(address indexed sender, uint256 value, address to, uint256 amount, uint256 wlMintPrice);</span>
+<span id="L35"><span class="lineNum">      35</span>                 :             :     event MintEvent(address indexed sender, uint256 value, address to, uint256 amount, uint256 mintPrice);</span>
+<span id="L36"><span class="lineNum">      36</span>                 :             :     event OwnerMintEvent(address indexed sender, address to, uint256 amount);</span>
+<span id="L37"><span class="lineNum">      37</span>                 :             : </span>
+<span id="L38"><span class="lineNum">      38</span>                 :             :     event BurnEvent(address indexed sender, uint256 tokenId);</span>
+<span id="L39"><span class="lineNum">      39</span>                 :             : </span>
+<span id="L40"><span class="lineNum">      40</span>                 :             :     /// @notice Called by MvxFactory on Deployment</span>
+<span id="L41"><span class="lineNum">      41</span>                 :             :     /// @param mintFee description</span>
+<span id="L42"><span class="lineNum">      42</span>                 :             :     /// @param nftData description</span>
+<span id="L43"><span class="lineNum">      43</span>                 :             :     /// @param initialOGMinters description</span>
+<span id="L44"><span class="lineNum">      44</span>                 :             :     /// @param initialWLMinters description</span>
+<span id="L45"><span class="lineNum">      45</span>                 :             :     /// @param mintingStages description</span>
+<span id="L46"><span class="lineNum">      46</span>                 :<span class="tlaGNC tlaBgGNC">           1 :     function initialize(</span></span>
+<span id="L47"><span class="lineNum">      47</span>                 :             :         uint256 mintFee,</span>
+<span id="L48"><span class="lineNum">      48</span>                 :             :         bytes calldata nftData,</span>
+<span id="L49"><span class="lineNum">      49</span>                 :             :         address[] calldata initialOGMinters,</span>
+<span id="L50"><span class="lineNum">      50</span>                 :             :         address[] calldata initialWLMinters,</span>
+<span id="L51"><span class="lineNum">      51</span>                 :             :         uint256[] calldata mintingStages</span>
+<span id="L52"><span class="lineNum">      52</span>                 :             :     ) public initializer {</span>
+<span id="L53"><span class="lineNum">      53</span>                 :<span class="tlaGNC">           1 :         (uint256 maxSupply, uint256 royaltyFee, string memory name, string memory symbol, string memory initBaseURI) =</span></span>
+<span id="L54"><span class="lineNum">      54</span>                 :<span class="tlaGNC">           1 :             abi.decode(nftData, (uint256, uint256, string, string, string));</span></span>
+<span id="L55"><span class="lineNum">      55</span>                 :             : </span>
+<span id="L56"><span class="lineNum">      56</span>                 :<span class="tlaGNC">           1 :         __ERC721A_init(name, symbol);</span></span>
+<span id="L57"><span class="lineNum">      57</span>                 :<span class="tlaGNC">           1 :         __AccessControl_init();</span></span>
+<span id="L58"><span class="lineNum">      58</span>                 :<span class="tlaGNC">           1 :         _setRoleAdmin(ADMIN_ROLE, ADMIN_ROLE);</span></span>
+<span id="L59"><span class="lineNum">      59</span>                 :             : </span>
+<span id="L60"><span class="lineNum">      60</span>                 :             :         // Granting Admin to MvxFactory to be able to grant roles for user</span>
+<span id="L61"><span class="lineNum">      61</span>                 :             :         // since user is not msg.sender, but revoking at the end of function</span>
+<span id="L62"><span class="lineNum">      62</span>                 :             :         // Trade-off to manage minting roles with OZ AccessControl</span>
+<span id="L63"><span class="lineNum">      63</span>                 :<span class="tlaGNC">           1 :         _grantRole(ADMIN_ROLE, msg.sender);</span></span>
+<span id="L64"><span class="lineNum">      64</span>                 :<span class="tlaGNC">           1 :         _setRoleAdmin(ADMIN_ROLE, ADMIN_ROLE);</span></span>
+<span id="L65"><span class="lineNum">      65</span>                 :             : </span>
+<span id="L66"><span class="lineNum">      66</span>                 :             :         // immutable arguments set at clone deployment, storage slot 0 always = collection owner/admin</span>
+<span id="L67"><span class="lineNum">      67</span>                 :<span class="tlaGNC">           1 :         _grantRole(ADMIN_ROLE, _getArgAddress(0));</span></span>
+<span id="L68"><span class="lineNum">      68</span>                 :<span class="tlaGNC">           1 :         _setRoleAdmin(OG_MINTER_ROLE, ADMIN_ROLE); // set ADMIN_ROLE as admin of OG's</span></span>
+<span id="L69"><span class="lineNum">      69</span>                 :<span class="tlaGNC">           1 :         _setRoleAdmin(WL_MINTER_ROLE, ADMIN_ROLE); // set ADMIN_ROLE as admin of WL's</span></span>
+<span id="L70"><span class="lineNum">      70</span>                 :             : </span>
+<span id="L71"><span class="lineNum">      71</span>                 :<span class="tlaGNC">           1 :         baseURI = initBaseURI;</span></span>
+<span id="L72"><span class="lineNum">      72</span>                 :<span class="tlaGNC">           1 :         _baseExtension = &quot;.json&quot;;</span></span>
+<span id="L73"><span class="lineNum">      73</span>                 :<span class="tlaGNC">           1 :         _maxSupply = maxSupply;</span></span>
+<span id="L74"><span class="lineNum">      74</span>                 :<span class="tlaGNC">           1 :         _royaltyFee = royaltyFee;</span></span>
+<span id="L75"><span class="lineNum">      75</span>                 :             : </span>
+<span id="L76"><span class="lineNum">      76</span>                 :             :         // OG minting stage details</span>
+<span id="L77"><span class="lineNum">      77</span>                 :<span class="tlaGNC">           1 :         _ogMintPrice = mintingStages[0];</span></span>
+<span id="L78"><span class="lineNum">      78</span>                 :<span class="tlaGNC">           1 :         _ogMintMaxPerUser = mintingStages[1];</span></span>
+<span id="L79"><span class="lineNum">      79</span>                 :<span class="tlaGNC">           1 :         _ogMintStart = mintingStages[2];</span></span>
+<span id="L80"><span class="lineNum">      80</span>                 :<span class="tlaGNC">           1 :         _ogMintEnd = mintingStages[3];</span></span>
+<span id="L81"><span class="lineNum">      81</span>                 :             : </span>
+<span id="L82"><span class="lineNum">      82</span>                 :             :         // WL minting stage details</span>
+<span id="L83"><span class="lineNum">      83</span>                 :<span class="tlaGNC">           1 :         _whitelistMintPrice = mintingStages[4];</span></span>
+<span id="L84"><span class="lineNum">      84</span>                 :<span class="tlaGNC">           1 :         _whitelistMintMaxPerUser = mintingStages[5];</span></span>
+<span id="L85"><span class="lineNum">      85</span>                 :<span class="tlaGNC">           1 :         _whitelistMintStart = mintingStages[6];</span></span>
+<span id="L86"><span class="lineNum">      86</span>                 :<span class="tlaGNC">           1 :         _whitelistMintEnd = mintingStages[7];</span></span>
+<span id="L87"><span class="lineNum">      87</span>                 :             : </span>
+<span id="L88"><span class="lineNum">      88</span>                 :             :         // Regular minting stage details</span>
+<span id="L89"><span class="lineNum">      89</span>                 :<span class="tlaGNC">           1 :         _mintPrice = mintingStages[8];</span></span>
+<span id="L90"><span class="lineNum">      90</span>                 :<span class="tlaGNC">           1 :         _mintMaxPerUser = mintingStages[9];</span></span>
+<span id="L91"><span class="lineNum">      91</span>                 :<span class="tlaGNC">           1 :         _mintStart = mintingStages[10];</span></span>
+<span id="L92"><span class="lineNum">      92</span>                 :<span class="tlaGNC">           1 :         _mintEnd = mintingStages[11];</span></span>
+<span id="L93"><span class="lineNum">      93</span>                 :             :         // init minting roles OG=0, WL=1</span>
+<span id="L94"><span class="lineNum">      94</span>                 :<span class="tlaGNC">           1 :         updateMinterRoles(initialOGMinters, 0);</span></span>
+<span id="L95"><span class="lineNum">      95</span>                 :<span class="tlaGNC">           1 :         updateMinterRoles(initialWLMinters, 1);</span></span>
+<span id="L96"><span class="lineNum">      96</span>                 :<span class="tlaGNC">           1 :         _mintFee = mintFee;</span></span>
+<span id="L97"><span class="lineNum">      97</span>                 :             : </span>
+<span id="L98"><span class="lineNum">      98</span>                 :             :         // revoke ADMIN_ROLE to MvxFactory, ADMIN is the OWNER of collection</span>
+<span id="L99"><span class="lineNum">      99</span>                 :<span class="tlaGNC">           1 :         revokeRole(ADMIN_ROLE, msg.sender);</span></span>
+<span id="L100"><span class="lineNum">     100</span>                 :             :     }</span>
+<span id="L101"><span class="lineNum">     101</span>                 :             : </span>
+<span id="L102"><span class="lineNum">     102</span>                 :             :     /// @notice access: ADMIN_ROLE</span>
+<span id="L103"><span class="lineNum">     103</span>                 :             :     /// @param to address to mint to</span>
+<span id="L104"><span class="lineNum">     104</span>                 :             :     /// @param amount amount to mint (batch minting)</span>
+<span id="L105"><span class="lineNum">     105</span>                 :<span class="tlaUNC tlaBgUNC">           0 :     function mintForOwner(address to, uint256 amount) external payable nonReentrant OnlyAdminOrOperator {</span></span>
+<span id="L106"><span class="lineNum">     106</span>         [<span class="tlaUNC" title="Branch 0 was not executed"> # </span><span class="tlaUNC" title="Branch 1 was not executed"> # </span>]:<span class="tlaUNC">           0 :         require(totalSupply() + amount &lt;= _maxSupply, &quot;Over mintMax error&quot;);</span></span>
+<span id="L107"><span class="lineNum">     107</span>                 :<span class="tlaUNC">           0 :         _safeMint(to, amount);</span></span>
+<span id="L108"><span class="lineNum">     108</span>                 :<span class="tlaUNC">           0 :         emit OwnerMintEvent(msg.sender, to, amount);</span></span>
+<span id="L109"><span class="lineNum">     109</span>                 :             :     }</span>
+<span id="L110"><span class="lineNum">     110</span>                 :             : </span>
+<span id="L111"><span class="lineNum">     111</span>                 :             :     /// @notice access: OG_MINTER_ROLE</span>
+<span id="L112"><span class="lineNum">     112</span>                 :             :     /// @param to address to mint to</span>
+<span id="L113"><span class="lineNum">     113</span>                 :             :     /// @param amount amount to mint (batch minting)</span>
+<span id="L114"><span class="lineNum">     114</span>                 :<span class="tlaGNC tlaBgGNC">         256 :     function mintForOG(address to, uint256 amount) external payable nonReentrant onlyRole(OG_MINTER_ROLE) {</span></span>
+<span id="L115"><span class="lineNum">     115</span>                 :<span class="tlaGNC">         256 :         uint256 currentTime = block.timestamp;</span></span>
+<span id="L116"><span class="lineNum">     116</span>         [<span class="tlaUNC" title="Branch 0 was not executed"> # </span><span class="tlaGBC" title="Branch 1 was taken 256 times"> + </span>]:<span class="tlaGNC">         256 :         require(currentTime &lt;= _ogMintEnd &amp;&amp; currentTime &gt;= _ogMintStart, &quot;Not OG mint time&quot;);</span></span>
+<span id="L117"><span class="lineNum">     117</span>         [<span class="tlaUNC" title="Branch 0 was not executed"> # </span><span class="tlaGBC" title="Branch 1 was taken 256 times"> + </span>]:<span class="tlaGNC">         256 :         require(totalSupply() + amount &lt;= _maxSupply, &quot;Over mintMax error&quot;);</span></span>
+<span id="L118"><span class="lineNum">     118</span>                 :<span class="tlaGNC">         256 :         _internalSafeMint(msg.value, to, _ogMintPrice, amount, _ogMintMaxPerUser);</span></span>
+<span id="L119"><span class="lineNum">     119</span>                 :<span class="tlaGNC">         256 :         emit OGmintEvent(msg.sender, msg.value, to, amount, _ogMintPrice);</span></span>
+<span id="L120"><span class="lineNum">     120</span>                 :             :     }</span>
+<span id="L121"><span class="lineNum">     121</span>                 :             : </span>
+<span id="L122"><span class="lineNum">     122</span>                 :             :     /// @notice access: WL_MINTER_ROLE</span>
+<span id="L123"><span class="lineNum">     123</span>                 :             :     /// @param to address to mint to</span>
+<span id="L124"><span class="lineNum">     124</span>                 :             :     /// @param amount amount to mint (batch minting)</span>
+<span id="L125"><span class="lineNum">     125</span>                 :<span class="tlaGNC">         256 :     function mintForWhitelist(address to, uint256 amount) external payable onlyRole(WL_MINTER_ROLE) nonReentrant {</span></span>
+<span id="L126"><span class="lineNum">     126</span>                 :<span class="tlaGNC">         256 :         uint256 currentTime = block.timestamp;</span></span>
+<span id="L127"><span class="lineNum">     127</span>         [<span class="tlaUNC" title="Branch 0 was not executed"> # </span><span class="tlaGBC" title="Branch 1 was taken 256 times"> + </span>]:<span class="tlaGNC">         256 :         require(currentTime &lt;= _whitelistMintEnd &amp;&amp; currentTime &gt;= _whitelistMintStart, &quot;Not OG mint time&quot;);</span></span>
+<span id="L128"><span class="lineNum">     128</span>         [<span class="tlaUNC" title="Branch 0 was not executed"> # </span><span class="tlaGBC" title="Branch 1 was taken 256 times"> + </span>]:<span class="tlaGNC">         256 :         require(totalSupply() + amount &lt;= _maxSupply, &quot;Over mintMax error&quot;);</span></span>
+<span id="L129"><span class="lineNum">     129</span>                 :<span class="tlaGNC">         256 :         _internalSafeMint(msg.value, to, _whitelistMintPrice, amount, _whitelistMintMaxPerUser);</span></span>
+<span id="L130"><span class="lineNum">     130</span>                 :<span class="tlaGNC">         256 :         emit WLmintEvent(msg.sender, msg.value, to, amount, _whitelistMintPrice);</span></span>
+<span id="L131"><span class="lineNum">     131</span>                 :             :     }</span>
+<span id="L132"><span class="lineNum">     132</span>                 :             : </span>
+<span id="L133"><span class="lineNum">     133</span>                 :             :     /// @notice access: any</span>
+<span id="L134"><span class="lineNum">     134</span>                 :             :     /// @param to address to mint to</span>
+<span id="L135"><span class="lineNum">     135</span>                 :             :     /// @param amount amount to mint (batch minting)</span>
+<span id="L136"><span class="lineNum">     136</span>                 :<span class="tlaGNC">         512 :     function mintForRegular(address to, uint256 amount) external payable nonReentrant {</span></span>
+<span id="L137"><span class="lineNum">     137</span>                 :<span class="tlaGNC">         512 :         uint256 currentTime = block.timestamp;</span></span>
+<span id="L138"><span class="lineNum">     138</span>         [<span class="tlaUNC" title="Branch 0 was not executed"> # </span><span class="tlaGBC" title="Branch 1 was taken 512 times"> + </span>]:<span class="tlaGNC">         512 :         require(currentTime &lt;= _mintEnd &amp;&amp; currentTime &gt;= _mintStart, &quot;Not Regular minTime&quot;);</span></span>
+<span id="L139"><span class="lineNum">     139</span>         [<span class="tlaUNC" title="Branch 0 was not executed"> # </span><span class="tlaGBC" title="Branch 1 was taken 512 times"> + </span>]:<span class="tlaGNC">         512 :         require(totalSupply() + amount &lt;= _maxSupply, &quot;Over mintMax error&quot;);</span></span>
+<span id="L140"><span class="lineNum">     140</span>                 :<span class="tlaGNC">         512 :         _internalSafeMint(msg.value, to, _mintPrice, amount, _mintMaxPerUser);</span></span>
+<span id="L141"><span class="lineNum">     141</span>                 :<span class="tlaGNC">         512 :         emit MintEvent(msg.sender, msg.value, to, amount, _mintPrice);</span></span>
+<span id="L142"><span class="lineNum">     142</span>                 :             :     }</span>
+<span id="L143"><span class="lineNum">     143</span>                 :             : </span>
+<span id="L144"><span class="lineNum">     144</span>                 :             :     /// @notice Checks for ether sent to this contract before calling _safeMint</span>
+<span id="L145"><span class="lineNum">     145</span>                 :             :     /// @param msgValue internal values set at minting call</span>
+<span id="L146"><span class="lineNum">     146</span>                 :             :     /// @param mintTo internal values set at minting call</span>
+<span id="L147"><span class="lineNum">     147</span>                 :             :     /// @param mintPrice internal values set at minting call</span>
+<span id="L148"><span class="lineNum">     148</span>                 :             :     /// @param mintAmount internal values set at minting call</span>
+<span id="L149"><span class="lineNum">     149</span>                 :             :     /// @param maxMintAmount internal values set at minting call</span>
+<span id="L150"><span class="lineNum">     150</span>                 :<span class="tlaGNC">        1024 :     function _internalSafeMint(</span></span>
+<span id="L151"><span class="lineNum">     151</span>                 :             :         uint256 msgValue,</span>
+<span id="L152"><span class="lineNum">     152</span>                 :             :         address mintTo,</span>
+<span id="L153"><span class="lineNum">     153</span>                 :             :         uint256 mintPrice,</span>
+<span id="L154"><span class="lineNum">     154</span>                 :             :         uint256 mintAmount,</span>
+<span id="L155"><span class="lineNum">     155</span>                 :             :         uint256 maxMintAmount</span>
+<span id="L156"><span class="lineNum">     156</span>                 :             :     ) internal {</span>
+<span id="L157"><span class="lineNum">     157</span>         [<span class="tlaUNC" title="Branch 0 was not executed"> # </span><span class="tlaGBC" title="Branch 1 was taken 1024 times"> + </span>]:<span class="tlaGNC">        1024 :         require(_mintsPerWallet[msg.sender] + mintAmount &lt;= maxMintAmount, &quot;Exceeds maxMint&quot;);</span></span>
+<span id="L158"><span class="lineNum">     158</span>                 :             : </span>
+<span id="L159"><span class="lineNum">     159</span>                 :<span class="tlaGNC">        1024 :         uint256 price = mintAmount * mintPrice;</span></span>
+<span id="L160"><span class="lineNum">     160</span>                 :<span class="tlaGNC">        1024 :         uint256 mintFee = _mintFee != 0 ? _calculateFee(price, _mintFee) : 0;</span></span>
+<span id="L161"><span class="lineNum">     161</span>                 :             : </span>
+<span id="L162"><span class="lineNum">     162</span>         [<span class="tlaUNC" title="Branch 0 was not executed"> # </span><span class="tlaGBC" title="Branch 1 was taken 1024 times"> + </span>]:<span class="tlaGNC">        1024 :         require(msgValue &gt;= (price + mintFee), &quot;Insufficient mint payment&quot;);</span></span>
+<span id="L163"><span class="lineNum">     163</span>                 :             : </span>
+<span id="L164"><span class="lineNum">     164</span>                 :             :         unchecked {</span>
+<span id="L165"><span class="lineNum">     165</span>                 :<span class="tlaGNC">        1024 :             _mintsPerWallet[msg.sender] += mintAmount;</span></span>
+<span id="L166"><span class="lineNum">     166</span>                 :             :         }</span>
+<span id="L167"><span class="lineNum">     167</span>                 :<span class="tlaGNC">        1024 :         _safeMint(mintTo, mintAmount);</span></span>
+<span id="L168"><span class="lineNum">     168</span>                 :             :     }</span>
+<span id="L169"><span class="lineNum">     169</span>                 :             : </span>
+<span id="L170"><span class="lineNum">     170</span>                 :             :     /// @notice Quote based on current OG Mint price and amount</span>
+<span id="L171"><span class="lineNum">     171</span>                 :             :     /// @param amount amount to mint</span>
+<span id="L172"><span class="lineNum">     172</span>                 :<span class="tlaUNC tlaBgUNC">           0 :     function quoteOgMints(uint256 amount) external view returns (uint256 quote) {</span></span>
+<span id="L173"><span class="lineNum">     173</span>                 :<span class="tlaUNC">           0 :         uint256 price = _ogMintPrice * amount;</span></span>
+<span id="L174"><span class="lineNum">     174</span>                 :<span class="tlaUNC">           0 :         quote = price + (_mintFee != 0 ? _calculateFee(price, _mintFee) : 0);</span></span>
+<span id="L175"><span class="lineNum">     175</span>                 :             :     }</span>
+<span id="L176"><span class="lineNum">     176</span>                 :             : </span>
+<span id="L177"><span class="lineNum">     177</span>                 :             :     /// @notice Quote based on current WL Mint price and amount</span>
+<span id="L178"><span class="lineNum">     178</span>                 :             :     /// @param amount amount to mint</span>
+<span id="L179"><span class="lineNum">     179</span>                 :<span class="tlaUNC">           0 :     function quoteWLMints(uint256 amount) external view returns (uint256 quote) {</span></span>
+<span id="L180"><span class="lineNum">     180</span>                 :<span class="tlaUNC">           0 :         uint256 price = _whitelistMintPrice * amount;</span></span>
+<span id="L181"><span class="lineNum">     181</span>                 :<span class="tlaUNC">           0 :         quote = price + (_mintFee != 0 ? _calculateFee(price, _mintFee) : 0);</span></span>
+<span id="L182"><span class="lineNum">     182</span>                 :             :     }</span>
+<span id="L183"><span class="lineNum">     183</span>                 :             : </span>
+<span id="L184"><span class="lineNum">     184</span>                 :             :     /// @notice Quote based on current Regular Mint price and amount</span>
+<span id="L185"><span class="lineNum">     185</span>                 :             :     /// @param amount amount to mint</span>
+<span id="L186"><span class="lineNum">     186</span>                 :<span class="tlaUNC">           0 :     function quoteMints(uint256 amount) external view returns (uint256 quote) {</span></span>
+<span id="L187"><span class="lineNum">     187</span>                 :<span class="tlaUNC">           0 :         uint256 price = _mintPrice * amount;</span></span>
+<span id="L188"><span class="lineNum">     188</span>                 :<span class="tlaUNC">           0 :         quote = price + (_mintFee != 0 ? _calculateFee(price, _mintFee) : 0);</span></span>
+<span id="L189"><span class="lineNum">     189</span>                 :             :     }</span>
+<span id="L190"><span class="lineNum">     190</span>                 :             : </span>
+<span id="L191"><span class="lineNum">     191</span>                 :             :     /// @notice Using basis Points as measurement units.</span>
+<span id="L192"><span class="lineNum">     192</span>                 :             :     /// @dev FullMath: core uniswap v3 to mittigate phantom overflow</span>
+<span id="L193"><span class="lineNum">     193</span>                 :<span class="tlaUNC">           0 :     function _calculateFee(uint256 price, uint256 mintFee) internal pure returns (uint256 _fee) {</span></span>
+<span id="L194"><span class="lineNum">     194</span>                 :             :         // 0.003 (aka 0.3%) feeOnMint = 3000</span>
+<span id="L195"><span class="lineNum">     195</span>                 :<span class="tlaUNC">           0 :         _fee = FullMath.mulDiv(uint256(price), 1e6 - mintFee, 1e6);</span></span>
+<span id="L196"><span class="lineNum">     196</span>                 :             :     }</span>
+<span id="L197"><span class="lineNum">     197</span>                 :             : </span>
+<span id="L198"><span class="lineNum">     198</span>                 :             :     /// @notice IERC2981 compatible</span>
+<span id="L199"><span class="lineNum">     199</span>                 :<span class="tlaGNC tlaBgGNC">         256 :     function royaltyInfo(uint256 tokenId, uint256 salePrice)</span></span>
+<span id="L200"><span class="lineNum">     200</span>                 :             :         external</span>
+<span id="L201"><span class="lineNum">     201</span>                 :             :         view</span>
+<span id="L202"><span class="lineNum">     202</span>                 :             :         override</span>
+<span id="L203"><span class="lineNum">     203</span>                 :             :         returns (address receiver, uint256 royaltyAmount)</span>
+<span id="L204"><span class="lineNum">     204</span>                 :             :     {</span>
+<span id="L205"><span class="lineNum">     205</span>                 :             :         // The receiver will be the contract owner</span>
+<span id="L206"><span class="lineNum">     206</span>                 :<span class="tlaGNC">         256 :         receiver = _getArgAddress(0);</span></span>
+<span id="L207"><span class="lineNum">     207</span>                 :<span class="tlaGNC">         256 :         royaltyAmount = FullMath.mulDiv(uint256(salePrice), 1e6 - _royaltyFee, 1e6);</span></span>
+<span id="L208"><span class="lineNum">     208</span>                 :             :     }</span>
+<span id="L209"><span class="lineNum">     209</span>                 :             : </span>
+<span id="L210"><span class="lineNum">     210</span>                 :<span class="tlaUNC tlaBgUNC">           0 :     function updateRoyaltyFee(uint256 newFee) external payable onlyRole(ADMIN_ROLE) {</span></span>
+<span id="L211"><span class="lineNum">     211</span>                 :<span class="tlaUNC">           0 :         _royaltyFee = newFee;</span></span>
+<span id="L212"><span class="lineNum">     212</span>                 :             :     }</span>
+<span id="L213"><span class="lineNum">     213</span>                 :             : </span>
+<span id="L214"><span class="lineNum">     214</span>                 :<span class="tlaGNC tlaBgGNC">         768 :     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {</span></span>
+<span id="L215"><span class="lineNum">     215</span>         [<span class="tlaUNC" title="Branch 0 was not executed"> # </span><span class="tlaGBC" title="Branch 1 was taken 768 times"> + </span>]:<span class="tlaGNC">         768 :         require(_exists(tokenId), &quot;ERC721Metadata: URI query for nonexistent token&quot;);</span></span>
+<span id="L216"><span class="lineNum">     216</span>                 :             : </span>
+<span id="L217"><span class="lineNum">     217</span>                 :<span class="tlaGNC">         768 :         string memory current_baseURI = baseURI;</span></span>
+<span id="L218"><span class="lineNum">     218</span>                 :             : </span>
+<span id="L219"><span class="lineNum">     219</span>                 :<span class="tlaGNC">         768 :         return bytes(baseURI).length &gt; 0</span></span>
+<span id="L220"><span class="lineNum">     220</span>                 :             :             ? string(abi.encodePacked(current_baseURI, _toString(tokenId), _baseExtension))</span>
+<span id="L221"><span class="lineNum">     221</span>                 :             :             : &quot;&quot;;</span>
+<span id="L222"><span class="lineNum">     222</span>                 :             :     }</span>
+<span id="L223"><span class="lineNum">     223</span>                 :             : </span>
+<span id="L224"><span class="lineNum">     224</span>                 :<span class="tlaUNC tlaBgUNC">           0 :     function setBaseURI(string memory newBaseURI) public {</span></span>
+<span id="L225"><span class="lineNum">     225</span>                 :<span class="tlaUNC">           0 :         baseURI = newBaseURI;</span></span>
+<span id="L226"><span class="lineNum">     226</span>                 :             :     }</span>
+<span id="L227"><span class="lineNum">     227</span>                 :             : </span>
+<span id="L228"><span class="lineNum">     228</span>                 :<span class="tlaUNC">           0 :     function getMintCountOf(address user) public view returns (uint256) {</span></span>
+<span id="L229"><span class="lineNum">     229</span>                 :<span class="tlaUNC">           0 :         return _mintsPerWallet[user];</span></span>
+<span id="L230"><span class="lineNum">     230</span>                 :             :     }</span>
+<span id="L231"><span class="lineNum">     231</span>                 :             : </span>
+<span id="L232"><span class="lineNum">     232</span>                 :<span class="tlaUNC">           0 :     function setBaseExtension(string memory newBaseExtension) public {</span></span>
+<span id="L233"><span class="lineNum">     233</span>                 :<span class="tlaUNC">           0 :         _baseExtension = newBaseExtension;</span></span>
+<span id="L234"><span class="lineNum">     234</span>                 :             :     }</span>
+<span id="L235"><span class="lineNum">     235</span>                 :             : </span>
+<span id="L236"><span class="lineNum">     236</span>                 :<span class="tlaUNC">           0 :     function burn(uint256 tokenId) external {</span></span>
+<span id="L237"><span class="lineNum">     237</span>         [<span class="tlaUNC" title="Branch 0 was not executed"> # </span><span class="tlaUNC" title="Branch 1 was not executed"> # </span>]:<span class="tlaUNC">           0 :         require(ownerOf(tokenId) == msg.sender, &quot;Not Owner&quot;);</span></span>
+<span id="L238"><span class="lineNum">     238</span>                 :             : </span>
+<span id="L239"><span class="lineNum">     239</span>                 :<span class="tlaUNC">           0 :         _burn(tokenId);</span></span>
+<span id="L240"><span class="lineNum">     240</span>                 :             : </span>
+<span id="L241"><span class="lineNum">     241</span>                 :<span class="tlaUNC">           0 :         emit BurnEvent(_msgSender(), tokenId);</span></span>
+<span id="L242"><span class="lineNum">     242</span>                 :             :     }</span>
+<span id="L243"><span class="lineNum">     243</span>                 :             : </span>
+<span id="L244"><span class="lineNum">     244</span>                 :             :     /// @notice only ADMIN access withdraw royalties</span>
+<span id="L245"><span class="lineNum">     245</span>                 :<span class="tlaUNC">           0 :     function withdraw() external payable onlyRole(ADMIN_ROLE) {</span></span>
+<span id="L246"><span class="lineNum">     246</span>                 :<span class="tlaUNC">           0 :         payable(msg.sender).transfer(address(this).balance);</span></span>
+<span id="L247"><span class="lineNum">     247</span>                 :             :     }</span>
+<span id="L248"><span class="lineNum">     248</span>                 :             : </span>
+<span id="L249"><span class="lineNum">     249</span>                 :<span class="tlaUNC">           0 :     function supportsInterface(bytes4 interfaceId)</span></span>
+<span id="L250"><span class="lineNum">     250</span>                 :             :         public</span>
+<span id="L251"><span class="lineNum">     251</span>                 :             :         view</span>
+<span id="L252"><span class="lineNum">     252</span>                 :             :         override(ERC721A, AccessControlUpgradeable, IERC165)</span>
+<span id="L253"><span class="lineNum">     253</span>                 :             :         returns (bool)</span>
+<span id="L254"><span class="lineNum">     254</span>                 :             :     {</span>
+<span id="L255"><span class="lineNum">     255</span>                 :<span class="tlaUNC">           0 :         return interfaceId == type(IERC721A).interfaceId || interfaceId == type(IERC2981).interfaceId</span></span>
+<span id="L256"><span class="lineNum">     256</span>                 :<span class="tlaUNC">           0 :             || super.supportsInterface(interfaceId);</span></span>
+<span id="L257"><span class="lineNum">     257</span>                 :             :     }</span>
+<span id="L258"><span class="lineNum">     258</span>                 :             : </span>
+<span id="L259"><span class="lineNum">     259</span>                 :<span class="tlaUNC">           0 :     function version() external pure returns (bytes16) {</span></span>
+<span id="L260"><span class="lineNum">     260</span>                 :<span class="tlaUNC">           0 :         return &quot;0.1&quot;;</span></span>
+<span id="L261"><span class="lineNum">     261</span>                 :             :     }</span>
+<span id="L262"><span class="lineNum">     262</span>                 :             : }</span>
+        </pre>
+              </td>
+            </tr>
+          </table>
+          <br>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+            <tr><td class="versionInfo">Generated by: <a href="https://github.com//linux-test-project/lcov" target="_parent">LCOV version 2.0-1</a></td></tr>
+          </table>
+          <br>
+
+</body>
+</html>
