@@ -15,7 +15,13 @@ import "@src/abstracts/MintingStages.sol";
 /// @notice This contract is made only for the Arab Collectors Club ACC
 /// @author MoonveraLabs
 contract MvxCollection is MintingStages {
+    
+    
+    // old delete after testing other two per stage mappings
+    mapping(address => uint256) public mintsPerWallet;
 
+
+    
     // Cap number of mint per user msg.sender => 0 => amountMinted
     mapping(address => uint256) public wlPerWallet;
     mapping(address => uint256) public ogPerWallet;
