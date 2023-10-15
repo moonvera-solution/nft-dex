@@ -17,8 +17,8 @@ import "@src/abstracts/MintingStages.sol";
 contract MvxCollection is MintingStages {
 
     // Cap number of mint per user msg.sender => 0 => amountMinted
-    mapping(address => uint256) public mintsPerWallet;
-    mapping(address => uint256) public mintsPerWallet;
+    mapping(address => uint256) public wlPerWallet;
+    mapping(address => uint256) public ogPerWallet;
 
 
     event WithdrawEvent(address indexed, uint256, address, uint256);
@@ -34,7 +34,7 @@ contract MvxCollection is MintingStages {
     /// @param _nftData maxSupply,royaltyFee,name,symbol,baseURI,baseExt
     /// @param _ogs address[]og,
     /// @param _wls address[] wl
-    function initialize(bytes caldata)
+    function initialize(
         uint96 platformFee,
         Collection calldata _nftData,
         Stages calldata _mintingStages,
@@ -122,8 +122,7 @@ contract MvxCollection is MintingStages {
         address _mintTo,
         uint256 _mintPrice,
         uint256 _mintAmount,
-        uint256 _maxMintAmount,
-        
+        uint256 _maxMintAmount
     ) internal {
         require(mintsPerWallet[msg.sender] + _mintAmount <= _maxMintAmount, "Exceeds maxMint");
         require(_msgValue >= (_mintAmount * _mintPrice), "Insufficient mint payment");
