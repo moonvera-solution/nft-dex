@@ -15,8 +15,11 @@ import "@src/abstracts/MintingStages.sol";
 /// @notice This contract is made only for the Arab Collectors Club ACC
 /// @author MoonveraLabs
 contract MvxCollection is MintingStages {
-    // Cap number of mint per user
+
+    // Cap number of mint per user msg.sender => 0 => amountMinted
     mapping(address => uint256) public mintsPerWallet;
+    mapping(address => uint256) public mintsPerWallet;
+
 
     event WithdrawEvent(address indexed, uint256, address, uint256);
     event OGmintEvent(address indexed sender, uint256 value, address to, uint256 amount, uint256 _ogMintPrice);
@@ -31,7 +34,7 @@ contract MvxCollection is MintingStages {
     /// @param _nftData maxSupply,royaltyFee,name,symbol,baseURI,baseExt
     /// @param _ogs address[]og,
     /// @param _wls address[] wl
-    function initialize(
+    function initialize(bytes caldata)
         uint96 platformFee,
         Collection calldata _nftData,
         Stages calldata _mintingStages,
@@ -106,7 +109,9 @@ contract MvxCollection is MintingStages {
     function mintForRegular(address _to, uint256 _amount) external payable nonReentrant {
         uint256 _currentTime = block.timestamp;
         require(_currentTime <= mintingStages.mintEnd && _currentTime >= mintingStages.mintStart, "Not Regular minTime");
+       
         require(totalSupply() + _amount <= collectionData.maxSupply, "Over mintMax error");
+        
         _internalSafeMint(msg.value, _to, mintingStages.mintPrice, _amount, mintingStages.mintMaxPerUser);
         emit MintEvent(msg.sender, msg.value, _to, _amount, mintingStages.mintPrice);
     }
@@ -117,7 +122,8 @@ contract MvxCollection is MintingStages {
         address _mintTo,
         uint256 _mintPrice,
         uint256 _mintAmount,
-        uint256 _maxMintAmount
+        uint256 _maxMintAmount,
+        
     ) internal {
         require(mintsPerWallet[msg.sender] + _mintAmount <= _maxMintAmount, "Exceeds maxMint");
         require(_msgValue >= (_mintAmount * _mintPrice), "Insufficient mint payment");
