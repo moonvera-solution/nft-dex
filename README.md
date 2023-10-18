@@ -1,8 +1,13 @@
 # Nft Launchpad & Marketplace
+Decentralized market and launchpad for minting, listing and trading of non-fungible assets.
 
-***Project from [MoonveraLabs] ***
+Project for [Moonvera](https://moonvera.io/)
+- [Launchpad](https://mvx-beta-version.netlify.app/)
+- Factory [ethereum mainnet](https://etherscan.io/address/0x6A213cDDb2f5eD08ef3D27c66E7f6493970e9426)
+- Colletions:
+    - GremGoyles [ethereum mainnet](https://etherscan.io/address/0x881dC9f60B4Dec6196d9368520F458cdAA8f245c)
 <br>
-### Decentralized market and launchpad for minting, listing and trading of non-fungible assets.
+
 #### CONTRACT COMPONENTS
 - MvxFactory.sol:
     - MvxFactory to create ERC721A clone contracts with immutable arguments, solady implementation
