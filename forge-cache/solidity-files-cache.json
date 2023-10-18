@@ -3031,8 +3031,8 @@
       }
     },
     "src/MvxCollection.sol": {
-      "lastModificationDate": 1697594376578,
-      "contentHash": "366da8e8106390fa8e2e6f106ca30420",
+      "lastModificationDate": 1697595613523,
+      "contentHash": "2ea5b03edc792d1ce3f9082f8cd2428f",
       "sourceName": "src/MvxCollection.sol",
       "solcConfig": {
         "settings": {
@@ -3585,8 +3585,8 @@
       }
     },
     "test/foundry/MvxCollectionTest.t.sol": {
-      "lastModificationDate": 1697593627518,
-      "contentHash": "b3245989054f537e7ddeaa22f868d12d",
+      "lastModificationDate": 1697594415043,
+      "contentHash": "b64f81e82776e682759496b4b2cabc23",
       "sourceName": "test/foundry/MvxCollectionTest.t.sol",
       "solcConfig": {
         "settings": {

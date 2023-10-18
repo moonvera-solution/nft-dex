@@ -1,4 +1,5 @@
 # Compiler files
+local/
 cache/
 out/
 lib/
@@ -12,6 +13,7 @@ artifacts/
 /broadcast/*/31337/
 /broadcast/**/dry-run/
 /forge_hardhat
+/forge_cache
 node_modules
 # Docs
 docs/
@@ -21,3 +23,5 @@ docs/
 .cmds
 .deploy.sh
 yarn-error.log
+.vscode
+.gas-snapshots

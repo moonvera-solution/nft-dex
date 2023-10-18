@@ -5,6 +5,8 @@ import * as tdly from "@tenderly/hardhat-tenderly";
 import * as dotenv from "dotenv";
 import fs from "fs";
 import "hardhat-contract-sizer";
+import '@openzeppelin/hardhat-upgrades';
+import "hardhat-gas-reporter"
 
 
 dotenv.config();
@@ -17,7 +19,8 @@ const {
     MAINNET_NODE,
     GOERLY_NODE,
     MAINNET_DEPLOYER_PK,
-    TES_DEPLOYER
+    TES_DEPLOYER,
+    ETHERSCAN_API_KEY
 } = process.env;
 
 const config: HardhatUserConfig = {
@@ -69,6 +72,15 @@ const config: HardhatUserConfig = {
         disambiguatePaths: false,
         runOnCompile: false,
         strict: true,
+      },
+      gasReporter: {
+        enabled: (process.env.REPORT_GAS) ? true : false,
+        currency: 'USD',
+        gasPrice: 21,
+        coinmarketcap: process.env.COIN_MARKET_CAP_KEY,
+        token: 'ETH',
+        showMethodSig: true,
+        // gasPriceApi: `https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=${ETHERSCAN_API_KEY}`
       },
     preprocess: {
         eachLine: (hre) => ({

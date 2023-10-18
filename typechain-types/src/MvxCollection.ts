@@ -121,7 +121,6 @@ export interface MvxCollectionInterface extends Interface {
       | "mintingStages"
       | "mintsPerWallet"
       | "name"
-      | "ogPerWallet"
       | "ownerOf"
       | "renounceRole"
       | "revokeRole"
@@ -147,7 +146,6 @@ export interface MvxCollectionInterface extends Interface {
       | "updateWhitelistMintPrice"
       | "version"
       | "withdraw"
-      | "wlPerWallet"
   ): FunctionFragment;
 
   getEvent(
@@ -157,6 +155,7 @@ export interface MvxCollectionInterface extends Interface {
       | "BurnEvent"
       | "ConsecutiveTransfer"
       | "Initialized"
+      | "Log"
       | "MintEvent"
       | "OGmintEvent"
       | "OwnerMintEvent"
@@ -211,7 +210,7 @@ export interface MvxCollectionInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "getMintCountOf",
-    values: [AddressLike]
+    values: [string, AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "getRoleAdmin",
@@ -261,13 +260,9 @@ export interface MvxCollectionInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "mintsPerWallet",
-    values: [AddressLike]
+    values: [AddressLike, string]
   ): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "ogPerWallet",
-    values: [AddressLike]
-  ): string;
   encodeFunctionData(
     functionFragment: "ownerOf",
     values: [BigNumberish]
@@ -356,10 +351,6 @@ export interface MvxCollectionInterface extends Interface {
   ): string;
   encodeFunctionData(functionFragment: "version", values?: undefined): string;
   encodeFunctionData(functionFragment: "withdraw", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "wlPerWallet",
-    values: [AddressLike]
-  ): string;
 
   decodeFunctionResult(functionFragment: "ADMIN_ROLE", data: BytesLike): Result;
   decodeFunctionResult(
@@ -427,10 +418,6 @@ export interface MvxCollectionInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "ogPerWallet",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "ownerOf", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "renounceRole",
@@ -507,10 +494,6 @@ export interface MvxCollectionInterface extends Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "version", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "withdraw", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "wlPerWallet",
-    data: BytesLike
-  ): Result;
 }
 
 export namespace ApprovalEvent {
@@ -596,6 +579,19 @@ export namespace InitializedEvent {
   export type OutputTuple = [version: bigint];
   export interface OutputObject {
     version: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace LogEvent {
+  export type InputTuple = [arg0: string, arg1: BigNumberish];
+  export type OutputTuple = [arg0: string, arg1: bigint];
+  export interface OutputObject {
+    arg0: string;
+    arg1: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -937,7 +933,11 @@ export interface MvxCollection extends BaseContract {
 
   getApproved: TypedContractMethod<[tokenId: BigNumberish], [string], "view">;
 
-  getMintCountOf: TypedContractMethod<[_user: AddressLike], [bigint], "view">;
+  getMintCountOf: TypedContractMethod<
+    [mintType: string, _user: AddressLike],
+    [bigint],
+    "view"
+  >;
 
   getRoleAdmin: TypedContractMethod<[role: BytesLike], [string], "view">;
 
@@ -1029,11 +1029,13 @@ export interface MvxCollection extends BaseContract {
     "view"
   >;
 
-  mintsPerWallet: TypedContractMethod<[arg0: AddressLike], [bigint], "view">;
+  mintsPerWallet: TypedContractMethod<
+    [arg0: AddressLike, arg1: string],
+    [bigint],
+    "view"
+  >;
 
   name: TypedContractMethod<[], [string], "view">;
-
-  ogPerWallet: TypedContractMethod<[arg0: AddressLike], [bigint], "view">;
 
   ownerOf: TypedContractMethod<[tokenId: BigNumberish], [string], "view">;
 
@@ -1162,8 +1164,6 @@ export interface MvxCollection extends BaseContract {
 
   withdraw: TypedContractMethod<[], [void], "payable">;
 
-  wlPerWallet: TypedContractMethod<[arg0: AddressLike], [bigint], "view">;
-
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment
   ): T;
@@ -1221,7 +1221,11 @@ export interface MvxCollection extends BaseContract {
   ): TypedContractMethod<[tokenId: BigNumberish], [string], "view">;
   getFunction(
     nameOrSignature: "getMintCountOf"
-  ): TypedContractMethod<[_user: AddressLike], [bigint], "view">;
+  ): TypedContractMethod<
+    [mintType: string, _user: AddressLike],
+    [bigint],
+    "view"
+  >;
   getFunction(
     nameOrSignature: "getRoleAdmin"
   ): TypedContractMethod<[role: BytesLike], [string], "view">;
@@ -1324,13 +1328,10 @@ export interface MvxCollection extends BaseContract {
   >;
   getFunction(
     nameOrSignature: "mintsPerWallet"
-  ): TypedContractMethod<[arg0: AddressLike], [bigint], "view">;
+  ): TypedContractMethod<[arg0: AddressLike, arg1: string], [bigint], "view">;
   getFunction(
     nameOrSignature: "name"
   ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "ogPerWallet"
-  ): TypedContractMethod<[arg0: AddressLike], [bigint], "view">;
   getFunction(
     nameOrSignature: "ownerOf"
   ): TypedContractMethod<[tokenId: BigNumberish], [string], "view">;
@@ -1459,9 +1460,6 @@ export interface MvxCollection extends BaseContract {
   getFunction(
     nameOrSignature: "withdraw"
   ): TypedContractMethod<[], [void], "payable">;
-  getFunction(
-    nameOrSignature: "wlPerWallet"
-  ): TypedContractMethod<[arg0: AddressLike], [bigint], "view">;
 
   getEvent(
     key: "Approval"
@@ -1497,6 +1495,13 @@ export interface MvxCollection extends BaseContract {
     InitializedEvent.InputTuple,
     InitializedEvent.OutputTuple,
     InitializedEvent.OutputObject
+  >;
+  getEvent(
+    key: "Log"
+  ): TypedContractEvent<
+    LogEvent.InputTuple,
+    LogEvent.OutputTuple,
+    LogEvent.OutputObject
   >;
   getEvent(
     key: "MintEvent"
@@ -1637,6 +1642,17 @@ export interface MvxCollection extends BaseContract {
       InitializedEvent.InputTuple,
       InitializedEvent.OutputTuple,
       InitializedEvent.OutputObject
+    >;
+
+    "Log(string,uint256)": TypedContractEvent<
+      LogEvent.InputTuple,
+      LogEvent.OutputTuple,
+      LogEvent.OutputObject
+    >;
+    Log: TypedContractEvent<
+      LogEvent.InputTuple,
+      LogEvent.OutputTuple,
+      LogEvent.OutputObject
     >;
 
     "MintEvent(address,uint256,address,uint256,uint256)": TypedContractEvent<
