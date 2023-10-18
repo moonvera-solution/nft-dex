@@ -252,6 +252,31 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         assert(address(wallet5.addr).balance + address(factory).balance == balanceB4Withdraw);
     }
 
+    event Log(string, uint256);
+
+    function test_break_minting_logic() public {
+        Vm.Wallet memory hacker = vm.createWallet("hacker");
+        vm.deal(hacker.addr, 100 ether);
+
+        (,,, uint256 maxOG, uint256 maxReg, uint256 maxWL,,,,,,) = _nftCollection.mintingStages();
+        _nftCollection.grantRole(WL_MINTER_ROLE, hacker.addr); // OG=0, WL=1
+        _nftCollection.grantRole(OG_MINTER_ROLE, hacker.addr); // OG=0, WL=1
+
+        vm.startPrank(hacker.addr, hacker.addr);
+        emit Log("maxOG:", maxOG);
+        emit Log("maxReg:", maxReg);
+        emit Log("maxWL:", maxWL);
+
+        _nftCollection.mintForWhitelist{value: 1 ether}(hacker.addr, maxWL );
+        _nftCollection.mintForOG{value: 1 ether}(hacker.addr, maxOG);
+        _nftCollection.mintForRegular{value: 1 ether}(hacker.addr, maxReg);
+        
+        // one more should break the logic
+        vm.expectRevert("Exceeds maxMint");
+        _nftCollection.mintForRegular{value: 1 ether}(hacker.addr, 1);
+        assert(_nftCollection.balanceOf(hacker.addr) > 0);
+    }
+
     fallback() external payable {}
 }
 

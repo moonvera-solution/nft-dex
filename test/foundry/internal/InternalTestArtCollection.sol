@@ -21,8 +21,8 @@ contract MvxCollectionInternalsTest is Test, MvxCollection {
         vm.assume(_mintPrice > 0 && _mintPrice < 5 ether);
         vm.assume(_mintAmount > 0 && _mintAmount < _maxMintAmount);
         vm.assume(_msgValue > _maxMintAmount * _mintPrice && _msgValue < 5000 ether);
-        super._internalSafeMint(_msgValue, _mintTo, _mintPrice, _mintAmount, _maxMintAmount);
-        assertEq(mintsPerWallet[msg.sender], _mintAmount);
+        super._internalSafeMint(_msgValue, _mintTo, _mintPrice, _mintAmount, _maxMintAmount, "OriginalGangsters");
+        assertEq(mintsPerWallet[msg.sender]["OriginalGangsters"], _mintAmount);
         assert(balanceOf(_mintTo) == _mintAmount);
     }
 }
