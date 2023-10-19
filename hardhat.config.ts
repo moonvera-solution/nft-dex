@@ -1,16 +1,18 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "hardhat-preprocessor";
 import "@nomicfoundation/hardhat-toolbox";
-import * as tdly from "@tenderly/hardhat-tenderly";
+// import * as tdly from "@tenderly/hardhat-tenderly";
 import * as dotenv from "dotenv";
 import fs from "fs";
 import "hardhat-contract-sizer";
 import '@openzeppelin/hardhat-upgrades';
 import "hardhat-gas-reporter"
+import "hardhat-tracer";
+require("@nomicfoundation/hardhat-ethers")
 
 
 dotenv.config();
-tdly.setup({ automaticVerifications: true })
+// tdly.setup({ automaticVerifications: true })
 
 const {
     TENDERLY_ACCESS_KEY,
@@ -43,6 +45,15 @@ const config: HardhatUserConfig = {
         ],
     },
     networks: {
+        localhost:{
+            url:"ttp://127.0.0.1:8545/"
+        },
+        hardhat: {
+            forking: {
+              url: MAINNET_NODE,
+              blockNumber:18378515
+            }
+          },
         mainnet:{
             url: MAINNET_NODE,
             chainId: 1,
@@ -58,11 +69,6 @@ const config: HardhatUserConfig = {
             chainId: 1,
         }
     },
-    tenderly: {
-        project: TENDERLY_PROJECT_SLUG || "devnet-example",
-        username: "danielleseng",
-        accessKey: TENDERLY_ACCESS_KEY,
-    },
     paths: {
         sources: "./src",
         cache: "./forge_hardhat",
@@ -74,13 +80,13 @@ const config: HardhatUserConfig = {
         strict: true,
       },
       gasReporter: {
-        enabled: (process.env.REPORT_GAS) ? true : false,
+        enabled: false,
         currency: 'USD',
         gasPrice: 21,
         coinmarketcap: process.env.COIN_MARKET_CAP_KEY,
         token: 'ETH',
         showMethodSig: true,
-        // gasPriceApi: `https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=${ETHERSCAN_API_KEY}`
+        gasPriceApi: `https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=${ETHERSCAN_API_KEY}`
       },
     preprocess: {
         eachLine: (hre) => ({

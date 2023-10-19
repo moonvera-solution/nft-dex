@@ -19,9 +19,9 @@
 [submodule "lib/erc721m"]
 	path = lib/erc721m
 	url = https://github.com/magicoss/erc721m
-[submodule "aave-v3-core"]
-	path = aave-v3-core
-	url = https://github.com/aave/aave-v3-core
 [submodule "lib/properties"]
 	path = lib/properties
 	url = https://github.com/crytic/properties
+[submodule "lib/aave-v3-core"]
+	path = lib/aave-v3-core
+	url = https://github.com/aave/aave-v3-core

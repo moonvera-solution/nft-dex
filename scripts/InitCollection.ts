@@ -1,8 +1,7 @@
-import { ethers } from "hardhat";
+import { ethers } from "ethers";
 import * as dotenv from "dotenv";
 dotenv.config();
 import FactoryContract from "../out/MvxFactory.sol/MvxFactory.json";
-const { utils } = require("ethers");
 import { MvxFactory } from "../typechain-types";
 
 
@@ -11,14 +10,30 @@ const FACTORY_MAINNET: any = "0x6A213cDDb2f5eD08ef3D27c66E7f6493970e9426";
 const COLLECTION_GOERLY: any = "0x9aa968D0513F74456632Ef08A07c2c646869B149";
 const OWNER = "0x37aa961D37F3513ae760ea7B704dAe3415f67B2F";
 
-
+function cleanMinterLists(addresses: any) {
+    return addresses.map((address: any) => {
+      // Trim whitespaces
+      address = address.trim();
+  
+      // Check if the address is valid
+      if (ethers.utils.isAddress(address)) {
+        // Checksum the address
+        const checksummedAddress = ethers.utils.getAddress(address);
+  
+        // Return the checksummed address surrounded by double quotes
+        return checksummedAddress;
+      }
+    });
+  }
 
 async function _getFactory(){
-  return await ethers.getContractAt("MvxFactory", FACTORY_MAINNET);   
+  return await ethers.getContractAt("MvxFactory", FACTORY_MAINNET);
+    // console.log("Factory Set collection=>", await Factory._collectionImpl());  
 }
 
 async function _initCollection(){
-  const encoder = ethers.utils.defaultAbiCoder;
+  const abiCoder = ethers.utils.defaultAbiCoder();
+
 
   const maxSupply = 6888;
   const royaltyFee = 1000;
@@ -43,17 +58,11 @@ async function _initCollection(){
   ];
 
 
-
-  const data = await encoder.encode(["uint256", "uint256", "string", "string", "string"],
+  const data = await abiCoder.encode(["uint256", "uint256", "string", "string", "string"],
     [maxSupply, royaltyFee, name, tokenSymbol, uri]);
 
-  // SEND Tx CREATE COLLECTION
-  const tx = await Factory.createCollection(data, og, wl, stageDetails,);
-  await tx.wait().then(function (receipt: any) {
-    console.log(receipt);
-  }).catch((e: any) => {
-    console.log("ERROR", e);
-  });
+
+  console.log(data,stageDetails)
 }
 async function main() {
     _initCollection();

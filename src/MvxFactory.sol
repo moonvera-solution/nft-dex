@@ -6,17 +6,15 @@ import {Clone} from "@solady/utils/Clone.sol";
 import {IERC721A} from "./interfaces/IERC721A.sol";
 import {MvxCollection} from "./MvxCollection.sol";
 import {Stages, Collection} from "@src/libs/MvxStruct.sol";
+import {AccessControl} from "@src/libs/AccessControl.sol";
 
 /**
  * @title MvxFactory contract to create erc721's clones with immutable arguments
  * @author MoonveraLabs
  */
-contract MvxFactory {
+contract MvxFactory is AccessControl {
     // Keep track of collections/clones per user
     mapping(address => address) public collections;
-
-    // MvxFactory  address(user) => validUntil;
-    mapping(address => uint256) public members;
 
     // Current MvxCollection template
     address public collectionImpl;
@@ -30,6 +28,8 @@ contract MvxFactory {
     // Minting fee
     uint96 public platformFee;
 
+    bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
+
     // count of total number of collections
     uint256 collectionCount;
 
@@ -40,6 +40,7 @@ contract MvxFactory {
     event InitOwnerEvent(address sender);
     event InitCollectionEvent(address sender, address collection);
     event CreateCollectionEvent(address sender, address template, address clone);
+    error Unathorized(uint8);
 
     constructor(uint96 _platformFee) {
         owner = payable(msg.sender);
@@ -54,18 +55,29 @@ contract MvxFactory {
     }
 
     modifier onlyOwner() {
-        require(msg.sender == owner, "Only owner");
+        if(msg.sender != owner) revert Unathorized();
         _;
     }
 
     modifier onlyMember() {
-        require(members[msg.sender] >= block.timestamp, "Only members");
+        if(block.timestamp < members[msg.sender], "Only members");
+        _;
+    }
+
+    modifier accMember(address acc) {
+        require(MvxCollection(acc).balanceOf(msg.sender) > 0, "Only ACC");
         _;
     }
 
     modifier auth() {
-        require(msg.sender == owner || members[msg.sender] >= block.timestamp, "Only Auth");
+        require(msg.sender == owner || members[msg.sender] >= block.timestamp, "Unauthorized");
         _;
+    }
+
+    /// @access only Acc mebers / ACC_MEMBER_ROLE
+    function grantReferal(address _acc, address _referee) external hasRole("ACC_MEMBER_ROLE"){
+         referees[_referee] = msg.sender;
+        _grantRole(REFEREE_ROLE, _referee);
     }
 
     /// @notice Access: only Owner
@@ -159,6 +171,11 @@ contract MvxFactory {
             collectionCount = collectionCount + 1;
         }
         emit InitCollectionEvent(msg.sender, _clone);
+    }
+
+    function _cleanUp() internal{
+        /// devoke caller mvx member or artist role
+        /// return dust
     }
 
     function getTime() public view returns (uint256 _time) {
