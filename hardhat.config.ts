@@ -80,7 +80,7 @@ const config: HardhatUserConfig = {
         strict: true,
       },
       gasReporter: {
-        enabled: false,
+        enabled: true,
         currency: 'USD',
         gasPrice: 21,
         coinmarketcap: process.env.COIN_MARKET_CAP_KEY,

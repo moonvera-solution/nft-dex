@@ -25,3 +25,20 @@ struct Collection {
     uint96 royaltyFee;
     address royaltyReceiver;
 }
+
+// address artist => Artist
+struct Artist {
+    address referral; // referral address
+    uint256 referralBalance; // track referral balance
+    address collection; // memeber of collection the referral is
+    uint256 expiration;
+}
+
+// address collection => MvxCollection
+struct Partner {
+    address admin; // partner collection admin
+    uint96 adminOwnPercent; // % variable per partnership
+    uint96 referralOwnPercent; // % variable per partnership
+    uint256 adminBalance; // track partner balance (admin)
+    uint96 discount; // variable per partnership
+}

@@ -4,6 +4,7 @@
 export * as abstracts from "./abstracts";
 export * as dex from "./dex";
 export * as interfaces from "./interfaces";
+export * as libs from "./libs";
 export * as tokens from "./tokens";
 export { MvxCollection__factory } from "./MvxCollection__factory";
 export { MvxFactory__factory } from "./MvxFactory__factory";

@@ -2,7 +2,7 @@
 pragma solidity ^0.8.5;
 
 import {Test, console2, Vm} from "@forge-std/Test.sol";
-import {Stages, Collection} from "@src/libs/MvxStruct.sol";
+import {Stages, Collection,Partner} from "@src/libs/MvxStruct.sol";
 import {MvxFactory} from "@src/MvxFactory.sol";
 import {MvxCollection} from "@src/MvxCollection.sol";
 
@@ -12,6 +12,7 @@ contract BaseTest is Test {
 
     Stages public stages;
     Collection public nftData;
+    Partner public partner;
     address[] og;
     address[] wl;
 
@@ -32,11 +33,11 @@ contract BaseTest is Test {
     address public user9 = address(9);
     address public user10 = address(10);
 
-    function _factoryCreate(MvxFactory factory, address royaltyReiver) internal returns (address) {
+    function _factoryCreate(MvxFactory factory, address royaltyReiver, uint _deployCost) internal returns (address) {
         _setStages();
         _setCollectionDetails(royaltyReiver);
         (address[] memory _ogs, address[] memory _wls) = _getMinters();
-        return factory.createCollection{value: 0 ether}(nftData, stages, _ogs, _wls);
+        return factory.createCollection{value: _deployCost}(nftData, stages, _ogs, _wls);
     }
 
     function _getMinters() internal returns (address[] memory _initialOGMinters, address[] memory _initialWLMinters) {

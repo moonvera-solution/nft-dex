@@ -7,6 +7,8 @@ import type * as dex from "./dex";
 export type { dex };
 import type * as interfaces from "./interfaces";
 export type { interfaces };
+import type * as libs from "./libs";
+export type { libs };
 import type * as tokens from "./tokens";
 export type { tokens };
 export type { MvxCollection } from "./MvxCollection";

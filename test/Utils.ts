@@ -111,6 +111,6 @@ function _getMinters() {
         '0x172e1D59AEBe8fc5d0BAc93B9E9a1ABddCc767ea',
         '0x63c65c86cB9D25a252635c73f90516D21E344ED4',
     ]
-   return {og,wl}
+   return [og,wl]
 }
 module.exports = { _getGasPrice, _getMinters ,_getStageData,_getColletionData}

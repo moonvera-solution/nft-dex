@@ -2671,47 +2671,6 @@
         }
       }
     },
-    "lib/solady/src/utils/LibString.sol": {
-      "lastModificationDate": 1697133546603,
-      "contentHash": "2f126f9d30fdf899ea1edb2f21470151",
-      "sourceName": "lib/solady/src/utils/LibString.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "useLiteralContent": false,
-            "bytecodeHash": "ipfs",
-            "appendCBOR": true
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ]
-            }
-          },
-          "evmVersion": "paris",
-          "libraries": {}
-        }
-      },
-      "imports": [],
-      "versionRequirement": "^0.8.4",
-      "artifacts": {
-        "LibString": {
-          "0.8.21+commit.d9974bed.Darwin.appleclang": "LibString.sol/LibString.json"
-        }
-      }
-    },
     "lib/solmate/src/tokens/ERC20.sol": {
       "lastModificationDate": 1697133547047,
       "contentHash": "0c7c7ada139062536af09d69d96d395c",
@@ -2798,7 +2757,7 @@
       }
     },
     "script/Deployer.s.sol": {
-      "lastModificationDate": 1697592811206,
+      "lastModificationDate": 1697769340966,
       "contentHash": "59faaad02c3f26525d48764299e21b2a",
       "sourceName": "script/Deployer.s.sol",
       "solcConfig": {
@@ -2878,7 +2837,9 @@
         "src/MvxFactory.sol",
         "src/abstracts/MintingStages.sol",
         "src/interfaces/IERC721A.sol",
+        "src/libs/AccessControl.sol",
         "src/libs/MvxStruct.sol",
+        "src/libs/Ownable.sol",
         "src/tokens/ERC721A.sol"
       ],
       "versionRequirement": "^0.8.20",
@@ -2950,7 +2911,7 @@
       }
     },
     "script/Utils.sol": {
-      "lastModificationDate": 1697592811205,
+      "lastModificationDate": 1697769340967,
       "contentHash": "fc1390c4ced5825df030fcff01e9a19a",
       "sourceName": "script/Utils.sol",
       "solcConfig": {
@@ -3020,7 +2981,9 @@
         "src/MvxFactory.sol",
         "src/abstracts/MintingStages.sol",
         "src/interfaces/IERC721A.sol",
+        "src/libs/AccessControl.sol",
         "src/libs/MvxStruct.sol",
+        "src/libs/Ownable.sol",
         "src/tokens/ERC721A.sol"
       ],
       "versionRequirement": "^0.8.20",
@@ -3031,8 +2994,8 @@
       }
     },
     "src/MvxCollection.sol": {
-      "lastModificationDate": 1697595613523,
-      "contentHash": "2ea5b03edc792d1ce3f9082f8cd2428f",
+      "lastModificationDate": 1697769340968,
+      "contentHash": "4eb69926d7401fcf913d462d20da44bd",
       "sourceName": "src/MvxCollection.sol",
       "solcConfig": {
         "settings": {
@@ -3091,8 +3054,8 @@
       }
     },
     "src/MvxFactory.sol": {
-      "lastModificationDate": 1697592811204,
-      "contentHash": "73b0674bce7267b9da409709217c7347",
+      "lastModificationDate": 1697774981290,
+      "contentHash": "606fe8e58a3ddb09849e0879bc62555f",
       "sourceName": "src/MvxFactory.sol",
       "solcConfig": {
         "settings": {
@@ -3142,7 +3105,9 @@
         "src/MvxCollection.sol",
         "src/abstracts/MintingStages.sol",
         "src/interfaces/IERC721A.sol",
+        "src/libs/AccessControl.sol",
         "src/libs/MvxStruct.sol",
+        "src/libs/Ownable.sol",
         "src/tokens/ERC721A.sol"
       ],
       "versionRequirement": "^0.8.20",
@@ -3214,7 +3179,7 @@
       }
     },
     "src/abstracts/MintingStages.sol": {
-      "lastModificationDate": 1697320793813,
+      "lastModificationDate": 1697674177970,
       "contentHash": "a8e1a814c2b099e56be2f1c8d076a5d1",
       "sourceName": "src/abstracts/MintingStages.sol",
       "solcConfig": {
@@ -3456,6 +3421,96 @@
         }
       }
     },
+    "src/libs/AccessControl.sol": {
+      "lastModificationDate": 1697769340972,
+      "contentHash": "7477091d9a9c8d159d8177cb9b43c0b5",
+      "sourceName": "src/libs/AccessControl.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [],
+      "versionRequirement": "^0.8.0",
+      "artifacts": {
+        "AccessControl": {
+          "0.8.21+commit.d9974bed.Darwin.appleclang": "AccessControl.sol/AccessControl.json"
+        },
+        "Math": {
+          "0.8.21+commit.d9974bed.Darwin.appleclang": "AccessControl.sol/Math.json"
+        },
+        "Strings": {
+          "0.8.21+commit.d9974bed.Darwin.appleclang": "AccessControl.sol/Strings.json"
+        }
+      }
+    },
+    "src/libs/Encoder.sol": {
+      "lastModificationDate": 1697769340969,
+      "contentHash": "121f1cdeb4acf663a25334a1f7395e9e",
+      "sourceName": "src/libs/Encoder.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "src/libs/MvxStruct.sol"
+      ],
+      "versionRequirement": "^0.8.5",
+      "artifacts": {
+        "Encoder": {
+          "0.8.21+commit.d9974bed.Darwin.appleclang": "Encoder.sol/Encoder.json"
+        }
+      }
+    },
     "src/libs/FullMath.sol": {
       "lastModificationDate": 1697320793813,
       "contentHash": "a9d3665e8a310b8611992cab2a47aaae",
@@ -3498,8 +3553,8 @@
       }
     },
     "src/libs/MvxStruct.sol": {
-      "lastModificationDate": 1697320793812,
-      "contentHash": "503b655490ef02c836b28648cae5b0b0",
+      "lastModificationDate": 1697769340969,
+      "contentHash": "f7f6dd15fcb95e6b61aac9483b7dc3fe",
       "sourceName": "src/libs/MvxStruct.sol",
       "solcConfig": {
         "settings": {
@@ -3535,6 +3590,47 @@
       "artifacts": {
         "MvxStruct": {
           "0.8.21+commit.d9974bed.Darwin.appleclang": "MvxStruct.sol/MvxStruct.json"
+        }
+      }
+    },
+    "src/libs/Ownable.sol": {
+      "lastModificationDate": 1697769340969,
+      "contentHash": "da12a37d05cf9b4257922daf1c174364",
+      "sourceName": "src/libs/Ownable.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [],
+      "versionRequirement": "^0.8.0",
+      "artifacts": {
+        "Ownable": {
+          "0.8.21+commit.d9974bed.Darwin.appleclang": "Ownable.sol/Ownable.json"
         }
       }
     },
@@ -3584,98 +3680,9 @@
         }
       }
     },
-    "test/foundry/MvxCollectionTest.t.sol": {
-      "lastModificationDate": 1697594415043,
-      "contentHash": "b64f81e82776e682759496b4b2cabc23",
-      "sourceName": "test/foundry/MvxCollectionTest.t.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "useLiteralContent": false,
-            "bytecodeHash": "ipfs",
-            "appendCBOR": true
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ]
-            }
-          },
-          "evmVersion": "paris",
-          "libraries": {}
-        }
-      },
-      "imports": [
-        "lib/forge-gas-snapshot/src/GasSnapshot.sol",
-        "lib/forge-gas-snapshot/src/utils/UintString.sol",
-        "lib/forge-std/lib/ds-test/src/test.sol",
-        "lib/forge-std/src/Base.sol",
-        "lib/forge-std/src/Script.sol",
-        "lib/forge-std/src/StdAssertions.sol",
-        "lib/forge-std/src/StdChains.sol",
-        "lib/forge-std/src/StdCheats.sol",
-        "lib/forge-std/src/StdError.sol",
-        "lib/forge-std/src/StdInvariant.sol",
-        "lib/forge-std/src/StdJson.sol",
-        "lib/forge-std/src/StdMath.sol",
-        "lib/forge-std/src/StdStorage.sol",
-        "lib/forge-std/src/StdStyle.sol",
-        "lib/forge-std/src/StdUtils.sol",
-        "lib/forge-std/src/Test.sol",
-        "lib/forge-std/src/Vm.sol",
-        "lib/forge-std/src/console.sol",
-        "lib/forge-std/src/console2.sol",
-        "lib/forge-std/src/interfaces/IMulticall3.sol",
-        "lib/forge-std/src/safeconsole.sol",
-        "lib/openzeppelin-contracts/contracts/interfaces/IERC2981.sol",
-        "lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol",
-        "lib/openzeppelin-contracts-upgradeable/contracts/access/AccessControlUpgradeable.sol",
-        "lib/openzeppelin-contracts-upgradeable/contracts/access/IAccessControlUpgradeable.sol",
-        "lib/openzeppelin-contracts-upgradeable/contracts/proxy/utils/Initializable.sol",
-        "lib/openzeppelin-contracts-upgradeable/contracts/security/ReentrancyGuardUpgradeable.sol",
-        "lib/openzeppelin-contracts-upgradeable/contracts/utils/AddressUpgradeable.sol",
-        "lib/openzeppelin-contracts-upgradeable/contracts/utils/ContextUpgradeable.sol",
-        "lib/openzeppelin-contracts-upgradeable/contracts/utils/StringsUpgradeable.sol",
-        "lib/openzeppelin-contracts-upgradeable/contracts/utils/introspection/ERC165Upgradeable.sol",
-        "lib/openzeppelin-contracts-upgradeable/contracts/utils/introspection/IERC165Upgradeable.sol",
-        "lib/openzeppelin-contracts-upgradeable/contracts/utils/math/MathUpgradeable.sol",
-        "lib/openzeppelin-contracts-upgradeable/contracts/utils/math/SignedMathUpgradeable.sol",
-        "lib/solady/src/utils/Clone.sol",
-        "lib/solady/src/utils/LibClone.sol",
-        "lib/solady/src/utils/LibString.sol",
-        "src/MvxCollection.sol",
-        "src/MvxFactory.sol",
-        "src/abstracts/MintingStages.sol",
-        "src/interfaces/IERC721A.sol",
-        "src/libs/MvxStruct.sol",
-        "src/tokens/ERC721A.sol",
-        "test/foundry/helpers/BaseTest.sol"
-      ],
-      "versionRequirement": "^0.8.20",
-      "artifacts": {
-        "MvxCollectionNotERC721A": {
-          "0.8.21+commit.d9974bed.Darwin.appleclang": "MvxCollectionTest.t.sol/MvxCollectionNotERC721A.json"
-        },
-        "MvxCollectionTest": {
-          "0.8.21+commit.d9974bed.Darwin.appleclang": "MvxCollectionTest.t.sol/MvxCollectionTest.json"
-        }
-      }
-    },
     "test/foundry/MvxFactoryTest.sol": {
-      "lastModificationDate": 1697592811206,
-      "contentHash": "7b077871c584bafdbf282e499a89fd4f",
+      "lastModificationDate": 1697774663431,
+      "contentHash": "333e2de7e9925e747d2c94714e05f6bd",
       "sourceName": "test/foundry/MvxFactoryTest.sol",
       "solcConfig": {
         "settings": {
@@ -3747,7 +3754,9 @@
         "src/MvxFactory.sol",
         "src/abstracts/MintingStages.sol",
         "src/interfaces/IERC721A.sol",
+        "src/libs/AccessControl.sol",
         "src/libs/MvxStruct.sol",
+        "src/libs/Ownable.sol",
         "src/tokens/ERC721A.sol",
         "test/foundry/helpers/BaseTest.sol"
       ],
@@ -3847,8 +3856,8 @@
       }
     },
     "test/foundry/helpers/BaseTest.sol": {
-      "lastModificationDate": 1697592811209,
-      "contentHash": "cb8372afb23b39ab7ce2c494579f3536",
+      "lastModificationDate": 1697774082456,
+      "contentHash": "0f34394d7241b89abcea026e0b609476",
       "sourceName": "test/foundry/helpers/BaseTest.sol",
       "solcConfig": {
         "settings": {
@@ -3917,98 +3926,15 @@
         "src/MvxFactory.sol",
         "src/abstracts/MintingStages.sol",
         "src/interfaces/IERC721A.sol",
+        "src/libs/AccessControl.sol",
         "src/libs/MvxStruct.sol",
+        "src/libs/Ownable.sol",
         "src/tokens/ERC721A.sol"
       ],
       "versionRequirement": "^0.8.5",
       "artifacts": {
         "BaseTest": {
           "0.8.21+commit.d9974bed.Darwin.appleclang": "BaseTest.sol/BaseTest.json"
-        }
-      }
-    },
-    "test/foundry/internal/InternalTestArtCollection.sol": {
-      "lastModificationDate": 1697592811205,
-      "contentHash": "a4dfe1533f0774744742a2d9d7c172fc",
-      "sourceName": "test/foundry/internal/InternalTestArtCollection.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "useLiteralContent": false,
-            "bytecodeHash": "ipfs",
-            "appendCBOR": true
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ]
-            }
-          },
-          "evmVersion": "paris",
-          "libraries": {}
-        }
-      },
-      "imports": [
-        "lib/forge-gas-snapshot/src/GasSnapshot.sol",
-        "lib/forge-gas-snapshot/src/utils/UintString.sol",
-        "lib/forge-std/lib/ds-test/src/test.sol",
-        "lib/forge-std/src/Base.sol",
-        "lib/forge-std/src/Script.sol",
-        "lib/forge-std/src/StdAssertions.sol",
-        "lib/forge-std/src/StdChains.sol",
-        "lib/forge-std/src/StdCheats.sol",
-        "lib/forge-std/src/StdError.sol",
-        "lib/forge-std/src/StdInvariant.sol",
-        "lib/forge-std/src/StdJson.sol",
-        "lib/forge-std/src/StdMath.sol",
-        "lib/forge-std/src/StdStorage.sol",
-        "lib/forge-std/src/StdStyle.sol",
-        "lib/forge-std/src/StdUtils.sol",
-        "lib/forge-std/src/Test.sol",
-        "lib/forge-std/src/Vm.sol",
-        "lib/forge-std/src/console.sol",
-        "lib/forge-std/src/console2.sol",
-        "lib/forge-std/src/interfaces/IMulticall3.sol",
-        "lib/forge-std/src/safeconsole.sol",
-        "lib/openzeppelin-contracts/contracts/interfaces/IERC2981.sol",
-        "lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol",
-        "lib/openzeppelin-contracts-upgradeable/contracts/access/AccessControlUpgradeable.sol",
-        "lib/openzeppelin-contracts-upgradeable/contracts/access/IAccessControlUpgradeable.sol",
-        "lib/openzeppelin-contracts-upgradeable/contracts/proxy/utils/Initializable.sol",
-        "lib/openzeppelin-contracts-upgradeable/contracts/security/ReentrancyGuardUpgradeable.sol",
-        "lib/openzeppelin-contracts-upgradeable/contracts/utils/AddressUpgradeable.sol",
-        "lib/openzeppelin-contracts-upgradeable/contracts/utils/ContextUpgradeable.sol",
-        "lib/openzeppelin-contracts-upgradeable/contracts/utils/StringsUpgradeable.sol",
-        "lib/openzeppelin-contracts-upgradeable/contracts/utils/introspection/ERC165Upgradeable.sol",
-        "lib/openzeppelin-contracts-upgradeable/contracts/utils/introspection/IERC165Upgradeable.sol",
-        "lib/openzeppelin-contracts-upgradeable/contracts/utils/math/MathUpgradeable.sol",
-        "lib/openzeppelin-contracts-upgradeable/contracts/utils/math/SignedMathUpgradeable.sol",
-        "lib/solady/src/utils/Clone.sol",
-        "lib/solady/src/utils/LibClone.sol",
-        "lib/solady/src/utils/LibString.sol",
-        "src/MvxCollection.sol",
-        "src/MvxFactory.sol",
-        "src/abstracts/MintingStages.sol",
-        "src/interfaces/IERC721A.sol",
-        "src/libs/MvxStruct.sol",
-        "src/tokens/ERC721A.sol"
-      ],
-      "versionRequirement": "^0.8.20",
-      "artifacts": {
-        "MvxCollectionInternalsTest": {
-          "0.8.21+commit.d9974bed.Darwin.appleclang": "InternalTestArtCollection.sol/MvxCollectionInternalsTest.json"
         }
       }
     }

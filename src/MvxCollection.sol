@@ -188,7 +188,7 @@ contract MvxCollection is MintingStages {
 
     ///@dev Sequential generation of Token Id
     function tokenURI(uint256 _tokenId) public view virtual override returns (string memory) {
-        if(!_exists(_tokenId)) revert TokenNotExistsError();
+        if (!_exists(_tokenId)) revert TokenNotExistsError();
 
         string memory currentBaseURI = baseURI();
 
@@ -222,10 +222,10 @@ contract MvxCollection is MintingStages {
         uint256 _balanceAfterFee = _balance - platformFee;
 
         (bool feeSent,) = payable(_platformFeeReceiver).call{value: platformFee}("");
-        if(!feeSent) revert WithdrawFail(0);
+        if (!feeSent) revert WithdrawFail(0);
 
         (bool sent,) = payable(msg.sender).call{value: _balanceAfterFee}("");
-        if(!sent) revert WithdrawFail(1);
+        if (!sent) revert WithdrawFail(1);
         emit WithdrawEvent(msg.sender, _balanceAfterFee, _platformFeeReceiver, _platformFee);
     }
 

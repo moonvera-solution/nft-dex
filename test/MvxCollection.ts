@@ -12,8 +12,8 @@ import "@nomicfoundation/hardhat-ethers";
 import { _getGasPrice, _getMinters ,_getStageData,_getColletionData} from "./Utils.ts";
 import {
   MvxFactory__factory,
-  MvxCollection__factory,
-  MvxCollection, MvxFactory
+  MvxCollection__factory,Encoder__factory,
+  Encoder,MvxCollection, MvxFactory
 } from "typechain-types";
 
 describe("NftCollection", function () {
@@ -24,13 +24,16 @@ describe("NftCollection", function () {
     const signers = await ethers.getSigners();
     const deployer = signers[0];
 
+    const EncoderFactory: Encoder__factory = await ethers.getContractFactory("Encoder");
+    const EncoderInstance = await EncoderFactory.deploy();
+
     const Mvx: MvxFactory__factory = await ethers.getContractFactory("MvxFactory");
     const FactoryInstance = await Mvx.deploy(0, { from: deployer });
 
     const MvxColl: MvxCollection__factory = await ethers.getContractFactory("MvxCollection");
     const CollectionInstance = await MvxColl.deploy({ from: deployer });
 
-    return { FactoryInstance, CollectionInstance };
+    return { FactoryInstance, CollectionInstance ,EncoderInstance};
   }
 
   describe("Quote create collection", function () {
@@ -43,16 +46,12 @@ describe("NftCollection", function () {
     });
 
     it("Create a new collection from factory", async function () {
-      const { FactoryInstance, CollectionInstance } = await loadFixture(deployContracts);
+      const { FactoryInstance, CollectionInstance ,EncoderInstance} = await loadFixture(deployContracts);
 
-      const {Ogs, Wls} = await _getMinters();
-      const StageStruct = await _getStageData();
-      const CollectionStruct = await _getColletionData();
-
-      console.log(StageStruct);
-      console.log(CollectionStruct);
-
-      await FactoryInstance.createCollection(CollectionStruct,StageStruct,Ogs,Wls);
+      const [Ogs, Wls] = await _getMinters();
+      // const  CollectionStruct = await EncoderInstance.encodeCollection();
+      // const StageStruct = await EncoderInstance.encodeStage();
+      // await FactoryInstance.createCollection(CollectionStruct,StageStruct,Ogs,Wls);
     });
   });
 
