@@ -34,11 +34,11 @@ struct Artist {
     uint256 expiration;
 }
 
-// address collection => MvxCollection
+// address collection => Partner
 struct Partner {
     address admin; // partner collection admin
     uint96 adminOwnPercent; // % variable per partnership
     uint96 referralOwnPercent; // % variable per partnership
-    uint256 adminBalance; // track partner balance (admin)
+    uint256 balance; // track partner balance (admin)
     uint96 discount; // variable per partnership
 }

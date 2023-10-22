@@ -134,7 +134,8 @@ export interface MvxFactoryInterface extends Interface {
       | "DiscountGranted"
       | "InitCollectionEvent"
       | "InitOwnerEvent"
-      | "Log"
+      | "Log(string,bytes4)"
+      | "Log(string,uint256)"
       | "OwnershipTransferred"
       | "WithdrawPartner"
       | "WithdrawReferral"
@@ -429,7 +430,20 @@ export namespace InitOwnerEventEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export namespace LogEvent {
+export namespace Log_string_bytes4_Event {
+  export type InputTuple = [arg0: string, arg1: BytesLike];
+  export type OutputTuple = [arg0: string, arg1: string];
+  export interface OutputObject {
+    arg0: string;
+    arg1: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace Log_string_uint256_Event {
   export type InputTuple = [arg0: string, arg1: BigNumberish];
   export type OutputTuple = [arg0: string, arg1: bigint];
   export interface OutputObject {
@@ -459,17 +473,17 @@ export namespace WithdrawPartnerEvent {
   export type InputTuple = [
     _sender: AddressLike,
     _collection: AddressLike,
-    _adminBalance: BigNumberish
+    _balance: BigNumberish
   ];
   export type OutputTuple = [
     _sender: string,
     _collection: string,
-    _adminBalance: bigint
+    _balance: bigint
   ];
   export interface OutputObject {
     _sender: string;
     _collection: string;
-    _adminBalance: bigint;
+    _balance: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -611,7 +625,7 @@ export interface MvxFactory extends BaseContract {
         admin: string;
         adminOwnPercent: bigint;
         referralOwnPercent: bigint;
-        adminBalance: bigint;
+        balance: bigint;
         discount: bigint;
       }
     ],
@@ -681,7 +695,7 @@ export interface MvxFactory extends BaseContract {
   >;
 
   withdrawReferral: TypedContractMethod<
-    [_artist: AddressLike],
+    [artist_: AddressLike],
     [void],
     "nonpayable"
   >;
@@ -762,7 +776,7 @@ export interface MvxFactory extends BaseContract {
         admin: string;
         adminOwnPercent: bigint;
         referralOwnPercent: bigint;
-        adminBalance: bigint;
+        balance: bigint;
         discount: bigint;
       }
     ],
@@ -820,7 +834,7 @@ export interface MvxFactory extends BaseContract {
   ): TypedContractMethod<[_collection: AddressLike], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "withdrawReferral"
-  ): TypedContractMethod<[_artist: AddressLike], [void], "nonpayable">;
+  ): TypedContractMethod<[artist_: AddressLike], [void], "nonpayable">;
 
   getEvent(
     key: "CollectionDiscount"
@@ -865,11 +879,18 @@ export interface MvxFactory extends BaseContract {
     InitOwnerEventEvent.OutputObject
   >;
   getEvent(
-    key: "Log"
+    key: "Log(string,bytes4)"
   ): TypedContractEvent<
-    LogEvent.InputTuple,
-    LogEvent.OutputTuple,
-    LogEvent.OutputObject
+    Log_string_bytes4_Event.InputTuple,
+    Log_string_bytes4_Event.OutputTuple,
+    Log_string_bytes4_Event.OutputObject
+  >;
+  getEvent(
+    key: "Log(string,uint256)"
+  ): TypedContractEvent<
+    Log_string_uint256_Event.InputTuple,
+    Log_string_uint256_Event.OutputTuple,
+    Log_string_uint256_Event.OutputObject
   >;
   getEvent(
     key: "OwnershipTransferred"
@@ -960,15 +981,15 @@ export interface MvxFactory extends BaseContract {
       InitOwnerEventEvent.OutputObject
     >;
 
-    "Log(string,uint256)": TypedContractEvent<
-      LogEvent.InputTuple,
-      LogEvent.OutputTuple,
-      LogEvent.OutputObject
+    "Log(string,bytes4)": TypedContractEvent<
+      Log_string_bytes4_Event.InputTuple,
+      Log_string_bytes4_Event.OutputTuple,
+      Log_string_bytes4_Event.OutputObject
     >;
-    Log: TypedContractEvent<
-      LogEvent.InputTuple,
-      LogEvent.OutputTuple,
-      LogEvent.OutputObject
+    "Log(string,uint256)": TypedContractEvent<
+      Log_string_uint256_Event.InputTuple,
+      Log_string_uint256_Event.OutputTuple,
+      Log_string_uint256_Event.OutputObject
     >;
 
     "OwnershipTransferred(address,address)": TypedContractEvent<

@@ -154,7 +154,6 @@ export interface MvxCollectionInterface extends Interface {
       | "ApprovalForAll"
       | "BurnEvent"
       | "ConsecutiveTransfer"
-      | "Initialized"
       | "Log"
       | "MintEvent"
       | "OGmintEvent"
@@ -567,18 +566,6 @@ export namespace ConsecutiveTransferEvent {
     toTokenId: bigint;
     from: string;
     to: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
-
-export namespace InitializedEvent {
-  export type InputTuple = [version: BigNumberish];
-  export type OutputTuple = [version: bigint];
-  export interface OutputObject {
-    version: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -1490,13 +1477,6 @@ export interface MvxCollection extends BaseContract {
     ConsecutiveTransferEvent.OutputObject
   >;
   getEvent(
-    key: "Initialized"
-  ): TypedContractEvent<
-    InitializedEvent.InputTuple,
-    InitializedEvent.OutputTuple,
-    InitializedEvent.OutputObject
-  >;
-  getEvent(
     key: "Log"
   ): TypedContractEvent<
     LogEvent.InputTuple,
@@ -1631,17 +1611,6 @@ export interface MvxCollection extends BaseContract {
       ConsecutiveTransferEvent.InputTuple,
       ConsecutiveTransferEvent.OutputTuple,
       ConsecutiveTransferEvent.OutputObject
-    >;
-
-    "Initialized(uint8)": TypedContractEvent<
-      InitializedEvent.InputTuple,
-      InitializedEvent.OutputTuple,
-      InitializedEvent.OutputObject
-    >;
-    Initialized: TypedContractEvent<
-      InitializedEvent.InputTuple,
-      InitializedEvent.OutputTuple,
-      InitializedEvent.OutputObject
     >;
 
     "Log(string,uint256)": TypedContractEvent<

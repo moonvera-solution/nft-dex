@@ -1,15 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "@openzeppelin-contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "@openzeppelin-contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import {IERC2981, IERC165} from "@openzeppelin-contracts/interfaces/IERC2981.sol";
 
+import "@src/libs/AccessControl.sol";
 import {Stages, Collection} from "@src/libs/MvxStruct.sol";
 import {Clone} from "@solady/utils/Clone.sol";
 import {ERC721A, IERC721A} from "@src/tokens/ERC721A.sol";
 
-abstract contract MintingStages is Clone, ERC721A, IERC2981, AccessControlUpgradeable, ReentrancyGuardUpgradeable {
+abstract contract MintingStages is Clone, AccessControl, ERC721A, IERC2981 {
+    /// sender => mintType => counter amount
+    mapping(address => mapping(string => uint256)) public mintsPerWallet;
+
     /* ACCESS ROLES */
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
@@ -22,6 +24,7 @@ abstract contract MintingStages is Clone, ERC721A, IERC2981, AccessControlUpgrad
     Collection public collectionData;
     address internal _platformFeeReceiver;
     uint96 internal _platformFee;
+    bool internal _initalized = false;
 
     event UpdateWLevent(address indexed sender, uint256 listLength);
     event UpdateOgEvent(address indexed sender, uint256 listLength);
@@ -87,12 +90,7 @@ abstract contract MintingStages is Clone, ERC721A, IERC2981, AccessControlUpgrad
         }
     }
 
-    function supportsInterface(bytes4 _interfaceId)
-        public
-        view
-        override(ERC721A, AccessControlUpgradeable, IERC165)
-        returns (bool)
-    {
+    function supportsInterface(bytes4 _interfaceId) public view override(ERC721A, IERC165) returns (bool) {
         return _interfaceId == type(IERC721A).interfaceId || _interfaceId == type(IERC2981).interfaceId
             || super.supportsInterface(_interfaceId);
     }

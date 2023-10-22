@@ -40,6 +40,7 @@ export interface MintingStagesInterface extends Interface {
       | "hasRole"
       | "isApprovedForAll"
       | "mintingStages"
+      | "mintsPerWallet"
       | "name"
       | "ownerOf"
       | "renounceRole"
@@ -68,7 +69,6 @@ export interface MintingStagesInterface extends Interface {
       | "Approval"
       | "ApprovalForAll"
       | "ConsecutiveTransfer"
-      | "Initialized"
       | "RoleAdminChanged"
       | "RoleGranted"
       | "RoleRevoked"
@@ -132,6 +132,10 @@ export interface MintingStagesInterface extends Interface {
   encodeFunctionData(
     functionFragment: "mintingStages",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "mintsPerWallet",
+    values: [AddressLike, string]
   ): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
   encodeFunctionData(
@@ -251,6 +255,10 @@ export interface MintingStagesInterface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "mintingStages",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "mintsPerWallet",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
@@ -379,18 +387,6 @@ export namespace ConsecutiveTransferEvent {
     toTokenId: bigint;
     from: string;
     to: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
-
-export namespace InitializedEvent {
-  export type InputTuple = [version: BigNumberish];
-  export type OutputTuple = [version: bigint];
-  export interface OutputObject {
-    version: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -633,6 +629,12 @@ export interface MintingStages extends BaseContract {
     "view"
   >;
 
+  mintsPerWallet: TypedContractMethod<
+    [arg0: AddressLike, arg1: string],
+    [bigint],
+    "view"
+  >;
+
   name: TypedContractMethod<[], [string], "view">;
 
   ownerOf: TypedContractMethod<[tokenId: BigNumberish], [string], "view">;
@@ -853,6 +855,9 @@ export interface MintingStages extends BaseContract {
     "view"
   >;
   getFunction(
+    nameOrSignature: "mintsPerWallet"
+  ): TypedContractMethod<[arg0: AddressLike, arg1: string], [bigint], "view">;
+  getFunction(
     nameOrSignature: "name"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
@@ -987,13 +992,6 @@ export interface MintingStages extends BaseContract {
     ConsecutiveTransferEvent.OutputObject
   >;
   getEvent(
-    key: "Initialized"
-  ): TypedContractEvent<
-    InitializedEvent.InputTuple,
-    InitializedEvent.OutputTuple,
-    InitializedEvent.OutputObject
-  >;
-  getEvent(
     key: "RoleAdminChanged"
   ): TypedContractEvent<
     RoleAdminChangedEvent.InputTuple,
@@ -1068,17 +1066,6 @@ export interface MintingStages extends BaseContract {
       ConsecutiveTransferEvent.InputTuple,
       ConsecutiveTransferEvent.OutputTuple,
       ConsecutiveTransferEvent.OutputObject
-    >;
-
-    "Initialized(uint8)": TypedContractEvent<
-      InitializedEvent.InputTuple,
-      InitializedEvent.OutputTuple,
-      InitializedEvent.OutputObject
-    >;
-    Initialized: TypedContractEvent<
-      InitializedEvent.InputTuple,
-      InitializedEvent.OutputTuple,
-      InitializedEvent.OutputObject
     >;
 
     "RoleAdminChanged(bytes32,bytes32,bytes32)": TypedContractEvent<
