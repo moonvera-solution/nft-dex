@@ -15,9 +15,6 @@ import "@src/abstracts/MintingStages.sol";
 /// @notice This contract is made only for the Arab Collectors Club ACC
 /// @author MoonveraLabs
 contract MvxCollection is MintingStages {
-    // Cap number of mint per user
-    mapping(address => uint256) public mintsPerWallet;
-
     event WithdrawEvent(address indexed, uint256, address, uint256);
     event OGmintEvent(address indexed sender, uint256 value, address to, uint256 amount, uint256 _ogMintPrice);
     event WLmintEvent(address indexed sender, uint256 value, address to, uint256 amount, uint256 wlMintPrice);
@@ -26,26 +23,31 @@ contract MvxCollection is MintingStages {
     event RoyaltyFeeUpdate(address indexed sender, address receiver, uint96 royaltyFee);
     event BurnEvent(address indexed sender, uint256 tokenId);
 
+    error TokenNotExistsError();
+    error WithdrawError(uint8 isPlaformCall); // 0 = yes, 1 = no, fail admin
+    error MintForOwnerError(uint8);
+    error MintError(string, uint256);
+
     /// @notice Called by MvxFactory on clone Deployment
     /// @param platformFee uint96 fee in basis points
     /// @param _nftData maxSupply,royaltyFee,name,symbol,baseURI,baseExt
     /// @param _ogs address[]og,
     /// @param _wls address[] wl
     function initialize(
-        uint96 platformFee,
+        uint256 platformFee,
         Collection calldata _nftData,
         Stages calldata _mintingStages,
         address[] calldata _ogs,
         address[] calldata _wls
-    ) public initializer {
+    ) external {
+        require(!_initalized, "Already initialized");
         address _owner = _getArgAddress(0); // immutable arguments
         address _mvxFactory = msg.sender;
 
         __ERC721A_init(_nftData.name, _nftData.symbol);
-        __AccessControl_init();
-        __ReentrancyGuard_init();
 
         _setRoleAdmin(ADMIN_ROLE, ADMIN_ROLE);
+        _setRoleAdmin(OPERATOR_ROLE, ADMIN_ROLE);
         _setRoleAdmin(OG_MINTER_ROLE, ADMIN_ROLE);
         _setRoleAdmin(WL_MINTER_ROLE, ADMIN_ROLE);
 
@@ -58,15 +60,16 @@ contract MvxCollection is MintingStages {
         collectionData = _nftData;
         mintingStages = _mintingStages;
         _platformFee = platformFee;
-        _platformFeeReceiver = _mvxFactory;
+        _platformFeeReceiver = platformFee > 0 ? address(0x0) : _mvxFactory;
         revokeRole(ADMIN_ROLE, _mvxFactory);
+        _initalized = true;
     }
 
     /// @notice access: ADMIN_ROLE
     /// @param _to address to mint to
     /// @param _amount amount to mint (batch minting)
-    function mintForOwner(address _to, uint256 _amount) external payable nonReentrant OnlyAdminOrOperator {
-        require(totalSupply() + _amount <= collectionData.maxSupply, "Over mintMax error");
+    function mintForOwner(address _to, uint256 _amount) external payable OnlyAdminOrOperator {
+        if (totalSupply() + _amount > collectionData.maxSupply) revert MintForOwnerError(1);
         _safeMint(_to, _amount);
         emit OwnerMintEvent(msg.sender, _to, _amount);
     }
@@ -74,28 +77,35 @@ contract MvxCollection is MintingStages {
     /// @notice access: OG_MINTER_ROLE
     /// @param _to address to mint to
     /// @param _amount amount to mint (batch minting)
-    function mintForOG(address _to, uint256 _amount) external payable nonReentrant onlyRole(OG_MINTER_ROLE) {
-        uint256 _currentTime = block.timestamp;
-        require(
-            _currentTime <= mintingStages.ogMintEnd && _currentTime >= mintingStages.ogMintStart, "Not OG mint time"
+    function mintForOG(address _to, uint256 _amount) external payable onlyRole(OG_MINTER_ROLE) {
+        string memory mintType = "OG";
+        if (!(msg.value >= (_amount * mintingStages.mintPrice))) revert MintError(mintType, 0); // Not enought eth
+        _internalSafeMint(
+            _to,
+            _amount,
+            mintingStages.whitelistMintPrice,
+            mintingStages.whitelistMintMaxPerUser,
+            mintingStages.whitelistMintStart,
+            mintingStages.whitelistMintEnd,
+            mintType
         );
-        require(totalSupply() + _amount <= collectionData.maxSupply, "Over mintMax error");
-        _internalSafeMint(msg.value, _to, mintingStages.ogMintPrice, _amount, mintingStages.ogMintMaxPerUser);
         emit OGmintEvent(msg.sender, msg.value, _to, _amount, mintingStages.ogMintPrice);
     }
 
     /// @notice access: WL_MINTER_ROLE
     /// @param _to address to mint to
     /// @param _amount amount to mint (batch minting)
-    function mintForWhitelist(address _to, uint256 _amount) external payable onlyRole(WL_MINTER_ROLE) nonReentrant {
-        uint256 _currentTime = block.timestamp;
-        require(
-            _currentTime <= mintingStages.whitelistMintEnd && _currentTime >= mintingStages.whitelistMintStart,
-            "Not OG mint time"
-        );
-        require(totalSupply() + _amount <= collectionData.maxSupply, "Over mintMax error");
+    function mintForWhitelist(address _to, uint256 _amount) external payable onlyRole(WL_MINTER_ROLE) {
+        string memory mintType = "WL";
+        if (!(msg.value >= (_amount * mintingStages.mintPrice))) revert MintError(mintType, 0); // Not enought eth
         _internalSafeMint(
-            msg.value, _to, mintingStages.whitelistMintPrice, _amount, mintingStages.whitelistMintMaxPerUser
+            _to,
+            _amount,
+            mintingStages.whitelistMintPrice,
+            mintingStages.whitelistMintMaxPerUser,
+            mintingStages.whitelistMintStart,
+            mintingStages.whitelistMintEnd,
+            mintType
         );
         emit WLmintEvent(msg.sender, msg.value, _to, _amount, mintingStages.whitelistMintPrice);
     }
@@ -103,26 +113,41 @@ contract MvxCollection is MintingStages {
     /// @notice access: any
     /// @param _to address to mint to
     /// @param _amount amount to mint (batch minting)
-    function mintForRegular(address _to, uint256 _amount) external payable nonReentrant {
-        uint256 _currentTime = block.timestamp;
-        require(_currentTime <= mintingStages.mintEnd && _currentTime >= mintingStages.mintStart, "Not Regular minTime");
-        require(totalSupply() + _amount <= collectionData.maxSupply, "Over mintMax error");
-        _internalSafeMint(msg.value, _to, mintingStages.mintPrice, _amount, mintingStages.mintMaxPerUser);
+    function mintForRegular(address _to, uint256 _amount) external payable {
+        string memory mintType = "Regular";
+        if (!(msg.value >= (_amount * mintingStages.mintPrice))) revert MintError(mintType, 0); // Not enought eth
+        _internalSafeMint(
+            _to,
+            _amount,
+            mintingStages.mintPrice,
+            mintingStages.mintMaxPerUser,
+            mintingStages.mintStart,
+            mintingStages.mintEnd,
+            mintType
+        );
         emit MintEvent(msg.sender, msg.value, _to, _amount, mintingStages.mintPrice);
     }
 
+    event Log(string, uint256);
     /// @notice Checks for ether sent to this contract before calling _safeMint
+
     function _internalSafeMint(
-        uint256 _msgValue,
         address _mintTo,
-        uint256 _mintPrice,
         uint256 _mintAmount,
-        uint256 _maxMintAmount
+        uint256 _mintPrice,
+        uint256 _maxMintAmount,
+        uint256 _mintStageStartsAt,
+        uint256 _mintStageEndsAt,
+        string memory mintType
     ) internal {
-        require(mintsPerWallet[msg.sender] + _mintAmount <= _maxMintAmount, "Exceeds maxMint");
-        require(_msgValue >= (_mintAmount * _mintPrice), "Insufficient mint payment");
+        if (mintsPerWallet[msg.sender][mintType] + _mintAmount > _maxMintAmount) revert MintError(mintType, 1); // Exceeds mint per wallet amount
+        uint256 _currentTime = block.timestamp;
+        if (_mintStageStartsAt < _currentTime) revert MintError(mintType, 2); // Stage mintType has not started
+        if (_currentTime > _mintStageEndsAt) revert MintError(mintType, 3); // Stage mint already end
+        if (totalSupply() + _mintAmount > collectionData.maxSupply) revert MintError(mintType, 4); // Mint amount exceeds supply
+
         unchecked {
-            mintsPerWallet[msg.sender] += _mintAmount;
+            mintsPerWallet[msg.sender][mintType] += _mintAmount;
         }
         _safeMint(_mintTo, _mintAmount);
     }
@@ -133,6 +158,10 @@ contract MvxCollection is MintingStages {
         emit RoyaltyFeeUpdate(msg.sender, _receiver, _royaltyFee);
     }
 
+    /// @notice variable fee rate in basis points
+    /// @param _receiver royalty fee recipient address
+    /// @param _royaltyFee basis points rate 1% = 100
+    /// @dev updateRoyaltyInfo(...) access onlyRole(ADMIN_ROLE)
     function _updateRoyaltyInfo(address _receiver, uint96 _royaltyFee) internal {
         require(_royaltyFee <= _feeDenominator(), "ERC2981: fee exceed salePrice");
         require(_receiver != address(0), "ERC2981: invalid receiver");
@@ -160,8 +189,9 @@ contract MvxCollection is MintingStages {
         return collectionData.baseURI;
     }
 
+    ///@dev Sequential generation of Token Id
     function tokenURI(uint256 _tokenId) public view virtual override returns (string memory) {
-        require(_exists(_tokenId), "ERC721Metadata: URI query for nonexistent token");
+        if (!_exists(_tokenId)) revert TokenNotExistsError();
 
         string memory currentBaseURI = baseURI();
 
@@ -174,8 +204,8 @@ contract MvxCollection is MintingStages {
         collectionData.baseURI = _newBaseURI;
     }
 
-    function getMintCountOf(address _user) public view returns (uint256) {
-        return mintsPerWallet[_user];
+    function getMintCountOf(string calldata mintType, address _user) public view returns (uint256) {
+        return mintsPerWallet[_user][mintType];
     }
 
     function setBaseExtension(string memory _newBaseExtension) public {
@@ -185,21 +215,27 @@ contract MvxCollection is MintingStages {
     function burn(uint256 _tokenId) external {
         require(ownerOf(_tokenId) == msg.sender, "Not Owner");
         _burn(_tokenId);
-        emit BurnEvent(_msgSender(), _tokenId);
+        emit BurnEvent(msg.sender, _tokenId);
     }
 
-    /// @notice only ADMIN access withdraw royalties
-    function withdraw() external payable nonReentrant onlyRole(ADMIN_ROLE) {
-        uint256 _balance = address(this).balance;
-        uint256 platformFee = _balance * _platformFee / _feeDenominator();
-        uint256 _balanceAfterFee = _balance - platformFee;
+    /// @notice access: only ADMIN withdraw royalties
+    function withdraw() external payable onlyRole(ADMIN_ROLE) {
+        if (_platformFeeReceiver != address(0x0)) {
+            uint256 _balance = address(this).balance;
+            uint256 platformFee = _balance * _platformFee / _feeDenominator();
+            uint256 _balanceAfterFee = _balance - platformFee;
 
-        (bool feeSent,) = payable(_platformFeeReceiver).call{value: platformFee}("");
-        require(feeSent, "Withdraw _platformFee fail");
+            (bool feeSent,) = payable(_platformFeeReceiver).call{value: platformFee}("");
+            if (!feeSent) revert WithdrawError(0);
 
-        (bool sent,) = payable(msg.sender).call{value: _balanceAfterFee}("");
-        require(sent, "Withdraw _balanceAfterFee fail");
-        emit WithdrawEvent(msg.sender, _balanceAfterFee, _platformFeeReceiver, _platformFee);
+            (bool sent,) = payable(msg.sender).call{value: _balanceAfterFee}("");
+            if (!sent) revert WithdrawError(1);
+            emit WithdrawEvent(msg.sender, _balanceAfterFee, _platformFeeReceiver, _platformFee);
+        } else {
+            (bool sent,) = payable(msg.sender).call{value: address(this).balance}("");
+            if (!sent) revert WithdrawError(1);
+            emit WithdrawEvent(msg.sender, address(this).balance, _platformFeeReceiver, _platformFee);
+        }
     }
 
     function version() external pure returns (uint8 _version) {

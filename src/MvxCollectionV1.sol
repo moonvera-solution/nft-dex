@@ -156,7 +156,7 @@ library AddressUpgradeable {
     function sendValue(address payable recipient, uint256 amount) internal {
         require(address(this).balance >= amount, "Address: insufficient balance");
 
-        (bool success, ) = recipient.call{value: amount}("");
+        (bool success,) = recipient.call{value: amount}("");
         require(success, "Address: unable to send value, recipient may have reverted");
     }
 
@@ -188,11 +188,10 @@ library AddressUpgradeable {
      *
      * _Available since v3.1._
      */
-    function functionCall(
-        address target,
-        bytes memory data,
-        string memory errorMessage
-    ) internal returns (bytes memory) {
+    function functionCall(address target, bytes memory data, string memory errorMessage)
+        internal
+        returns (bytes memory)
+    {
         return functionCallWithValue(target, data, 0, errorMessage);
     }
 
@@ -217,12 +216,10 @@ library AddressUpgradeable {
      *
      * _Available since v3.1._
      */
-    function functionCallWithValue(
-        address target,
-        bytes memory data,
-        uint256 value,
-        string memory errorMessage
-    ) internal returns (bytes memory) {
+    function functionCallWithValue(address target, bytes memory data, uint256 value, string memory errorMessage)
+        internal
+        returns (bytes memory)
+    {
         require(address(this).balance >= value, "Address: insufficient balance for call");
         (bool success, bytes memory returndata) = target.call{value: value}(data);
         return verifyCallResultFromTarget(target, success, returndata, errorMessage);
@@ -244,11 +241,11 @@ library AddressUpgradeable {
      *
      * _Available since v3.3._
      */
-    function functionStaticCall(
-        address target,
-        bytes memory data,
-        string memory errorMessage
-    ) internal view returns (bytes memory) {
+    function functionStaticCall(address target, bytes memory data, string memory errorMessage)
+        internal
+        view
+        returns (bytes memory)
+    {
         (bool success, bytes memory returndata) = target.staticcall(data);
         return verifyCallResultFromTarget(target, success, returndata, errorMessage);
     }
@@ -269,11 +266,10 @@ library AddressUpgradeable {
      *
      * _Available since v3.4._
      */
-    function functionDelegateCall(
-        address target,
-        bytes memory data,
-        string memory errorMessage
-    ) internal returns (bytes memory) {
+    function functionDelegateCall(address target, bytes memory data, string memory errorMessage)
+        internal
+        returns (bytes memory)
+    {
         (bool success, bytes memory returndata) = target.delegatecall(data);
         return verifyCallResultFromTarget(target, success, returndata, errorMessage);
     }
@@ -308,11 +304,11 @@ library AddressUpgradeable {
      *
      * _Available since v4.3._
      */
-    function verifyCallResult(
-        bool success,
-        bytes memory returndata,
-        string memory errorMessage
-    ) internal pure returns (bytes memory) {
+    function verifyCallResult(bool success, bytes memory returndata, string memory errorMessage)
+        internal
+        pure
+        returns (bytes memory)
+    {
         if (success) {
             return returndata;
         } else {
@@ -506,11 +502,10 @@ abstract contract Initializable {
  * This contract is only required for intermediate, library-like contracts.
  */
 abstract contract ContextUpgradeable is Initializable {
-    function __Context_init() internal onlyInitializing {
-    }
+    function __Context_init() internal onlyInitializing {}
 
-    function __Context_init_unchained() internal onlyInitializing {
-    }
+    function __Context_init_unchained() internal onlyInitializing {}
+
     function _msgSender() internal view virtual returns (address) {
         return msg.sender;
     }
@@ -1025,14 +1020,13 @@ interface IERC165Upgradeable {
  * Alternatively, {ERC165Storage} provides an easier to use but more expensive implementation.
  */
 abstract contract ERC165Upgradeable is Initializable, IERC165Upgradeable {
-    function __ERC165_init() internal onlyInitializing {
-    }
+    function __ERC165_init() internal onlyInitializing {}
 
-    function __ERC165_init_unchained() internal onlyInitializing {
-    }
+    function __ERC165_init_unchained() internal onlyInitializing {}
     /**
      * @dev See {IERC165-supportsInterface}.
      */
+
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
         return interfaceId == type(IERC165Upgradeable).interfaceId;
     }
@@ -1084,12 +1078,16 @@ abstract contract ERC165Upgradeable is Initializable, IERC165Upgradeable {
  * accounts that have been granted it. We recommend using {AccessControlDefaultAdminRules}
  * to enforce additional security measures for this role.
  */
-abstract contract AccessControlUpgradeable is Initializable, ContextUpgradeable, IAccessControlUpgradeable, ERC165Upgradeable {
-    function __AccessControl_init() internal onlyInitializing {
-    }
+abstract contract AccessControlUpgradeable is
+    Initializable,
+    ContextUpgradeable,
+    IAccessControlUpgradeable,
+    ERC165Upgradeable
+{
+    function __AccessControl_init() internal onlyInitializing {}
 
-    function __AccessControl_init_unchained() internal onlyInitializing {
-    }
+    function __AccessControl_init_unchained() internal onlyInitializing {}
+
     struct RoleData {
         mapping(address => bool) members;
         bytes32 adminRole;
@@ -1334,10 +1332,10 @@ interface IERC2981 is IERC165 {
      * @dev Returns how much royalty is owed and to whom, based on a sale price that may be denominated in any unit of
      * exchange. The royalty amount is denominated and should be paid in that same unit of exchange.
      */
-    function royaltyInfo(
-        uint256 tokenId,
-        uint256 salePrice
-    ) external view returns (address receiver, uint256 royaltyAmount);
+    function royaltyInfo(uint256 tokenId, uint256 salePrice)
+        external
+        view
+        returns (address receiver, uint256 royaltyAmount);
 }
 
 /// @notice Class with helper read functions for clone with immutable args.
@@ -1361,11 +1359,7 @@ abstract contract Clone {
     }
 
     /// @dev Reads an immutable arg with type bytes.
-    function _getArgBytes(uint256 argOffset, uint256 length)
-        internal
-        pure
-        returns (bytes memory arg)
-    {
+    function _getArgBytes(uint256 argOffset, uint256 length) internal pure returns (bytes memory arg) {
         uint256 offset = _getImmutableArgsOffset();
         /// @solidity memory-safe-assembly
         assembly {
@@ -1388,11 +1382,7 @@ abstract contract Clone {
     }
 
     /// @dev Reads a uint256 array stored in the immutable args.
-    function _getArgUint256Array(uint256 argOffset, uint256 length)
-        internal
-        pure
-        returns (uint256[] memory arg)
-    {
+    function _getArgUint256Array(uint256 argOffset, uint256 length) internal pure returns (uint256[] memory arg) {
         uint256 offset = _getImmutableArgsOffset();
         /// @solidity memory-safe-assembly
         assembly {
@@ -1404,11 +1394,7 @@ abstract contract Clone {
     }
 
     /// @dev Reads a bytes32 array stored in the immutable args.
-    function _getArgBytes32Array(uint256 argOffset, uint256 length)
-        internal
-        pure
-        returns (bytes32[] memory arg)
-    {
+    function _getArgBytes32Array(uint256 argOffset, uint256 length) internal pure returns (bytes32[] memory arg) {
         uint256 offset = _getImmutableArgsOffset();
         /// @solidity memory-safe-assembly
         assembly {
@@ -3423,7 +3409,7 @@ contract ERC721A is IERC721A {
 /// @title Art Collection ERC721A Upgradable
 /// @notice This contract is made only for the Arab Collectors Club ACC
 /// @author MoonveraLabs
-contract MvxCollection is Clone, ERC721A, IERC2981, MintingStages {
+contract MvxCollectionV1 is Clone, ERC721A, IERC2981, MintingStages {
     string public baseURI;
     string public baseExtension;
     uint256 public maxSupply;
@@ -3470,8 +3456,8 @@ contract MvxCollection is Clone, ERC721A, IERC2981, MintingStages {
         _setRoleAdmin(ADMIN_ROLE, ADMIN_ROLE);
         // Granting Admin to MvxFactory to be able to grant roles for user
         // since user is not msg.sender, but revoking at the end of function
-        // Trade-off to manage minting roles with OZ AccessControl  
-            
+        // Trade-off to manage minting roles with OZ AccessControl
+
         // ADMIN is onlyOwner that can add OPERATORS
         _grantRole(ADMIN_ROLE, msg.sender); // not caching due to Stack error
         platformFeeReceiver = msg.sender;
@@ -3641,7 +3627,7 @@ contract MvxCollection is Clone, ERC721A, IERC2981, MintingStages {
     function supportsInterface(bytes4 _interfaceId)
         public
         view
-        override(ERC721A, AccessControlUpgradeable,IERC165)
+        override(ERC721A, AccessControlUpgradeable, IERC165)
         returns (bool)
     {
         return _interfaceId == type(IERC721A).interfaceId || _interfaceId == type(IERC2981).interfaceId
@@ -3652,4 +3638,3 @@ contract MvxCollection is Clone, ERC721A, IERC2981, MintingStages {
         _version = 1;
     }
 }
-

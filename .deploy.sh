@@ -1,5 +1,5 @@
 ## MAINNET
-forge create src/MvxFactory.sol:MvxFactory  --rpc-url https://mainnet.infura.io/v3/0f16b26af1dc41ceb5ebf74a86e1d5b3 --private-key  --constructor-args $(cast abi-encode "constructor(uint256)" 0)
+forge create src/MvxFactory.sol:MvxFactory  --rpc-url https://mainnet.infura.io/v3/0f16b26af1dc41ceb5ebf74a86e1d5b3 --private-key  --constructor-args $(cast abi-encode "constructor(uint256)" 300000000000000000)
 forge verify-contract 0x6A213cDDb2f5eD08ef3D27c66E7f6493970e9426 MvxFactory --watch --chain-id 1 --constructor-args $(cast abi-encode "constructor(uint256)" 0)
 
 forge create src/MvxCollection.sol:MvxCollection  --rpc-url  https://mainnet.infura.io/v3/0f16b26af1dc41ceb5ebf74a86e1d5b3 --private-key  --gas-limit 30000000

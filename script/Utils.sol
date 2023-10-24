@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT O
 pragma solidity ^0.8.20;
 
-import "@src/MvxFactory.sol";
+import {MvxCollection} from "@src/MvxCollection.sol";
+import {MvxFactory} from "@src/MvxFactory.sol";
 
 import {Test, console2} from "@forge-std/Test.sol";
 
