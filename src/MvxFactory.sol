@@ -50,6 +50,8 @@ contract MvxFactory is Ownable {
     event CollectionDiscount(address indexed _collection, uint96 indexed _discount);
     event WithdrawPartner(address indexed _sender, address indexed _collection, uint256 _balance);
     event WithdrawReferral(address indexed _sender, address indexed _artist, uint256 _referralBalance);
+    event ReferralBalanceUpdate(address, uint256);
+    event PartnerBalanceUpdate(address, uint256);
 
     event Log(string, uint256);
 
@@ -69,13 +71,7 @@ contract MvxFactory is Ownable {
     }
 
     /**
-     *
-     */
-    /**
-     *          OnlyOwner          **
-     */
-    /**
-     *
+     *          OnlyOwner          
      */
 
     /// @notice Grants create colletion rights to MVX_MEMBER
@@ -149,13 +145,7 @@ contract MvxFactory is Ownable {
     }
 
     /**
-     *
-     */
-    /**
-     *      Withdraw Functions     **
-     */
-    /**
-     *
+     *      Withdraw Functions     
      */
 
     function withdraw() external payable onlyOwner {
@@ -189,13 +179,7 @@ contract MvxFactory is Ownable {
     }
 
     /**
-     *
-     */
-    /**
-     *        Grant Referrals      **
-     */
-    /**
-     *
+     *        Grant Referrals      
      */
 
     /// @notice Access: owner & members of any collection created with this launchpad contract
@@ -222,14 +206,9 @@ contract MvxFactory is Ownable {
     }
 
     /**
-     *
+     *      Launch Collection      
      */
-    /**
-     *      Launch Collection      **
-     */
-    /**
-     *
-     */
+
     event Log(string, bool);
 
     function createCollection(
@@ -269,9 +248,26 @@ contract MvxFactory is Ownable {
         emit CreateEvent(_sender, collectionImpl, _clone);
     }
 
-    event ReferralBalanceUpdate(address, uint256);
-    event PartnerBalanceUpdate(address, uint256);
+    function getTime() public view returns (uint256 _time) {
+        _time = block.timestamp;
+    }
 
+    /// @param _daysFromNow current timestamp plus days
+    function getTime(uint256 _daysFromNow) public view returns (uint256 _time) {
+        _time = block.timestamp + (_daysFromNow * 60 * 60 * 24);
+    }
+
+    function getPartnerBalance(address _collection) public view returns (uint256 _balance) {
+        _balance = partners[_collection].balance;
+    }
+
+    function getReferralBalance(address _artist) public view returns (uint256 _balance) {
+        _balance = artists[_artist].referralBalance;
+    }
+
+    function totalCollections() external view returns (uint256 _total) {
+        _total = collectionCount;
+    }
     function _applyDiscount(Artist memory _artist, address _sender, uint256 _msgValue) internal returns (bool) {
         emit Log("applying discount", 0);
         Partner memory _partner = partners[_artist.collection];
@@ -296,27 +292,6 @@ contract MvxFactory is Ownable {
         partners[_artist.collection] = _partner;
         if (address(this).balance < msg.value - (_partnerAmount + _referralAmount)) revert DiscountError(3);
         return true;
-    }
-
-    function getTime() public view returns (uint256 _time) {
-        _time = block.timestamp;
-    }
-
-    /// @param _daysFromNow current timestamp plus days
-    function getTime(uint256 _daysFromNow) public view returns (uint256 _time) {
-        _time = block.timestamp + (_daysFromNow * 60 * 60 * 24);
-    }
-
-    function getPartnerBalance(address _collection) public view returns (uint256 _balance) {
-        _balance = partners[_collection].balance;
-    }
-
-    function getReferralBalance(address _artist) public view returns (uint256 _balance) {
-        _balance = artists[_artist].referralBalance;
-    }
-
-    function totalCollections() external view returns (uint256 _total) {
-        _total = collectionCount;
     }
 
     function _percent(uint256 a, uint96 b) internal pure returns (uint256) {
