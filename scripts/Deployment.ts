@@ -22,16 +22,16 @@ async function _deploy() {
   // });
 }
 
-async function deployProxy() {
+async function deploy() {
   // Deploying
-  const Factory: MvxFactory = await ethers.getContractFactory("MvxFactory");
-  const Collection: MvxCollection = await ethers.getContractFactory("MvxCollection");
+  // const Factory: MvxFactory = await ethers.getContractFactory("MvxFactory");
+  // const Collection: MvxCollection = await ethers.getContractFactory("MvxCollection");
 
-  const FactoryProxy = await upgrades.deployProxy(Factory, [0], { kind: 'uups' }); // platform fee = 0
-  const CollectionProxy = await upgrades.deployProxy(Collection, { kind: 'uups' });
+  // const FactoryProxy = await upgrades.deployProxy(Factory, [0], { kind: 'uups' }); // platform fee = 0
+  // const CollectionProxy = await upgrades.deployProxy(Collection, { kind: 'uups' });
 
-  await FactoryProxy.waitForDeployment();
-  await CollectionProxy.waitForDeployment();
+  // await FactoryProxy.waitForDeployment();
+  // await CollectionProxy.waitForDeployment();
 }
 async function _quoteCreateCollection(){
   const tx = await ethers.deployContract("MvxFactory", [0]);

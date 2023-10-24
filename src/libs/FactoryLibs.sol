@@ -1,6 +1,6 @@
 pragma solidity ^0.8.0;
 
-import {Stages, Collection, Artist, Partner} from "./MvxStruct.sol";
+import {Stages, Collection, Member, Artist, Partner} from "./MvxStruct.sol";
 
 interface IMvxCollection {
     function balanceOf(address) external returns (uint256);

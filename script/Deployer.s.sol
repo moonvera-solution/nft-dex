@@ -23,8 +23,8 @@ contract Deployer is Script {
         MvxFactory factory = new MvxFactory(3000);
         MvxCollection template = new MvxCollection();
 
-        factory.setCollectionImpl(address(template));
-        factory.updateMember(regularMinter, 5); //
+        factory.updateCollectionImpl(address(template));
+        factory.updateMember(regularMinter, address(0x0), 0, 5); //
         vm.stopBroadcast();
     }
 

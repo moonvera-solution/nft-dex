@@ -2,7 +2,7 @@
 pragma solidity ^0.8.5;
 
 import {Test, console2, Vm} from "@forge-std/Test.sol";
-import {Stages, Collection, Partner} from "@src/libs/MvxStruct.sol";
+import {Stages, Collection, Partner, Member} from "@src/libs/MvxStruct.sol";
 import {MvxFactory} from "@src/MvxFactory.sol";
 import {MvxCollection} from "@src/MvxCollection.sol";
 
@@ -42,11 +42,11 @@ contract BaseTest is Test {
         (address[] memory _ogs, address[] memory _wls) = _getMinters();
         return factory.createCollection{value: _deployCost}(nftData, stages, _ogs, _wls);
     }
-    
+
     function _setStages() public {
         stages = Stages({
-            ogMintPrice: .10 ether,
-            whitelistMintPrice: .5 ether ,
+            ogMintPrice: 1 ether,
+            whitelistMintPrice: 1 ether,
             mintPrice: 1 ether,
             mintMaxPerUser: 60,
             ogMintMaxPerUser: 60,
@@ -71,7 +71,6 @@ contract BaseTest is Test {
             royaltyReceiver: royaltyReiver
         });
     }
-
 
     function _getMinters() internal returns (address[] memory _initialOGMinters, address[] memory _initialWLMinters) {
         wl.push(0x5A2D11396e115aEF85Fd6f467A439fFB181478ec);
@@ -276,16 +275,16 @@ contract BaseTest is Test {
         // wl.push(0x48b81e5bD2a1312B6cfB353Ec9256d891248BAd0);
         // wl.push(0x924d924F243D9d0B30a93FFBAA45aEE119223BD8);
 
-        og.push(0x5A2D11396e115aEF85Fd6f467A439fFB181478ec);
-        og.push(0x328A3f8bAE2fB255a86BcDEFE9710D045F1A7603);
-        og.push(0x6df1Fd18Aaa9F1DD745e6E3Afc3ff8522a556889);
-        og.push(0x269b4c5537445ad08EBF6eA6D848a4866856778b);
-        og.push(0x8919Bc879C595c4F5a699A870d5211a5436cDF7E);
-        og.push(0x6Aa9D725a023651E415CD78E9f229bD39d4a01BA);
-        og.push(0xc7468B7D4086D15bf13D025A663E46E38d945446);
-        og.push(0x40f0D8104ae5C9b9D7185Dbf1d65c2d40CA1565f);
-        og.push(0x897f1569a22Ab89ED2ED363acAF9b8613EDd27a7);
-        og.push(0x173f6e69efA3Ed13bC5b8fFa48b80cfaD5b55260);
+        // og.push(0x5A2D11396e115aEF85Fd6f467A439fFB181478ec);
+        // og.push(0x328A3f8bAE2fB255a86BcDEFE9710D045F1A7603);
+        // og.push(0x6df1Fd18Aaa9F1DD745e6E3Afc3ff8522a556889);
+        // og.push(0x269b4c5537445ad08EBF6eA6D848a4866856778b);
+        // og.push(0x8919Bc879C595c4F5a699A870d5211a5436cDF7E);
+        // og.push(0x6Aa9D725a023651E415CD78E9f229bD39d4a01BA);
+        // og.push(0xc7468B7D4086D15bf13D025A663E46E38d945446);
+        // og.push(0x40f0D8104ae5C9b9D7185Dbf1d65c2d40CA1565f);
+        // og.push(0x897f1569a22Ab89ED2ED363acAF9b8613EDd27a7);
+        // og.push(0x173f6e69efA3Ed13bC5b8fFa48b80cfaD5b55260);
         // og.push(0x172e1D59AEBe8fc5d0BAc93B9E9a1ABddCc767ea);
         // og.push(0x63c65c86cB9D25a252635c73f90516D21E344ED4);
         // og.push(0x63e03E3e25d483D7e5c0B300C8b34b9A5f7Ead85);
@@ -468,15 +467,15 @@ contract BaseTest is Test {
         // og.push(0xe1C9881B973b0D973b2f714B89055e270Fbf879e);
         // og.push(0x356E8dca95598C7A00cC3f198Af08762Ed57d050);
         // og.push(0x826a9158eCEbd405479f212A4836eB5E17880253);
-        // og.push(0x5A79B72e572427c86a28965206649cE9a12dfdfa);
-        // og.push(0x9228D10ddb805E338Fd2E9670d43996FEf89Ef6D);
-        // og.push(0x786235E5d2b1F2a8dd31D791d34726933FbA5004);
-        // og.push(0x1716Dc946d9264126412feDE8264E50E9d21c37a);
-        // og.push(0xCaF7DEF17e72fF1C9A298fB693899A5Ab3874117);
-        // og.push(0x80804B3f3a947053D0e930A231c732318c073aCF);
-        // og.push(0xa9b4bf6A5dc818fe20124012569BcfCcEBb40D77);
-        // og.push(0x48b81e5bD2a1312B6cfB353Ec9256d891248BAd0);
-        // og.push(0x924d924F243D9d0B30a93FFBAA45aEE119223BD8);
+        og.push(0x5A79B72e572427c86a28965206649cE9a12dfdfa);
+        og.push(0x9228D10ddb805E338Fd2E9670d43996FEf89Ef6D);
+        og.push(0x786235E5d2b1F2a8dd31D791d34726933FbA5004);
+        og.push(0x1716Dc946d9264126412feDE8264E50E9d21c37a);
+        og.push(0xCaF7DEF17e72fF1C9A298fB693899A5Ab3874117);
+        og.push(0x80804B3f3a947053D0e930A231c732318c073aCF);
+        og.push(0xa9b4bf6A5dc818fe20124012569BcfCcEBb40D77);
+        og.push(0x48b81e5bD2a1312B6cfB353Ec9256d891248BAd0);
+        og.push(0x924d924F243D9d0B30a93FFBAA45aEE119223BD8);
 
         _initialOGMinters = og;
         _initialWLMinters = wl;

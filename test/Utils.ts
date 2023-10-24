@@ -1,5 +1,8 @@
-import * as ethers from "ethers";
+import {ethers} from "hardhat";
 import * as dotenv from "dotenv";
+import  BigNumber from 'bignumber.js';
+BigNumber.config({ DECIMAL_PLACES: 20, ROUNDING_MODE: 4 })
+
 dotenv.config();
 const axios = require('axios');
 
@@ -32,7 +35,7 @@ function _getGasPrice() {
 
 
 async function _getColletionData(){
-    const encoder = ethers.utils.defaultAbiCoder; 
+    const encoder = new ethers.AbiCoder; 
     return encoder.encode(
         [
             "string",
@@ -47,14 +50,15 @@ async function _getColletionData(){
             "mvx", // symbol
             "ipfs://QmVjYK4hPdZ7Jn5GBuaMUsUAaGE6RpzHxaZVE29toYUrRZ/", // baseURI
             ".json", // baseExt
-            "10", // maxSupply
-            "300", // royaltyFee
+            10, // maxSupply
+            300, // royaltyFee
             "0x2ff9cb5A21981e8196b09AD651470b41Ba28b9C6", // royaltyReceiver
         ]
     );
 }
 async function _getStageData() {
-    const encoder = ethers.utils.defaultAbiCoder; 
+
+    const encoder =  new ethers.AbiCoder; 
     return encoder.encode(
         [
             "uint256",
@@ -68,20 +72,20 @@ async function _getStageData() {
             "uint256",
             "uint256",
             "uint256",
-            "uint256",
+            "uint256"
         ], [
-        await ethers.BigNumber.from("30000000000000000") ,// ogMintPrice;
-        await ethers.BigNumber.from("30000000000000000"), // whitelistMintPrice;
-        await ethers.BigNumber.from("30000000000000000"), // mintPrice;
+        18415248,
+        18415248,
+        18415248,
         20, // mintMaxPerUser;
         10, // ogMintMaxPerUser;
         10, // whitelistMintMaxPerUser;
-         await ethers.block.timestamp, //  ;
-         await ethers.block.timestamp + await ethers.block.timestamp + 500, //  ;
-         await ethers.block.timestamp, //  ;
-         await ethers.block.timestamp + await ethers.block.timestamp + 500, //  ;
-         await ethers.block.timestamp, //  ;
-         await ethers.block.timestamp + await ethers.block.timestamp + 500 //  ;
+         18415248,
+         18415248,
+         18415248,
+         18415248,
+         18415248,
+         18415248
 ]);
 }
 function _getMinters() {
@@ -109,7 +113,7 @@ function _getMinters() {
         '0x897f1569a22Ab89ED2ED363acAF9b8613EDd27a7',
         '0x173f6e69efA3Ed13bC5b8fFa48b80cfaD5b55260',
         '0x172e1D59AEBe8fc5d0BAc93B9E9a1ABddCc767ea',
-        '0x63c65c86cB9D25a252635c73f90516D21E344ED4',
+        '0x63c65c86cB9D25a252635c73f90516D21E344ED4'
     ]
    return [og,wl]
 }

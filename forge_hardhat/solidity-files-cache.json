@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/src/MvxCollection.sol": {
-      "lastModificationDate": 1697919065850,
-      "contentHash": "642c87d2ed919198c22576bc4d3ab883",
+      "lastModificationDate": 1698085164698,
+      "contentHash": "53a494938d066d7c244899fb814cfb2d",
       "sourceName": "src/MvxCollection.sol",
       "solcConfig": {
         "version": "0.8.20",
@@ -27,10 +27,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -46,8 +45,8 @@
       ]
     },
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/src/abstracts/MintingStages.sol": {
-      "lastModificationDate": 1697921196384,
-      "contentHash": "3ddf30aff9ebb66b1fc8b43909b096d9",
+      "lastModificationDate": 1698069605914,
+      "contentHash": "1f2d5499bec8284b949e31c709cc4161",
       "sourceName": "src/abstracts/MintingStages.sol",
       "solcConfig": {
         "version": "0.8.20",
@@ -71,10 +70,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -94,8 +92,8 @@
       ]
     },
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/src/libs/AccessControl.sol": {
-      "lastModificationDate": 1697918475037,
-      "contentHash": "fb49cc899a0e9091f252f88a1a536383",
+      "lastModificationDate": 1698069605921,
+      "contentHash": "d7fc5f77a2b5595bc20438af60a167da",
       "sourceName": "src/libs/AccessControl.sol",
       "solcConfig": {
         "version": "0.8.20",
@@ -119,10 +117,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -139,8 +136,8 @@
       ]
     },
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/src/libs/MvxStruct.sol": {
-      "lastModificationDate": 1697921205917,
-      "contentHash": "69ad55b331633eed1c8bacbb063deb62",
+      "lastModificationDate": 1698069967562,
+      "contentHash": "77e7869f076126f01b476007c5f2d15f",
       "sourceName": "src/libs/MvxStruct.sol",
       "solcConfig": {
         "version": "0.8.20",
@@ -164,10 +161,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -179,7 +175,7 @@
       "artifacts": []
     },
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/src/tokens/ERC721A.sol": {
-      "lastModificationDate": 1697910810391,
+      "lastModificationDate": 1698069605944,
       "contentHash": "37fc251f01b8a28769e9e45011fe1332",
       "sourceName": "src/tokens/ERC721A.sol",
       "solcConfig": {
@@ -204,10 +200,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -249,10 +244,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -293,10 +287,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -310,7 +303,7 @@
       ]
     },
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/src/interfaces/IERC721A.sol": {
-      "lastModificationDate": 1697910810356,
+      "lastModificationDate": 1698069605914,
       "contentHash": "e2bd882b05d84d4abc16bd284d546d69",
       "sourceName": "src/interfaces/IERC721A.sol",
       "solcConfig": {
@@ -335,10 +328,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -377,10 +369,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -419,10 +410,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -463,10 +453,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -513,10 +502,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -555,10 +543,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -599,10 +586,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -641,10 +627,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -683,10 +668,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -728,10 +712,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -772,10 +755,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -814,10 +796,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -831,7 +812,7 @@
       ]
     },
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/src/dex/OrderMatcher.sol": {
-      "lastModificationDate": 1697910810364,
+      "lastModificationDate": 1698069605919,
       "contentHash": "d694bf5ab27065c6b6a8d4853c5c4040",
       "sourceName": "src/dex/OrderMatcher.sol",
       "solcConfig": {
@@ -856,10 +837,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -908,10 +888,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -952,10 +931,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -994,10 +972,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -1038,10 +1015,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -1057,7 +1033,7 @@
       ]
     },
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/src/MvxMarket.sol": {
-      "lastModificationDate": 1697910810357,
+      "lastModificationDate": 1698069605911,
       "contentHash": "98ee04c7c13601874bd29079155be8ab",
       "sourceName": "src/MvxMarket.sol",
       "solcConfig": {
@@ -1082,10 +1058,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -1130,10 +1105,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -1174,10 +1148,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -1219,10 +1192,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -1261,10 +1233,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -1303,10 +1274,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -1347,10 +1317,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -1389,10 +1358,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -1433,10 +1401,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -1450,8 +1417,8 @@
       ]
     },
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/src/libs/FactoryLibs.sol": {
-      "lastModificationDate": 1697910810365,
-      "contentHash": "706c06954f348d1f924f3ef9bf24d765",
+      "lastModificationDate": 1698069689649,
+      "contentHash": "d06c3dd6a4f024dbded855761fb0515b",
       "sourceName": "src/libs/FactoryLibs.sol",
       "solcConfig": {
         "version": "0.8.20",
@@ -1475,10 +1442,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -1498,8 +1464,8 @@
       ]
     },
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/src/MvxFactory.sol": {
-      "lastModificationDate": 1697929781854,
-      "contentHash": "fc13bac565ee1e0550a091a77a9e2023",
+      "lastModificationDate": 1698076964911,
+      "contentHash": "8a7d41588b2e3e4724dbfe78432df9fd",
       "sourceName": "src/MvxFactory.sol",
       "solcConfig": {
         "version": "0.8.20",
@@ -1523,10 +1489,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -1542,7 +1507,7 @@
       ]
     },
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/src/libs/Encoder.sol": {
-      "lastModificationDate": 1697921222503,
+      "lastModificationDate": 1698069605912,
       "contentHash": "121f1cdeb4acf663a25334a1f7395e9e",
       "sourceName": "src/libs/Encoder.sol",
       "solcConfig": {
@@ -1567,10 +1532,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -1586,7 +1550,7 @@
       ]
     },
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/src/dex/OrderStructs.sol": {
-      "lastModificationDate": 1697910810360,
+      "lastModificationDate": 1698069605914,
       "contentHash": "8e1810c6bea5730c902e4df47768b253",
       "sourceName": "src/dex/OrderStructs.sol",
       "solcConfig": {
@@ -1611,10 +1575,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -1626,7 +1589,7 @@
       "artifacts": []
     },
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/src/interfaces/IDutchAuction.sol": {
-      "lastModificationDate": 1697910810354,
+      "lastModificationDate": 1698069605911,
       "contentHash": "7985059d7cbcf4a4c69b895847b39e34",
       "sourceName": "src/interfaces/IDutchAuction.sol",
       "solcConfig": {
@@ -1651,10 +1614,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -1668,7 +1630,7 @@
       ]
     },
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/src/libs/FullMath.sol": {
-      "lastModificationDate": 1697910810361,
+      "lastModificationDate": 1698069605912,
       "contentHash": "a9d3665e8a310b8611992cab2a47aaae",
       "sourceName": "src/libs/FullMath.sol",
       "solcConfig": {
@@ -1693,10 +1655,9 @@
               ]
             }
           },
-          "evmVersion": "paris",
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363937393239373935353634"
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
             }
           }
         }
@@ -1707,6 +1668,66 @@
       ],
       "artifacts": [
         "FullMath"
+      ]
+    },
+    "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/src/MvxCollectionV1.sol": {
+      "lastModificationDate": 1698079866043,
+      "contentHash": "6ef776be028c1166120a83857e2ab48f",
+      "sourceName": "src/MvxCollectionV1.sol",
+      "solcConfig": {
+        "version": "0.8.20",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 100000
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "storageLayout",
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "libraries": {
+            "": {
+              "__CACHE_BREAKER__": "0x0000000000000031363938303932313235353039"
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "AccessControlUpgradeable",
+        "AddressUpgradeable",
+        "Clone",
+        "ContextUpgradeable",
+        "ERC165Upgradeable",
+        "ERC721A",
+        "ERC721A__IERC721Receiver",
+        "FullMath",
+        "IAccessControlUpgradeable",
+        "IERC165",
+        "IERC165Upgradeable",
+        "IERC2981",
+        "IERC721A",
+        "Initializable",
+        "MathUpgradeable",
+        "MintingStages",
+        "MvxCollectionV1",
+        "ReentrancyGuardUpgradeable",
+        "SignedMathUpgradeable",
+        "StringsUpgradeable"
       ]
     }
   }

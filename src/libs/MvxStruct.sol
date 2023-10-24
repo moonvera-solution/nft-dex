@@ -41,4 +41,12 @@ struct Partner {
     uint96 referralOwnPercent; // % variable per partnership
     uint256 balance; // track partner balance (admin)
     uint96 discount; // variable per partnership
+    uint40 expiration;
+}
+
+// address => Member
+struct Member {
+    address collection;
+    uint96 discount;
+    uint256 expiration;
 }

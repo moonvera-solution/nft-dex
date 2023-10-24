@@ -2412,8 +2412,8 @@
       }
     },
     "script/Deployer.s.sol": {
-      "lastModificationDate": 1697931924778,
-      "contentHash": "59faaad02c3f26525d48764299e21b2a",
+      "lastModificationDate": 1698093957487,
+      "contentHash": "0670157e4ccc0c022f71f708dcb80cde",
       "sourceName": "script/Deployer.s.sol",
       "solcConfig": {
         "settings": {
@@ -2493,7 +2493,7 @@
       }
     },
     "script/Encoder.s.sol": {
-      "lastModificationDate": 1697931924777,
+      "lastModificationDate": 1698069605910,
       "contentHash": "b52cd417a31e8ab8e4876d96341ef345",
       "sourceName": "script/Encoder.s.sol",
       "solcConfig": {
@@ -2554,7 +2554,7 @@
       }
     },
     "script/Utils.sol": {
-      "lastModificationDate": 1697931924779,
+      "lastModificationDate": 1698093957487,
       "contentHash": "2c3a9ca746ac409c4f69dcdf63e29b4e",
       "sourceName": "script/Utils.sol",
       "solcConfig": {
@@ -2625,8 +2625,8 @@
       }
     },
     "src/MvxCollection.sol": {
-      "lastModificationDate": 1697943141216,
-      "contentHash": "09d8eb67a307e359b6d37cd002abeb3e",
+      "lastModificationDate": 1698093957482,
+      "contentHash": "2f13709c0c027d180f4293af3e4b2476",
       "sourceName": "src/MvxCollection.sol",
       "solcConfig": {
         "settings": {
@@ -2674,9 +2674,107 @@
         }
       }
     },
+    "src/MvxCollectionV1.sol": {
+      "lastModificationDate": 1698093957754,
+      "contentHash": "76a551584270e0dbb62949b7fc600206",
+      "sourceName": "src/MvxCollectionV1.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [],
+      "versionRequirement": "^0.8.20",
+      "artifacts": {
+        "AccessControlUpgradeable": {
+          "0.8.21+commit.d9974bed.Darwin.appleclang": "MvxCollectionV1.sol/AccessControlUpgradeable.json"
+        },
+        "AddressUpgradeable": {
+          "0.8.21+commit.d9974bed.Darwin.appleclang": "MvxCollectionV1.sol/AddressUpgradeable.json"
+        },
+        "Clone": {
+          "0.8.21+commit.d9974bed.Darwin.appleclang": "MvxCollectionV1.sol/Clone.json"
+        },
+        "ContextUpgradeable": {
+          "0.8.21+commit.d9974bed.Darwin.appleclang": "MvxCollectionV1.sol/ContextUpgradeable.json"
+        },
+        "ERC165Upgradeable": {
+          "0.8.21+commit.d9974bed.Darwin.appleclang": "MvxCollectionV1.sol/ERC165Upgradeable.json"
+        },
+        "ERC721A": {
+          "0.8.21+commit.d9974bed.Darwin.appleclang": "MvxCollectionV1.sol/ERC721A.json"
+        },
+        "ERC721A__IERC721Receiver": {
+          "0.8.21+commit.d9974bed.Darwin.appleclang": "MvxCollectionV1.sol/ERC721A__IERC721Receiver.json"
+        },
+        "FullMath": {
+          "0.8.21+commit.d9974bed.Darwin.appleclang": "MvxCollectionV1.sol/FullMath.json"
+        },
+        "IAccessControlUpgradeable": {
+          "0.8.21+commit.d9974bed.Darwin.appleclang": "MvxCollectionV1.sol/IAccessControlUpgradeable.json"
+        },
+        "IERC165": {
+          "0.8.21+commit.d9974bed.Darwin.appleclang": "MvxCollectionV1.sol/IERC165.json"
+        },
+        "IERC165Upgradeable": {
+          "0.8.21+commit.d9974bed.Darwin.appleclang": "MvxCollectionV1.sol/IERC165Upgradeable.json"
+        },
+        "IERC2981": {
+          "0.8.21+commit.d9974bed.Darwin.appleclang": "MvxCollectionV1.sol/IERC2981.json"
+        },
+        "IERC721A": {
+          "0.8.21+commit.d9974bed.Darwin.appleclang": "MvxCollectionV1.sol/IERC721A.json"
+        },
+        "Initializable": {
+          "0.8.21+commit.d9974bed.Darwin.appleclang": "MvxCollectionV1.sol/Initializable.json"
+        },
+        "MathUpgradeable": {
+          "0.8.21+commit.d9974bed.Darwin.appleclang": "MvxCollectionV1.sol/MathUpgradeable.json"
+        },
+        "MintingStages": {
+          "0.8.21+commit.d9974bed.Darwin.appleclang": "MvxCollectionV1.sol/MintingStages.json"
+        },
+        "MvxCollectionV1": {
+          "0.8.21+commit.d9974bed.Darwin.appleclang": "MvxCollectionV1.sol/MvxCollectionV1.json"
+        },
+        "ReentrancyGuardUpgradeable": {
+          "0.8.21+commit.d9974bed.Darwin.appleclang": "MvxCollectionV1.sol/ReentrancyGuardUpgradeable.json"
+        },
+        "SignedMathUpgradeable": {
+          "0.8.21+commit.d9974bed.Darwin.appleclang": "MvxCollectionV1.sol/SignedMathUpgradeable.json"
+        },
+        "StringsUpgradeable": {
+          "0.8.21+commit.d9974bed.Darwin.appleclang": "MvxCollectionV1.sol/StringsUpgradeable.json"
+        }
+      }
+    },
     "src/MvxFactory.sol": {
-      "lastModificationDate": 1697944998041,
-      "contentHash": "962b6ff142d5a48650b41d1640546349",
+      "lastModificationDate": 1698093957486,
+      "contentHash": "c3d3f601abd4650f4e91762a74199ab5",
       "sourceName": "src/MvxFactory.sol",
       "solcConfig": {
         "settings": {
@@ -2719,7 +2817,7 @@
       }
     },
     "src/MvxMarket.sol": {
-      "lastModificationDate": 1697931924773,
+      "lastModificationDate": 1698069605911,
       "contentHash": "28a3656caa857fc7f9838968f1d5b69f",
       "sourceName": "src/MvxMarket.sol",
       "solcConfig": {
@@ -2780,8 +2878,8 @@
       }
     },
     "src/abstracts/MintingStages.sol": {
-      "lastModificationDate": 1697931924774,
-      "contentHash": "359e73fa521de8e68ef062635c428e65",
+      "lastModificationDate": 1698093957484,
+      "contentHash": "7493dddd9dc05fa337f37ed2d5b8bedc",
       "sourceName": "src/abstracts/MintingStages.sol",
       "solcConfig": {
         "settings": {
@@ -2829,7 +2927,7 @@
       }
     },
     "src/dex/OrderMatcher.sol": {
-      "lastModificationDate": 1697931924780,
+      "lastModificationDate": 1698069605919,
       "contentHash": "e3a80609bab3222fdc4305eeb60edc42",
       "sourceName": "src/dex/OrderMatcher.sol",
       "solcConfig": {
@@ -2890,7 +2988,7 @@
       }
     },
     "src/dex/OrderStructs.sol": {
-      "lastModificationDate": 1697931924773,
+      "lastModificationDate": 1698069605914,
       "contentHash": "8e1810c6bea5730c902e4df47768b253",
       "sourceName": "src/dex/OrderStructs.sol",
       "solcConfig": {
@@ -2931,7 +3029,7 @@
       }
     },
     "src/interfaces/IDutchAuction.sol": {
-      "lastModificationDate": 1697931924775,
+      "lastModificationDate": 1698069605910,
       "contentHash": "7985059d7cbcf4a4c69b895847b39e34",
       "sourceName": "src/interfaces/IDutchAuction.sol",
       "solcConfig": {
@@ -2972,7 +3070,7 @@
       }
     },
     "src/interfaces/IERC721A.sol": {
-      "lastModificationDate": 1697931924776,
+      "lastModificationDate": 1698069605913,
       "contentHash": "e2bd882b05d84d4abc16bd284d546d69",
       "sourceName": "src/interfaces/IERC721A.sol",
       "solcConfig": {
@@ -3013,7 +3111,7 @@
       }
     },
     "src/libs/AccessControl.sol": {
-      "lastModificationDate": 1697931924779,
+      "lastModificationDate": 1698069605921,
       "contentHash": "d7fc5f77a2b5595bc20438af60a167da",
       "sourceName": "src/libs/AccessControl.sol",
       "solcConfig": {
@@ -3063,7 +3161,7 @@
       }
     },
     "src/libs/Encoder.sol": {
-      "lastModificationDate": 1697931924775,
+      "lastModificationDate": 1698069605911,
       "contentHash": "121f1cdeb4acf663a25334a1f7395e9e",
       "sourceName": "src/libs/Encoder.sol",
       "solcConfig": {
@@ -3106,8 +3204,8 @@
       }
     },
     "src/libs/FactoryLibs.sol": {
-      "lastModificationDate": 1697931924781,
-      "contentHash": "706c06954f348d1f924f3ef9bf24d765",
+      "lastModificationDate": 1698093957487,
+      "contentHash": "b16a2a219ad8aa9aa0c32c3d4674edcb",
       "sourceName": "src/libs/FactoryLibs.sol",
       "solcConfig": {
         "settings": {
@@ -3161,7 +3259,7 @@
       }
     },
     "src/libs/FullMath.sol": {
-      "lastModificationDate": 1697931924775,
+      "lastModificationDate": 1698069605911,
       "contentHash": "a9d3665e8a310b8611992cab2a47aaae",
       "sourceName": "src/libs/FullMath.sol",
       "solcConfig": {
@@ -3202,8 +3300,8 @@
       }
     },
     "src/libs/MvxStruct.sol": {
-      "lastModificationDate": 1697931924775,
-      "contentHash": "69ad55b331633eed1c8bacbb063deb62",
+      "lastModificationDate": 1698069967561,
+      "contentHash": "77e7869f076126f01b476007c5f2d15f",
       "sourceName": "src/libs/MvxStruct.sol",
       "solcConfig": {
         "settings": {
@@ -3243,7 +3341,7 @@
       }
     },
     "src/tokens/ERC721A.sol": {
-      "lastModificationDate": 1697931924809,
+      "lastModificationDate": 1698069605944,
       "contentHash": "37fc251f01b8a28769e9e45011fe1332",
       "sourceName": "src/tokens/ERC721A.sol",
       "solcConfig": {
@@ -3289,8 +3387,8 @@
       }
     },
     "test/foundry/MvxFactoryTest.sol": {
-      "lastModificationDate": 1697945805708,
-      "contentHash": "52a4bdcac7540466b51e7790b5f51350",
+      "lastModificationDate": 1698111170035,
+      "contentHash": "18001ed849642c2d892233d7e36f23df",
       "sourceName": "test/foundry/MvxFactoryTest.sol",
       "solcConfig": {
         "settings": {
@@ -3364,7 +3462,7 @@
       }
     },
     "test/foundry/MvxMarketTest.t.sol": {
-      "lastModificationDate": 1697931924779,
+      "lastModificationDate": 1698069605916,
       "contentHash": "03ed3907256c4a995f3f169d3c2b3c5f",
       "sourceName": "test/foundry/MvxMarketTest.t.sol",
       "solcConfig": {
@@ -3451,9 +3549,50 @@
         }
       }
     },
+    "test/foundry/Test.sol": {
+      "lastModificationDate": 1698069605910,
+      "contentHash": "8ccbce1000d8a90747cfc4e8baf9a99c",
+      "sourceName": "test/foundry/Test.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [],
+      "versionRequirement": "^0.8.5",
+      "artifacts": {
+        "Testing": {
+          "0.8.21+commit.d9974bed.Darwin.appleclang": "Test.sol/Testing.json"
+        }
+      }
+    },
     "test/foundry/helpers/BaseTest.sol": {
-      "lastModificationDate": 1697943826169,
-      "contentHash": "955305539f4c6b137916a206e8d84b57",
+      "lastModificationDate": 1698093957513,
+      "contentHash": "ecf0104ed314df329a022ff06985f6e5",
       "sourceName": "test/foundry/helpers/BaseTest.sol",
       "solcConfig": {
         "settings": {

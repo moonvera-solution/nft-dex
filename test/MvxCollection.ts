@@ -5,7 +5,6 @@ import {
 import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
 import { expect } from "chai";
 import { ethers } from "hardhat";
-// const {ethers} = require("ethers");
 import "@nomicfoundation/hardhat-ethers";
 
 
@@ -40,7 +39,7 @@ describe("NftCollection", function () {
     it("Should setCollectionImpl on Factory", async function () {
       const { FactoryInstance, CollectionInstance } = await loadFixture(deployContracts);
       const newImpl = CollectionInstance.target;
-      await FactoryInstance.setCollectionImpl(newImpl);
+      await FactoryInstance.updateCollectionImpl(newImpl);
       const actualImpl = await FactoryInstance.collectionImpl();
       await expect(actualImpl).to.be.equals(newImpl);
     });
@@ -49,11 +48,12 @@ describe("NftCollection", function () {
       const { FactoryInstance, CollectionInstance ,EncoderInstance} = await loadFixture(deployContracts);
 
       const [Ogs, Wls] = await _getMinters();
-      // const  CollectionStruct = await EncoderInstance.encodeCollection();
-      // const StageStruct = await EncoderInstance.encodeStage();
-      // await FactoryInstance.createCollection(CollectionStruct,StageStruct,Ogs,Wls);
+      const  CollectionStruct = await _getColletionData();
+      const StageStruct = await _getStageData();
+      await FactoryInstance.createCollection(CollectionStruct,StageStruct,Ogs,Wls);
     });
   });
+
 
   // describe("Withdrawals", function () {
   //   describe("Validations", function () {
