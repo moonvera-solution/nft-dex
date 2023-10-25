@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity 0.8.20;
 
 import "@src/abstracts/MintingStages.sol";
 
@@ -26,7 +26,7 @@ contract MvxCollection is MintingStages {
     error TokenNotExistsError();
     error WithdrawError(uint8 isPlaformCall); // 0 = yes, 1 = no, fail admin
     error MintForOwnerError(uint8);
-    error MintError(string, uint256);
+    error MintError(string, uint8);
 
     /// @notice Called by MvxFactory on clone Deployment
     /// @param platformFee uint96 fee in basis points
@@ -79,15 +79,9 @@ contract MvxCollection is MintingStages {
     /// @param _amount amount to mint (batch minting)
     function mintForOG(address _to, uint256 _amount) external payable onlyRole(OG_MINTER_ROLE) {
         string memory mintType = "OG";
-        if (!(msg.value >= (_amount * mintingStages.mintPrice))) revert MintError(mintType, 0); // Not enought eth
+        if (!(msg.value >= (_amount * mintingStages.ogMintPrice))) revert MintError(mintType, 0); // Not enought eth
         _internalSafeMint(
-            _to,
-            _amount,
-            mintingStages.whitelistMintPrice,
-            mintingStages.whitelistMintMaxPerUser,
-            mintingStages.whitelistMintStart,
-            mintingStages.whitelistMintEnd,
-            mintType
+            _to, _amount, mintingStages.ogMintMaxPerUser, mintingStages.ogMintStart, mintingStages.ogMintEnd, mintType
         );
         emit OGmintEvent(msg.sender, msg.value, _to, _amount, mintingStages.ogMintPrice);
     }
@@ -97,11 +91,10 @@ contract MvxCollection is MintingStages {
     /// @param _amount amount to mint (batch minting)
     function mintForWhitelist(address _to, uint256 _amount) external payable onlyRole(WL_MINTER_ROLE) {
         string memory mintType = "WL";
-        if (!(msg.value >= (_amount * mintingStages.mintPrice))) revert MintError(mintType, 0); // Not enought eth
+        if (!(msg.value >= (_amount * mintingStages.whitelistMintPrice))) revert MintError(mintType, 0); // Not enought eth
         _internalSafeMint(
             _to,
             _amount,
-            mintingStages.whitelistMintPrice,
             mintingStages.whitelistMintMaxPerUser,
             mintingStages.whitelistMintStart,
             mintingStages.whitelistMintEnd,
@@ -117,13 +110,7 @@ contract MvxCollection is MintingStages {
         string memory mintType = "Regular";
         if (!(msg.value >= (_amount * mintingStages.mintPrice))) revert MintError(mintType, 0); // Not enought eth
         _internalSafeMint(
-            _to,
-            _amount,
-            mintingStages.mintPrice,
-            mintingStages.mintMaxPerUser,
-            mintingStages.mintStart,
-            mintingStages.mintEnd,
-            mintType
+            _to, _amount, mintingStages.mintMaxPerUser, mintingStages.mintStart, mintingStages.mintEnd, mintType
         );
         emit MintEvent(msg.sender, msg.value, _to, _amount, mintingStages.mintPrice);
     }
@@ -134,7 +121,6 @@ contract MvxCollection is MintingStages {
     function _internalSafeMint(
         address _mintTo,
         uint256 _mintAmount,
-        uint256 _mintPrice,
         uint256 _maxMintAmount,
         uint256 _mintStageStartsAt,
         uint256 _mintStageEndsAt,

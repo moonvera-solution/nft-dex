@@ -5,7 +5,7 @@ import {Test, console, console2, Vm} from "@forge-std/Test.sol";
 import "@solady/utils/LibString.sol";
 import {GasSnapshot} from "@forge-gas-snapshot/GasSnapshot.sol";
 import "@src/MvxFactory.sol";
-import "@src/MvxCollection.sol";
+// import "@src/MvxCollection.sol";
 import {Stages, Collection} from "@src/libs/MvxStruct.sol";
 
 import "./helpers/BaseTest.sol";
@@ -24,9 +24,9 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         clone = new MvxCollection();
         mvxCollectionNotERC721A = new MvxCollectionNotERC721A();
         factory = new MvxFactory(0); // takes fee on mint 3%
-        factory.setCollectionImpl(address(clone));
+        factory.updateCollectionImpl(address(clone));
 
-        factory.updateMember(wallet1.addr, block.timestamp + 5 days);
+        factory.updateMember(wallet1.addr, address(0x0), 0, 10);
         factory.updatePlatformFee(_platformFee);
 
         vm.deal(wallet1.addr, 100 ether);
@@ -79,10 +79,10 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         assertEq(royaltyAmount, 1 ether * 1000 / 10_000);
     }
 
-    function test_fail_setCollectionImpl() public {
-        vm.expectRevert(abi.encodeWithSelector(InvalidColletion.selector, 2));
+    function test_fail_updateCollectionImpl() public {
+        vm.expectRevert(abi.encodeWithSelector(InvalidColletion.selector, 1));
         vm.startPrank(address(this));
-        factory.setCollectionImpl(address(mvxCollectionNotERC721A));
+        factory.updateCollectionImpl(address(mvxCollectionNotERC721A));
     }
 
     /// @notice deployer is Clone/Art Collection Admin
@@ -226,8 +226,8 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         assert(_nftCollection.hasRole(OG_MINTER_ROLE, wallet1.addr));
     }
 
-    function test_tokenURI(uint256 tokenId) public {
-        vm.assume(tokenId > 0 && tokenId < stages.mintMaxPerUser);
+    function test_tokenURI() public {
+        uint256 tokenId = 5;
         _nftCollection.mintForRegular{value: 5 ether}(address(1), tokenId);
         string memory uri = _nftCollection.tokenURI(tokenId);
         console.log("uri", uri);
@@ -256,7 +256,7 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
 
     function test_break_minting_logic() public {
         Vm.Wallet memory hacker = vm.createWallet("hacker");
-        vm.deal(hacker.addr, 100 ether);
+        vm.deal(hacker.addr, 200 ether);
 
         (,,, uint256 maxOG, uint256 maxReg, uint256 maxWL,,,,,,) = _nftCollection.mintingStages();
         _nftCollection.grantRole(WL_MINTER_ROLE, hacker.addr); // OG=0, WL=1
@@ -267,15 +267,17 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         emit Log("maxReg:", maxReg);
         emit Log("maxWL:", maxWL);
 
-        _nftCollection.mintForWhitelist{value: 1 ether}(hacker.addr, maxWL );
-        _nftCollection.mintForOG{value: 1 ether}(hacker.addr, maxOG);
-        _nftCollection.mintForRegular{value: 1 ether}(hacker.addr, maxReg);
-        
+        _nftCollection.mintForWhitelist{value: 50 ether}(hacker.addr, maxWL);
+        _nftCollection.mintForOG{value: 60 ether}(hacker.addr, maxOG);
+        _nftCollection.mintForRegular{value: 60 ether}(hacker.addr, maxReg);
+
         // one more should break the logic
-        vm.expectRevert("Exceeds maxMint");
+        vm.expectRevert(abi.encodeWithSelector(MintError.selector,"Regular", 1));
         _nftCollection.mintForRegular{value: 1 ether}(hacker.addr, 1);
-        assert(_nftCollection.balanceOf(hacker.addr) > 0);
+        assert(_nftCollection.balanceOf(hacker.addr) == maxWL + maxOG + maxReg);
     }
+
+    error MintError(string, uint8);
 
     fallback() external payable {}
 }

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT O
-pragma solidity ^0.8.5;
+pragma solidity 0.8.20;
 
 import {Test, console, console2, Vm} from "forge-std/Test.sol";
 import {GasSnapshot} from "@forge-gas-snapshot/GasSnapshot.sol";

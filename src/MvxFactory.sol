@@ -27,7 +27,7 @@ contract MvxFactory is Ownable {
 
     // nft collection deploy fee
     uint256 public deployFee;
-    uint96 public platformFee;
+    uint256 public platformFee;
     uint16 public collectionCount;
 
     mapping(address => Artist) public artists; // artists addr => Artist data, expires
@@ -71,7 +71,7 @@ contract MvxFactory is Ownable {
     }
 
     /**
-     *          OnlyOwner          
+     *          OnlyOwner
      */
 
     /// @notice Grants create colletion rights to MVX_MEMBER
@@ -145,7 +145,7 @@ contract MvxFactory is Ownable {
     }
 
     /**
-     *      Withdraw Functions     
+     *      Withdraw Functions
      */
 
     function withdraw() external payable onlyOwner {
@@ -179,7 +179,7 @@ contract MvxFactory is Ownable {
     }
 
     /**
-     *        Grant Referrals      
+     *        Grant Referrals
      */
 
     /// @notice Access: owner & members of any collection created with this launchpad contract
@@ -206,7 +206,7 @@ contract MvxFactory is Ownable {
     }
 
     /**
-     *      Launch Collection      
+     *      Launch Collection
      */
 
     event Log(string, bool);
@@ -268,6 +268,7 @@ contract MvxFactory is Ownable {
     function totalCollections() external view returns (uint256 _total) {
         _total = collectionCount;
     }
+
     function _applyDiscount(Artist memory _artist, address _sender, uint256 _msgValue) internal returns (bool) {
         emit Log("applying discount", 0);
         Partner memory _partner = partners[_artist.collection];

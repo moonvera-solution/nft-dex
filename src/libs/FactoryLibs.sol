@@ -6,7 +6,7 @@ interface IMvxCollection {
     function balanceOf(address) external returns (uint256);
     function supportsInterface(bytes4) external returns (bool);
     function initialize(
-        uint96 platformFee,
+        uint256 platformFee,
         Collection calldata _nftData,
         Stages calldata _mintingStages,
         address[] calldata _ogs,
