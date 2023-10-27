@@ -102,6 +102,7 @@ export interface MvxCollectionInterface extends Interface {
       | "OG_MINTER_ROLE"
       | "OPERATOR_ROLE"
       | "WL_MINTER_ROLE"
+      | "_feeDenominator"
       | "approve"
       | "balanceOf"
       | "baseURI"
@@ -187,6 +188,10 @@ export interface MvxCollectionInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "WL_MINTER_ROLE",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "_feeDenominator",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -366,6 +371,10 @@ export interface MvxCollectionInterface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "WL_MINTER_ROLE",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "_feeDenominator",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
@@ -890,6 +899,8 @@ export interface MvxCollection extends BaseContract {
 
   WL_MINTER_ROLE: TypedContractMethod<[], [string], "view">;
 
+  _feeDenominator: TypedContractMethod<[], [bigint], "view">;
+
   approve: TypedContractMethod<
     [to: AddressLike, tokenId: BigNumberish],
     [void],
@@ -1170,6 +1181,9 @@ export interface MvxCollection extends BaseContract {
   getFunction(
     nameOrSignature: "WL_MINTER_ROLE"
   ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "_feeDenominator"
+  ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "approve"
   ): TypedContractMethod<

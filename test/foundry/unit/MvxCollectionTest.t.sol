@@ -8,7 +8,7 @@ import "@src/MvxFactory.sol";
 // import "@src/MvxCollection.sol";
 import {Stages, Collection} from "@src/libs/MvxStruct.sol";
 
-import "./helpers/BaseTest.sol";
+import "../helpers/BaseTest.sol";
 
 error InvalidColletion(uint8);
 
@@ -17,17 +17,17 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
 
     MvxCollection private _nftCollection;
     MvxCollectionNotERC721A private mvxCollectionNotERC721A;
-    uint96 _platformFee;
+    uint256 _platformFee;
 
     function setUp() public {
         _platformFee = 1000; // 10%
         clone = new MvxCollection();
         mvxCollectionNotERC721A = new MvxCollectionNotERC721A();
-        factory = new MvxFactory(0); // takes fee on mint 3%
+        factory = new MvxFactory(); // takes fee on mint 3%
+        factory.initialize();
         factory.updateCollectionImpl(address(clone));
 
-        factory.updateMember(wallet1.addr, address(0x0), 0, 10);
-        factory.updatePlatformFee(_platformFee);
+        factory.updateMember(wallet1.addr, address(0x0), 0.5 ether, 0, 0, 10);
 
         vm.deal(wallet1.addr, 100 ether);
         vm.deal(address(this), 100 ether);
@@ -40,14 +40,14 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         (address[] memory _ogs, address[] memory _wls) = _getMinters();
 
         snapStart("init_clone"); // GAS tracking
-        address collectionAddress = factory.createCollection{value: 0}(nftData, stages, _ogs, _wls);
+        address collectionAddress = factory.createCollection{value: 0.5 ether}(nftData, stages, _ogs, _wls);
         snapEnd();
 
         _nftCollection = MvxCollection(collectionAddress);
 
         // grant ADMIN role to address(this) for minting fuzz
-        _nftCollection.grantRole(ADMIN_ROLE, address(this));
-        _nftCollection.grantRole(ADMIN_ROLE, wallet5.addr);
+        _nftCollection.grantRole(ADMIN_ROLE_TEST, address(this));
+        _nftCollection.grantRole(ADMIN_ROLE_TEST, wallet5.addr);
     }
 
     function test_updateRoyaltyInfo(address receiver, uint96 royaltyFee) external {
@@ -87,7 +87,7 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
 
     /// @notice deployer is Clone/Art Collection Admin
     function test_initialize() external {
-        assert((_nftCollection).hasRole(ADMIN_ROLE, wallet1.addr));
+        assert((_nftCollection).hasRole(ADMIN_ROLE_TEST, wallet1.addr));
     }
 
     function test_mintForOwner(address to, uint256 amount, uint256 tokenId) public {
@@ -120,9 +120,9 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         (,,,,, uint256 whitelistMintMaxPerUser,,,,,,) = _nftCollection.mintingStages();
         vm.assume(mintAmount > 0 && mintAmount <= whitelistMintMaxPerUser);
 
-        _nftCollection.grantRole(WL_MINTER_ROLE, WLmember.addr); // OG=0, WL=1
+        _nftCollection.grantRole(WL_MINTER_ROLE_TEST, WLmember.addr); // OG=0, WL=1
         _nftCollection.updateWhitelistMintPrice(5 wei);
-        assertTrue(_nftCollection.hasRole(WL_MINTER_ROLE, WLmember.addr));
+        assertTrue(_nftCollection.hasRole(WL_MINTER_ROLE_TEST, WLmember.addr));
 
         vm.startPrank(WLmember.addr, WLmember.addr);
         // paying one eth to mint as WL
@@ -137,9 +137,9 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         vm.assume(to != address(0x0));
         (,,,, uint256 maxOgmint,,,,,,,) = _nftCollection.mintingStages();
         vm.assume(mintAmount > 0 && mintAmount <= maxOgmint);
-        _nftCollection.grantRole(OG_MINTER_ROLE, OGmember.addr); // OG=0, WL=1
+        _nftCollection.grantRole(OG_MINTER_ROLE_TEST, OGmember.addr); // OG=0, WL=1
         _nftCollection.updateOGMintPrice(5 wei);
-        assertTrue(_nftCollection.hasRole(OG_MINTER_ROLE, OGmember.addr));
+        assertTrue(_nftCollection.hasRole(OG_MINTER_ROLE_TEST, OGmember.addr));
 
         vm.startPrank(OGmember.addr, OGmember.addr);
         // paying one eth to mint as OG
@@ -190,8 +190,8 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         vm.assume(index > 0 && index < minterList.length);
         _nftCollection.updateMinterRoles(minterList, role);
         assertTrue(
-            _nftCollection.hasRole(OG_MINTER_ROLE, minterList[index])
-                || _nftCollection.hasRole(WL_MINTER_ROLE, minterList[index])
+            _nftCollection.hasRole(OG_MINTER_ROLE_TEST, minterList[index])
+                || _nftCollection.hasRole(WL_MINTER_ROLE_TEST, minterList[index])
         );
     }
 
@@ -222,8 +222,8 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
     }
 
     function test_addOgRole() public {
-        _nftCollection.grantRole(OG_MINTER_ROLE, wallet1.addr);
-        assert(_nftCollection.hasRole(OG_MINTER_ROLE, wallet1.addr));
+        _nftCollection.grantRole(OG_MINTER_ROLE_TEST, wallet1.addr);
+        assert(_nftCollection.hasRole(OG_MINTER_ROLE_TEST, wallet1.addr));
     }
 
     function test_tokenURI() public {
@@ -238,7 +238,7 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         );
     }
 
-    function test_withdraw() public {
+    function test_withdraw_no_platform_fee() public {
         vm.startPrank(address(wallet5.addr));
         uint256 ethAmount = stages.mintPrice * 5;
         vm.deal(address(wallet5.addr), ethAmount);
@@ -246,10 +246,8 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         uint256 balanceB4Withdraw = address(_nftCollection).balance;
         _nftCollection.withdraw();
 
-        (,,,, uint256 _maxSupply,,) = _nftCollection.collectionData();
-        assert(wallet5.addr.balance > address(_nftCollection).balance);
-        assert(address(factory).balance >= address(_nftCollection).balance * _platformFee / 10_000);
-        assert(address(wallet5.addr).balance + address(factory).balance == balanceB4Withdraw);
+        assertEq(address(_nftCollection).balance,0);
+        assertEq(address(wallet5.addr).balance, balanceB4Withdraw);
     }
 
     event Log(string, uint256);
@@ -259,8 +257,8 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         vm.deal(hacker.addr, 200 ether);
 
         (,,, uint256 maxOG, uint256 maxReg, uint256 maxWL,,,,,,) = _nftCollection.mintingStages();
-        _nftCollection.grantRole(WL_MINTER_ROLE, hacker.addr); // OG=0, WL=1
-        _nftCollection.grantRole(OG_MINTER_ROLE, hacker.addr); // OG=0, WL=1
+        _nftCollection.grantRole(WL_MINTER_ROLE_TEST, hacker.addr); // OG=0, WL=1
+        _nftCollection.grantRole(OG_MINTER_ROLE_TEST, hacker.addr); // OG=0, WL=1
 
         vm.startPrank(hacker.addr, hacker.addr);
         emit Log("maxOG:", maxOG);
@@ -272,7 +270,7 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         _nftCollection.mintForRegular{value: 60 ether}(hacker.addr, maxReg);
 
         // one more should break the logic
-        vm.expectRevert(abi.encodeWithSelector(MintError.selector,"Regular", 1));
+        vm.expectRevert(abi.encodeWithSelector(MintError.selector, "Regular", 1));
         _nftCollection.mintForRegular{value: 1 ether}(hacker.addr, 1);
         assert(_nftCollection.balanceOf(hacker.addr) == maxWL + maxOG + maxReg);
     }

@@ -1,0 +1,12 @@
+{
+    "mainnet":{   
+        "MvxFactory_v1":"0x6A213cDDb2f5eD08ef3D27c66E7f6493970e9426",
+        "MvxCollection_v1":"0x91c574F2756eF4fc4E0d75E934A8c979c7d8C648",
+        "MvxCollectionClone_ACC":"0x296E350600c56313E5a458B553b07A1aFF3466A5"
+    },
+    "goerli":{   
+        "FatoryProxy":"0x98bC15a0c26eBCcDc923AF7eDA18b6F9f912878c",
+        "MvxCollection":"0xe84F8D961Ac2F73a214e6D9398Cd019bE29b45A7",
+        "MvxCollectionClone":""
+    }
+}

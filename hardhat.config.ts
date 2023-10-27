@@ -1,6 +1,6 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "hardhat-preprocessor";
-import "@nomicfoundation/hardhat-toolbox";
+// import "@nomicfoundation/hardhat-toolbox";
 // import * as tdly from "@tenderly/hardhat-tenderly";
 import * as dotenv from "dotenv";
 import fs from "fs";
@@ -8,7 +8,8 @@ import "hardhat-contract-sizer";
 import '@openzeppelin/hardhat-upgrades';
 import "hardhat-gas-reporter"
 import "hardhat-tracer";
-require("@nomicfoundation/hardhat-ethers")
+import "@nomicfoundation/hardhat-ethers";
+
 
 
 dotenv.config();
@@ -22,7 +23,9 @@ const {
     GOERLY_NODE,
     MAINNET_DEPLOYER_PK,
     TES_DEPLOYER,
-    ETHERSCAN_API_KEY
+    ETHERSCAN_API_KEY,
+    MEMBERT_TEST_KEY,
+    GOERLY_NODE_2
 } = process.env;
 
 const config: HardhatUserConfig = {
@@ -46,7 +49,9 @@ const config: HardhatUserConfig = {
     },
     networks: {
         localhost:{
-            url:"ttp://127.0.0.1:8545/"
+            url:"http://127.0.0.1:8545/",
+            accounts:[`0x8166f546bab6da521a8369cab06c5d2b9e46670292d85c875ee9ec20e84ffb61`,
+            `0x${MEMBERT_TEST_KEY}`]
         },
         hardhat: {
             forking: {
@@ -60,9 +65,9 @@ const config: HardhatUserConfig = {
             accounts:[`${MAINNET_DEPLOYER_PK}`]
         },
         goerli:{
-            url: GOERLY_NODE,
+            url: GOERLY_NODE_2,
             chainId: 5,
-            accounts:[`${TES_DEPLOYER}`]
+            accounts:[`0x${TES_DEPLOYER}`,`0x${MEMBERT_TEST_KEY}`]
         },
         tenderly: {
             url: DEVNET_RPC_URL,
@@ -88,6 +93,11 @@ const config: HardhatUserConfig = {
         showMethodSig: true,
         gasPriceApi: `https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=${ETHERSCAN_API_KEY}`
       },
+      etherscan: {
+        apiKey: {
+            goerli: ETHERSCAN_API_KEY
+        }
+  },
     preprocess: {
         eachLine: (hre) => ({
             transform: (line: string) => {

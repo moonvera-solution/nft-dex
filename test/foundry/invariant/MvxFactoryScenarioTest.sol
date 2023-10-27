@@ -5,25 +5,29 @@ import {Test, console, console2, Vm} from "forge-std/Test.sol";
 import {GasSnapshot} from "@forge-gas-snapshot/GasSnapshot.sol";
 import {MvxFactory} from "@src/MvxFactory.sol";
 import {MvxCollection} from "@src/MvxCollection.sol";
-import "./helpers/BaseTest.sol";
+import "../helpers/BaseTest.sol";
 
-contract MvxFactorytest is BaseTest, GasSnapshot {
-    uint160 public constant ALLOW_LAUNCH_PERIOD = 7 days;
-
+contract MvxFactoryScenarioTest is BaseTest, GasSnapshot {
+    uint160 internal constant ALLOW_LAUNCH_PERIOD = 10 days;
+    uint256 internal constant DEPLOY_FEE = .5 ether;
+    uint96 internal constant PLATFORM_FEE = 200; //bp 2%
+    uint96 internal constant MEMBER_DISCOUNT = 2000; //bp 20%
     function setUp() public {
         clone = new MvxCollection();
-        factory = new MvxFactory(.3 ether); // takes fee on mint
+        factory = new MvxFactory(); // takes fee on mint
+        factory.initialize();
 
         snapSize("MvxCollection", address(clone));
         vm.deal(address(this), 10 ether);
         factory.updateCollectionImpl(address(clone));
-        // vm.warp(block.timestamp + 100 days);
+        factory.updateReferralExpiration(ALLOW_LAUNCH_PERIOD); // 10 days
     }
 
     function test_member_createCollection() public {
         Vm.Wallet memory member = vm.createWallet("member");
-        factory.updateMember(member.addr, address(0x0), 0, 10);
-        (,, uint256 expiration) = factory.members(member.addr);
+        factory.updateMember(member.addr, address(0x0), 0.5 ether, 0, 0, ALLOW_LAUNCH_PERIOD);
+
+        (,,,, uint256 expiration) = factory.members(member.addr);
 
         assert(expiration > 0);
 
@@ -37,8 +41,8 @@ contract MvxFactorytest is BaseTest, GasSnapshot {
         Vm.Wallet memory referral = vm.createWallet("referral");
         Vm.Wallet memory artist = vm.createWallet("artist");
 
-        // mvs team reviews application and grants member to create coll
-        factory.updateMember(member.addr, address(0x0), 0, 10);
+        // mvs team reviews application and grants member to create collection
+        factory.updateMember(member.addr, address(0x0), 0.5 ether, 0, 0, ALLOW_LAUNCH_PERIOD);
 
         // mvx member creates collection - NO DISCOUNT
         vm.startPrank(member.addr);
@@ -73,14 +77,14 @@ contract MvxFactorytest is BaseTest, GasSnapshot {
         vm.stopPrank();
 
         // Mvx grants member after Artist applies,
-        factory.updateMember(artist.addr, address(0x0), 0, 10); // 10 days to Launch
+        factory.updateMember(artist.addr, address(0x0), 0.5 ether, 0, 0, 10); // 10 days to Launch
 
         // Artist Launches Collection
         vm.startPrank(artist.addr);
         vm.deal(artist.addr, 1 ether);
 
         snapStart("init_clone V2"); // GAS tracking
-        _factoryCreate(factory, artist.addr, 0.3 ether);
+        _factoryCreate(factory, artist.addr, 0.4 ether);
         snapEnd();
         vm.stopPrank();
 
@@ -98,17 +102,27 @@ contract MvxFactorytest is BaseTest, GasSnapshot {
         vm.assume(member.addr != address(0x0));
         vm.assume(referral.addr != address(0x0));
         vm.assume(artist.addr != address(0x0));
+        vm.assume(user1.addr != address(0x0));
+        vm.assume(user2.addr != address(0x0));
+
+        ///0x0000000000000000000000000000000000000000000000000000000000000000
+        ///                     INIT MAIN COLLECTION
+        ///0x0000000000000000000000000000000000000000000000000000000000000000
 
         // mvs team reviews application and grants member to create coll
-        factory.updateMember(member.addr, address(0x0), 5, 10);
+        factory.updateMember(member.addr, address(0x0),DEPLOY_FEE, 0, 0, 10);
 
         // mvx member creates collection - NO DISCOUNT
         vm.startPrank(member.addr);
         vm.deal(member.addr, 2 ether);
         address _cloneAddress = _factoryCreate(factory, member.addr, 1 ether);
-        MvxCollection(_cloneAddress).grantRole(WL_MINTER_ROLE, user2.addr);
-        MvxCollection(_cloneAddress).grantRole(OG_MINTER_ROLE, user1.addr);
+        MvxCollection(_cloneAddress).grantRole(keccak256("WL_MINTER_ROLE"), user2.addr);
+        MvxCollection(_cloneAddress).grantRole(keccak256("OG_MINTER_ROLE"), user1.addr);
         vm.stopPrank();
+
+        ///0x0000000000000000000000000000000000000000000000000000000000000000
+        ///                         USER MINTINS
+        ///0x0000000000000000000000000000000000000000000000000000000000000000
 
         // Random Collection members buys NFT becomes referral
         vm.startPrank(referral.addr);
@@ -138,6 +152,10 @@ contract MvxFactorytest is BaseTest, GasSnapshot {
         assert(MvxCollection(_cloneAddress).balanceOf(user2.addr) > 0);
         vm.stopPrank();
 
+        ///0x0000000000000000000000000000000000000000000000000000000000000000
+        ///                      MVX PARTNERS
+        ///0x0000000000000000000000000000000000000000000000000000000000000000
+
         // Mvx team partners with Collection Admin
         // Member becomes partner
         factory.updatePartnership(
@@ -149,6 +167,10 @@ contract MvxFactorytest is BaseTest, GasSnapshot {
             10 // 10 days expiration from now
         );
 
+        ///0x0000000000000000000000000000000000000000000000000000000000000000
+        ///                      GRANT REFERRALS
+        ///0x0000000000000000000000000000000000000000000000000000000000000000
+
         // if NO partnership grant Referral Fails
         // mvx member grants referal AFTER creating collection & having balance on it
         vm.startPrank(referral.addr);
@@ -159,32 +181,45 @@ contract MvxFactorytest is BaseTest, GasSnapshot {
         assert(expiration > 0);
         vm.stopPrank();
 
-        // Mvx grants member after Artist applies,
-        factory.updateMember(artist.addr, address(0x0), 0, 10); // 10 days to Launch
-        factory.updateMember(user1.addr, address(0x0), 0, 10);
-        factory.updateMember(user2.addr, address(0x0), 0, 10);
+        ///0x0000000000000000000000000000000000000000000000000000000000000000
+        ///                      ADD MEMBERS
+        ///0x0000000000000000000000000000000000000000000000000000000000000000
 
-        //user1 user1 Launches
+        // Mvx grants member after Artist applies,
+        factory.updateMember(artist.addr, address(0x0), DEPLOY_FEE, PLATFORM_FEE, MEMBER_DISCOUNT, ALLOW_LAUNCH_PERIOD); // 10 days to Launch
+        factory.updateMember(user1.addr, address(0x0), DEPLOY_FEE, PLATFORM_FEE, MEMBER_DISCOUNT, ALLOW_LAUNCH_PERIOD);
+        factory.updateMember(user2.addr, address(0x0), DEPLOY_FEE, PLATFORM_FEE, MEMBER_DISCOUNT, ALLOW_LAUNCH_PERIOD);
+
+        ///0x0000000000000000000000000000000000000000000000000000000000000000
+        ///                   CREATE COLLECTIONS BY ARTISTS
+        ///0x0000000000000000000000000000000000000000000000000000000000000000
+
+        // user1 Launches
         vm.startPrank(user1.addr);
         vm.deal(user1.addr, 1 ether);
-        _factoryCreate(factory, user1.addr, 0.3 ether);
+        _factoryCreate(factory, user1.addr, 0.4 ether);
         vm.stopPrank();
 
-        // user2 user2 Launches
+        // user2 Launches
         vm.startPrank(user2.addr);
         vm.deal(user2.addr, 1 ether);
-        _factoryCreate(factory, user2.addr, 0.3 ether);
+        _factoryCreate(factory, user2.addr, 0.4 ether);
         vm.stopPrank();
 
         // Artist Launches
         vm.startPrank(artist.addr);
         vm.deal(artist.addr, 1 ether);
         snapStart("init_clone V2"); // GAS tracking
-        _factoryCreate(factory, artist.addr, 0.3 ether);
+        _factoryCreate(factory, artist.addr, 0.5 ether); // feploy fee = .5 eth - referral discount 20% = .4 eth
         snapEnd();
         vm.stopPrank();
 
-        // Artist Withdraws
+        ///0x0000000000000000000000000000000000000000000000000000000000000000
+        ///                      WITHDRAWS
+        ///0x0000000000000000000000000000000000000000000000000000000000000000
+
+        /// REFERRALS
+
         vm.startPrank(referral.addr);
         factory.withdrawReferral(artist.addr);
         vm.stopPrank();
@@ -197,9 +232,15 @@ contract MvxFactorytest is BaseTest, GasSnapshot {
         factory.withdrawReferral(user2.addr);
         vm.stopPrank();
 
+        /// PARTNER
+
         vm.startPrank(member.addr);
+        (,,,uint256 balance,,) = factory.partners(_cloneAddress);
+        uint256 _balanceB4withdraw = member.addr.balance;
+
         factory.withdrawPartner(_cloneAddress);
-        console.log("member balance: ", member.addr.balance);
+        assertEq(member.addr.balance ,_balanceB4withdraw + balance);
+
         vm.stopPrank();
     }
 }

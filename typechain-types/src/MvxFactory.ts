@@ -103,24 +103,25 @@ export interface MvxFactoryInterface extends Interface {
       | "createCollection"
       | "deleteArtist"
       | "deleteMember"
-      | "deployFee"
       | "getPartnerBalance"
       | "getReferralBalance"
       | "getTime()"
       | "getTime(uint256)"
       | "grantReferral"
+      | "initialize"
       | "members"
       | "owner"
       | "partners"
-      | "platformFee"
+      | "proxiableUUID"
       | "renounceOwnership"
       | "totalCollections"
       | "transferOwnership"
       | "updateCollectionImpl"
-      | "updateDeployFee"
       | "updateMember"
       | "updatePartnership"
-      | "updatePlatformFee"
+      | "updateReferralExpiration"
+      | "upgradeTo"
+      | "upgradeToAndCall"
       | "withdraw"
       | "withdrawPartner"
       | "withdrawReferral"
@@ -128,16 +129,20 @@ export interface MvxFactoryInterface extends Interface {
 
   getEvent(
     nameOrSignatureOrTopic:
+      | "AdminChanged"
+      | "BeaconUpgraded"
       | "CollectionDiscount"
       | "CreateCollectionEvent"
       | "CreateEvent"
       | "InitCollectionEvent"
+      | "Initialized"
       | "Log(string,uint256)"
       | "Log(string,bool)"
       | "OwnershipTransferred"
       | "PartnerBalanceUpdate"
       | "ReferralBalanceUpdate"
       | "ReferralDiscount"
+      | "Upgraded"
       | "WithdrawPartner"
       | "WithdrawReferral"
   ): EventFragment;
@@ -166,7 +171,6 @@ export interface MvxFactoryInterface extends Interface {
     functionFragment: "deleteMember",
     values: [AddressLike]
   ): string;
-  encodeFunctionData(functionFragment: "deployFee", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "getPartnerBalance",
     values: [AddressLike]
@@ -185,6 +189,10 @@ export interface MvxFactoryInterface extends Interface {
     values: [AddressLike, AddressLike]
   ): string;
   encodeFunctionData(
+    functionFragment: "initialize",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "members",
     values: [AddressLike]
   ): string;
@@ -194,7 +202,7 @@ export interface MvxFactoryInterface extends Interface {
     values: [AddressLike]
   ): string;
   encodeFunctionData(
-    functionFragment: "platformFee",
+    functionFragment: "proxiableUUID",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -214,12 +222,15 @@ export interface MvxFactoryInterface extends Interface {
     values: [AddressLike]
   ): string;
   encodeFunctionData(
-    functionFragment: "updateDeployFee",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
     functionFragment: "updateMember",
-    values: [AddressLike, AddressLike, BigNumberish, BigNumberish]
+    values: [
+      AddressLike,
+      AddressLike,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "updatePartnership",
@@ -233,8 +244,16 @@ export interface MvxFactoryInterface extends Interface {
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "updatePlatformFee",
+    functionFragment: "updateReferralExpiration",
     values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "upgradeTo",
+    values: [AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "upgradeToAndCall",
+    values: [AddressLike, BytesLike]
   ): string;
   encodeFunctionData(functionFragment: "withdraw", values?: undefined): string;
   encodeFunctionData(
@@ -267,7 +286,6 @@ export interface MvxFactoryInterface extends Interface {
     functionFragment: "deleteMember",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "deployFee", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getPartnerBalance",
     data: BytesLike
@@ -285,11 +303,12 @@ export interface MvxFactoryInterface extends Interface {
     functionFragment: "grantReferral",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "members", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "partners", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "platformFee",
+    functionFragment: "proxiableUUID",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -309,10 +328,6 @@ export interface MvxFactoryInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "updateDeployFee",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "updateMember",
     data: BytesLike
   ): Result;
@@ -321,7 +336,12 @@ export interface MvxFactoryInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "updatePlatformFee",
+    functionFragment: "updateReferralExpiration",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "upgradeTo", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "upgradeToAndCall",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "withdraw", data: BytesLike): Result;
@@ -333,6 +353,31 @@ export interface MvxFactoryInterface extends Interface {
     functionFragment: "withdrawReferral",
     data: BytesLike
   ): Result;
+}
+
+export namespace AdminChangedEvent {
+  export type InputTuple = [previousAdmin: AddressLike, newAdmin: AddressLike];
+  export type OutputTuple = [previousAdmin: string, newAdmin: string];
+  export interface OutputObject {
+    previousAdmin: string;
+    newAdmin: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace BeaconUpgradedEvent {
+  export type InputTuple = [beacon: AddressLike];
+  export type OutputTuple = [beacon: string];
+  export interface OutputObject {
+    beacon: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
 
 export namespace CollectionDiscountEvent {
@@ -394,6 +439,18 @@ export namespace InitCollectionEventEvent {
   export interface OutputObject {
     sender: string;
     collection: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace InitializedEvent {
+  export type InputTuple = [version: BigNumberish];
+  export type OutputTuple = [version: bigint];
+  export interface OutputObject {
+    version: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -481,6 +538,18 @@ export namespace ReferralDiscountEvent {
     _artist: string;
     _sender: string;
     _collection: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace UpgradedEvent {
+  export type InputTuple = [implementation: AddressLike];
+  export type OutputTuple = [implementation: string];
+  export interface OutputObject {
+    implementation: string;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -615,8 +684,6 @@ export interface MvxFactory extends BaseContract {
     "nonpayable"
   >;
 
-  deployFee: TypedContractMethod<[], [bigint], "view">;
-
   getPartnerBalance: TypedContractMethod<
     [_collection: AddressLike],
     [bigint],
@@ -643,11 +710,15 @@ export interface MvxFactory extends BaseContract {
     "nonpayable"
   >;
 
+  initialize: TypedContractMethod<[], [void], "nonpayable">;
+
   members: TypedContractMethod<
     [arg0: AddressLike],
     [
-      [string, bigint, bigint] & {
+      [string, bigint, bigint, bigint, bigint] & {
         collection: string;
+        deployFee: bigint;
+        platformFee: bigint;
         discount: bigint;
         expiration: bigint;
       }
@@ -672,7 +743,7 @@ export interface MvxFactory extends BaseContract {
     "view"
   >;
 
-  platformFee: TypedContractMethod<[], [bigint], "view">;
+  proxiableUUID: TypedContractMethod<[], [string], "view">;
 
   renounceOwnership: TypedContractMethod<[], [void], "nonpayable">;
 
@@ -690,16 +761,12 @@ export interface MvxFactory extends BaseContract {
     "payable"
   >;
 
-  updateDeployFee: TypedContractMethod<
-    [_newFee: BigNumberish],
-    [void],
-    "payable"
-  >;
-
   updateMember: TypedContractMethod<
     [
       _newMember: AddressLike,
       _collection: AddressLike,
+      _deployFee: BigNumberish,
+      _platformFee: BigNumberish,
       _discount: BigNumberish,
       _expirationDays: BigNumberish
     ],
@@ -720,8 +787,20 @@ export interface MvxFactory extends BaseContract {
     "nonpayable"
   >;
 
-  updatePlatformFee: TypedContractMethod<
-    [_fee: BigNumberish],
+  updateReferralExpiration: TypedContractMethod<
+    [_expirationInDays: BigNumberish],
+    [void],
+    "payable"
+  >;
+
+  upgradeTo: TypedContractMethod<
+    [_newImplementation: AddressLike],
+    [void],
+    "nonpayable"
+  >;
+
+  upgradeToAndCall: TypedContractMethod<
+    [newImplementation: AddressLike, data: BytesLike],
     [void],
     "payable"
   >;
@@ -783,9 +862,6 @@ export interface MvxFactory extends BaseContract {
     nameOrSignature: "deleteMember"
   ): TypedContractMethod<[_member: AddressLike], [void], "nonpayable">;
   getFunction(
-    nameOrSignature: "deployFee"
-  ): TypedContractMethod<[], [bigint], "view">;
-  getFunction(
     nameOrSignature: "getPartnerBalance"
   ): TypedContractMethod<[_collection: AddressLike], [bigint], "view">;
   getFunction(
@@ -805,12 +881,17 @@ export interface MvxFactory extends BaseContract {
     "nonpayable"
   >;
   getFunction(
+    nameOrSignature: "initialize"
+  ): TypedContractMethod<[], [void], "nonpayable">;
+  getFunction(
     nameOrSignature: "members"
   ): TypedContractMethod<
     [arg0: AddressLike],
     [
-      [string, bigint, bigint] & {
+      [string, bigint, bigint, bigint, bigint] & {
         collection: string;
+        deployFee: bigint;
+        platformFee: bigint;
         discount: bigint;
         expiration: bigint;
       }
@@ -837,8 +918,8 @@ export interface MvxFactory extends BaseContract {
     "view"
   >;
   getFunction(
-    nameOrSignature: "platformFee"
-  ): TypedContractMethod<[], [bigint], "view">;
+    nameOrSignature: "proxiableUUID"
+  ): TypedContractMethod<[], [string], "view">;
   getFunction(
     nameOrSignature: "renounceOwnership"
   ): TypedContractMethod<[], [void], "nonpayable">;
@@ -852,14 +933,13 @@ export interface MvxFactory extends BaseContract {
     nameOrSignature: "updateCollectionImpl"
   ): TypedContractMethod<[_impl: AddressLike], [void], "payable">;
   getFunction(
-    nameOrSignature: "updateDeployFee"
-  ): TypedContractMethod<[_newFee: BigNumberish], [void], "payable">;
-  getFunction(
     nameOrSignature: "updateMember"
   ): TypedContractMethod<
     [
       _newMember: AddressLike,
       _collection: AddressLike,
+      _deployFee: BigNumberish,
+      _platformFee: BigNumberish,
       _discount: BigNumberish,
       _expirationDays: BigNumberish
     ],
@@ -881,8 +961,22 @@ export interface MvxFactory extends BaseContract {
     "nonpayable"
   >;
   getFunction(
-    nameOrSignature: "updatePlatformFee"
-  ): TypedContractMethod<[_fee: BigNumberish], [void], "payable">;
+    nameOrSignature: "updateReferralExpiration"
+  ): TypedContractMethod<[_expirationInDays: BigNumberish], [void], "payable">;
+  getFunction(
+    nameOrSignature: "upgradeTo"
+  ): TypedContractMethod<
+    [_newImplementation: AddressLike],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "upgradeToAndCall"
+  ): TypedContractMethod<
+    [newImplementation: AddressLike, data: BytesLike],
+    [void],
+    "payable"
+  >;
   getFunction(
     nameOrSignature: "withdraw"
   ): TypedContractMethod<[], [void], "payable">;
@@ -893,6 +987,20 @@ export interface MvxFactory extends BaseContract {
     nameOrSignature: "withdrawReferral"
   ): TypedContractMethod<[artist_: AddressLike], [void], "nonpayable">;
 
+  getEvent(
+    key: "AdminChanged"
+  ): TypedContractEvent<
+    AdminChangedEvent.InputTuple,
+    AdminChangedEvent.OutputTuple,
+    AdminChangedEvent.OutputObject
+  >;
+  getEvent(
+    key: "BeaconUpgraded"
+  ): TypedContractEvent<
+    BeaconUpgradedEvent.InputTuple,
+    BeaconUpgradedEvent.OutputTuple,
+    BeaconUpgradedEvent.OutputObject
+  >;
   getEvent(
     key: "CollectionDiscount"
   ): TypedContractEvent<
@@ -920,6 +1028,13 @@ export interface MvxFactory extends BaseContract {
     InitCollectionEventEvent.InputTuple,
     InitCollectionEventEvent.OutputTuple,
     InitCollectionEventEvent.OutputObject
+  >;
+  getEvent(
+    key: "Initialized"
+  ): TypedContractEvent<
+    InitializedEvent.InputTuple,
+    InitializedEvent.OutputTuple,
+    InitializedEvent.OutputObject
   >;
   getEvent(
     key: "Log(string,uint256)"
@@ -964,6 +1079,13 @@ export interface MvxFactory extends BaseContract {
     ReferralDiscountEvent.OutputObject
   >;
   getEvent(
+    key: "Upgraded"
+  ): TypedContractEvent<
+    UpgradedEvent.InputTuple,
+    UpgradedEvent.OutputTuple,
+    UpgradedEvent.OutputObject
+  >;
+  getEvent(
     key: "WithdrawPartner"
   ): TypedContractEvent<
     WithdrawPartnerEvent.InputTuple,
@@ -979,6 +1101,28 @@ export interface MvxFactory extends BaseContract {
   >;
 
   filters: {
+    "AdminChanged(address,address)": TypedContractEvent<
+      AdminChangedEvent.InputTuple,
+      AdminChangedEvent.OutputTuple,
+      AdminChangedEvent.OutputObject
+    >;
+    AdminChanged: TypedContractEvent<
+      AdminChangedEvent.InputTuple,
+      AdminChangedEvent.OutputTuple,
+      AdminChangedEvent.OutputObject
+    >;
+
+    "BeaconUpgraded(address)": TypedContractEvent<
+      BeaconUpgradedEvent.InputTuple,
+      BeaconUpgradedEvent.OutputTuple,
+      BeaconUpgradedEvent.OutputObject
+    >;
+    BeaconUpgraded: TypedContractEvent<
+      BeaconUpgradedEvent.InputTuple,
+      BeaconUpgradedEvent.OutputTuple,
+      BeaconUpgradedEvent.OutputObject
+    >;
+
     "CollectionDiscount(address,uint96)": TypedContractEvent<
       CollectionDiscountEvent.InputTuple,
       CollectionDiscountEvent.OutputTuple,
@@ -1021,6 +1165,17 @@ export interface MvxFactory extends BaseContract {
       InitCollectionEventEvent.InputTuple,
       InitCollectionEventEvent.OutputTuple,
       InitCollectionEventEvent.OutputObject
+    >;
+
+    "Initialized(uint8)": TypedContractEvent<
+      InitializedEvent.InputTuple,
+      InitializedEvent.OutputTuple,
+      InitializedEvent.OutputObject
+    >;
+    Initialized: TypedContractEvent<
+      InitializedEvent.InputTuple,
+      InitializedEvent.OutputTuple,
+      InitializedEvent.OutputObject
     >;
 
     "Log(string,uint256)": TypedContractEvent<
@@ -1076,6 +1231,17 @@ export interface MvxFactory extends BaseContract {
       ReferralDiscountEvent.InputTuple,
       ReferralDiscountEvent.OutputTuple,
       ReferralDiscountEvent.OutputObject
+    >;
+
+    "Upgraded(address)": TypedContractEvent<
+      UpgradedEvent.InputTuple,
+      UpgradedEvent.OutputTuple,
+      UpgradedEvent.OutputObject
+    >;
+    Upgraded: TypedContractEvent<
+      UpgradedEvent.InputTuple,
+      UpgradedEvent.OutputTuple,
+      UpgradedEvent.OutputObject
     >;
 
     "WithdrawPartner(address,address,uint256)": TypedContractEvent<

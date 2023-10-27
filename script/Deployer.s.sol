@@ -20,11 +20,10 @@ contract Deployer is Script {
         address regularMinter = vm.addr(vm.envUint("REG_MINTER_KEY"));
         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_KEY");
         vm.startBroadcast(deployerPrivateKey);
-        MvxFactory factory = new MvxFactory(3000);
+        MvxFactory factory = new MvxFactory();
         MvxCollection template = new MvxCollection();
 
         factory.updateCollectionImpl(address(template));
-        factory.updateMember(regularMinter, address(0x0), 0, 5); //
         vm.stopBroadcast();
     }
 

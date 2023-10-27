@@ -4,7 +4,7 @@ pragma solidity ^0.8.5;
 import {Collection, Stages} from "./MvxStruct.sol";
 
 contract Encoder {
-    function encodeStage() external returns (bytes memory _data) {
+    function encodeStage() external view returns (bytes memory _data) {
         Stages memory stage = Stages({
             ogMintPrice: 30000000000000000,
             whitelistMintPrice: 30000000000000000,
@@ -35,7 +35,7 @@ contract Encoder {
         );
     }
 
-    function encodeCollection() external returns (bytes memory _data) {
+    function encodeCollection() external view returns (bytes memory _data) {
         Collection memory nftData = Collection({
             name: "MVX ART",
             symbol: "MVX",

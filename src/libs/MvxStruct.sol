@@ -47,6 +47,8 @@ struct Partner {
 // address => Member
 struct Member {
     address collection;
+    uint256 deployFee;
+    uint256 platformFee;
     uint96 discount;
     uint256 expiration;
 }

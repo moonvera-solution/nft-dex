@@ -12,10 +12,10 @@ import "@src/abstracts/MintingStages.sol";
 // ╚═╝     ╚═╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═══╝  ╚═══╝  ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝
 //
 /// @title Art Collection ERC721A Upgradable
-/// @notice This contract is made only for the Arab Collectors Club ACC
 /// @author MoonveraLabs
+/// @dev ERC721A template for minimal proxy clones
 contract MvxCollection is MintingStages {
-    event WithdrawEvent(address indexed, uint256, address, uint256);
+    event WithdrawEvent(address  sender, uint256 balance, address feeReceiver, uint256 fee);
     event OGmintEvent(address indexed sender, uint256 value, address to, uint256 amount, uint256 _ogMintPrice);
     event WLmintEvent(address indexed sender, uint256 value, address to, uint256 amount, uint256 wlMintPrice);
     event MintEvent(address indexed sender, uint256 value, address to, uint256 amount, uint256 mintPrice);
@@ -57,10 +57,11 @@ contract MvxCollection is MintingStages {
         updateMinterRoles(_wls, 1); // WL = 1
 
         _updateRoyaltyInfo(_owner, _nftData.royaltyFee);
+
         collectionData = _nftData;
         mintingStages = _mintingStages;
         _platformFee = platformFee;
-        _platformFeeReceiver = platformFee > 0 ? address(0x0) : _mvxFactory;
+        _platformFeeReceiver = platformFee > 0 ? _mvxFactory : address(0x0);
         revokeRole(ADMIN_ROLE, _mvxFactory);
         _initalized = true;
     }
@@ -115,7 +116,7 @@ contract MvxCollection is MintingStages {
         emit MintEvent(msg.sender, msg.value, _to, _amount, mintingStages.mintPrice);
     }
 
-    event Log(string, uint256);
+
     /// @notice Checks for ether sent to this contract before calling _safeMint
 
     function _internalSafeMint(
@@ -128,8 +129,13 @@ contract MvxCollection is MintingStages {
     ) internal {
         if (mintsPerWallet[msg.sender][mintType] + _mintAmount > _maxMintAmount) revert MintError(mintType, 1); // Exceeds mint per wallet amount
         uint256 _currentTime = block.timestamp;
-        if (_mintStageStartsAt < _currentTime) revert MintError(mintType, 2); // Stage mintType has not started
-        if (_currentTime > _mintStageEndsAt) revert MintError(mintType, 3); // Stage mint already end
+        if (_currentTime < _mintStageStartsAt) revert MintError(mintType, 2); // Stage mintType has not started
+        if (_currentTime > _mintStageEndsAt) revert MintError(mintType, 3);   // Stage mint already end
+        
+        emit Log("totalSupply()::",totalSupply());
+        emit Log("_mintAmount()::",_mintAmount);
+        emit Log("collectionData.maxSupply()::",collectionData.maxSupply);
+
         if (totalSupply() + _mintAmount > collectionData.maxSupply) revert MintError(mintType, 4); // Mint amount exceeds supply
 
         unchecked {
@@ -149,7 +155,7 @@ contract MvxCollection is MintingStages {
     /// @param _royaltyFee basis points rate 1% = 100
     /// @dev updateRoyaltyInfo(...) access onlyRole(ADMIN_ROLE)
     function _updateRoyaltyInfo(address _receiver, uint96 _royaltyFee) internal {
-        require(_royaltyFee <= _feeDenominator(), "ERC2981: fee exceed salePrice");
+        require(_royaltyFee < 10_000, "ERC2981: fee exceed salePrice");
         require(_receiver != address(0), "ERC2981: invalid receiver");
         collectionData.royaltyReceiver = _receiver;
         collectionData.royaltyFee = _royaltyFee;
@@ -157,14 +163,7 @@ contract MvxCollection is MintingStages {
 
     // @dev Inherits IERC2981
     function royaltyInfo(uint256 tokenId, uint256 _salePrice) external view override returns (address, uint256) {
-        return (collectionData.royaltyReceiver, (_salePrice * collectionData.royaltyFee) / _feeDenominator());
-    }
-
-    /// @notice The denominator with which to interpret the fee set in {_setTokenRoyalty} and {_setDefaultRoyalty} as a
-    /// fraction of the sale price. Defaults to 10000 so fees are expressed in basis points, but may be customized by an
-    /// override.
-    function _feeDenominator() internal pure virtual returns (uint96) {
-        return 10_000;
+        return (collectionData.royaltyReceiver, (_salePrice * collectionData.royaltyFee) / 10_000);
     }
 
     function baseURI() public view returns (string memory) {
@@ -203,24 +202,27 @@ contract MvxCollection is MintingStages {
         _burn(_tokenId);
         emit BurnEvent(msg.sender, _tokenId);
     }
-
+    
+        event Log(string, uint256);
+            event Log(string, address);
     /// @notice access: only ADMIN withdraw royalties
     function withdraw() external payable onlyRole(ADMIN_ROLE) {
+        address _sender = msg.sender;
         if (_platformFeeReceiver != address(0x0)) {
-            uint256 _balance = address(this).balance;
-            uint256 platformFee = _balance * _platformFee / _feeDenominator();
-            uint256 _balanceAfterFee = _balance - platformFee;
+            uint256 platformFee = address(this).balance * _platformFee / 10_000;
 
             (bool feeSent,) = payable(_platformFeeReceiver).call{value: platformFee}("");
             if (!feeSent) revert WithdrawError(0);
 
-            (bool sent,) = payable(msg.sender).call{value: _balanceAfterFee}("");
+            uint256 _balance = address(this).balance;
+            (bool sent,) = payable(_sender).call{value: _balance}("");
             if (!sent) revert WithdrawError(1);
-            emit WithdrawEvent(msg.sender, _balanceAfterFee, _platformFeeReceiver, _platformFee);
+            emit WithdrawEvent(_sender, _balance - _platformFee, _platformFeeReceiver, _platformFee);
         } else {
-            (bool sent,) = payable(msg.sender).call{value: address(this).balance}("");
-            if (!sent) revert WithdrawError(1);
-            emit WithdrawEvent(msg.sender, address(this).balance, _platformFeeReceiver, _platformFee);
+            uint256 _balance = address(this).balance;
+            (bool sent,) = payable(_sender).call{value: _balance}("");
+            if (!sent) revert WithdrawError(2);
+            emit WithdrawEvent(_sender,_balance, _platformFeeReceiver, _platformFee);
         }
     }
 

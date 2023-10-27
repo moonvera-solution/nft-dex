@@ -16,12 +16,12 @@ contract BaseTest is Test {
     address[] og;
     address[] wl;
 
-    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
-    bytes32 public constant WL_MINTER_ROLE = keccak256("WL_MINTER_ROLE");
-    bytes32 public constant OG_MINTER_ROLE = keccak256("OG_MINTER_ROLE");
+    bytes32 public constant ADMIN_ROLE_TEST = keccak256("ADMIN_ROLE");
+    bytes32 public constant WL_MINTER_ROLE_TEST = keccak256("WL_MINTER_ROLE");
+    bytes32 public constant OG_MINTER_ROLE_TEST = keccak256("OG_MINTER_ROLE");
 
-    Vm.Wallet public wallet1 = vm.createWallet("wallet::user1");
-    Vm.Wallet public wallet5 = vm.createWallet("wallet::user5");
+    Vm.Wallet public wallet1 = vm.createWallet("w1");
+    Vm.Wallet public wallet5 = vm.createWallet("w5");
 
     address public user2 = address(2);
     address public user3 = address(3);
@@ -60,7 +60,7 @@ contract BaseTest is Test {
         });
     }
 
-    function _setCollectionDetails(address royaltyReiver) internal {
+    function _setCollectionDetails(address royaltyReiver) public {
         nftData = Collection({
             name: "MVX ART",
             symbol: "MVX",
@@ -72,7 +72,7 @@ contract BaseTest is Test {
         });
     }
 
-    function _getMinters() internal returns (address[] memory _initialOGMinters, address[] memory _initialWLMinters) {
+    function _getMinters() public returns (address[] memory _initialOGMinters, address[] memory _initialWLMinters) {
         wl.push(0x5A2D11396e115aEF85Fd6f467A439fFB181478ec);
         wl.push(0x328A3f8bAE2fB255a86BcDEFE9710D045F1A7603);
         wl.push(0x6df1Fd18Aaa9F1DD745e6E3Afc3ff8522a556889);
