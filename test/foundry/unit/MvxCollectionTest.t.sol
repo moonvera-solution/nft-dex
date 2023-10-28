@@ -286,7 +286,6 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
     }
 
 
-
     event Log(string, uint256);
 
     function test_break_minting_logic() public {

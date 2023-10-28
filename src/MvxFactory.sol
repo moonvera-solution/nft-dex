@@ -57,12 +57,12 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
     event WithdrawPartner(address indexed _sender, address _collection, uint256 _balance);
     event WithdrawReferral(address indexed _sender, address _artist, uint256 _referralBalance);
     event ReferralBalanceUpdate(address indexed _referral, uint256 _amount);
-    event PartnerBalanceUpdate(address indexed _partner, uint256 _amount);
+    event PartnerBalanceUpdate(address indexed _partner, uint256 _balance);
     event UpdateCollectionImpl(address _newImpl);
     event UpdatePartner(Partner);
     event UpdateMember(Member);
 
-    event Log(string, uint256);
+
 
     modifier auth() {
         require(msg.sender == owner() || members[msg.sender].expiration > block.timestamp, "Auth");
@@ -73,7 +73,7 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
         __Ownable_init_unchained();
     }
 
-    receive() external payable {emit Log("Receive factory",msg.value);}
+    receive() external payable {}
 
     fallback() external payable {
         revert Unathorized();
@@ -175,7 +175,6 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
         Artist memory _artist = artists[artist_];
         uint256 _referralBalance = _artist.referralBalance;
         if (_artist.referral != _sender) revert WithdrawReferralError(1);
-        emit Log("_referralBalance", _referralBalance);
         if (!(_referralBalance > 0)) revert WithdrawReferralError(2);
         delete artists[artist_];
         (bool sent,) = _sender.call{value: _referralBalance}("");
@@ -211,8 +210,6 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
     ///0x0000000000000000000000000000000000000000000000000000000000000000
     ///                      CREATE COLLECTION
     ///0x0000000000000000000000000000000000000000000000000000000000000000
-
-    event Log(string, bool);
 
     function createCollection(
         Collection calldata _nftsData,
@@ -279,31 +276,36 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
     ///0x0000000000000000000000000000000000000000000000000000000000000000
     ///                      INTERNAL LOGIC
     ///0x0000000000000000000000000000000000000000000000000000000000000000
-
     function _applyDiscount(Artist memory _artist, address _sender, uint256 _msgValue, uint256 _deployFee)
         internal
-        returns (bool)
     {
         Partner memory _partner = partners[_artist.collection];
-        uint256 _discountAmount = _percent(_deployFee, _partner.discount); // 20% discount
-
-        if (_msgValue < _deployFee - _discountAmount) revert DiscountError(1);
+        uint256 _discountAmount = _percent(_deployFee, _partner.discount); // -20%
+        uint256 _deployFeeAfterDiscounts = _deployFee - _discountAmount;  // - 20% == msg.value
+        uint256 remain = _deployFeeAfterDiscounts;
+        
+        if (_msgValue < _deployFeeAfterDiscounts) revert DiscountError(10);
 
         // Update Referral balance
-        uint256 _referralAmount = _percent(_deployFee, _partner.referralOwnPercent);
+        uint256 _referralAmount = _percent(_deployFeeAfterDiscounts, _partner.referralOwnPercent);
+        remain = remain - _referralAmount;
+
         _artist.referralBalance = _referralAmount;
         artists[_sender] = _artist;
         emit ReferralBalanceUpdate(_artist.referral, _referralAmount);
 
         // Update Partner balance
-        uint256 _partnerAmount = _percent(_deployFee, _partner.adminOwnPercent);
-        _partner.balance = _partner.balance + _partnerAmount;
+        uint256 _partnerAmount = _percent(_deployFeeAfterDiscounts, _partner.adminOwnPercent);
+        remain = remain - _partnerAmount;
+        _partner.balance =  _partner.balance + _partnerAmount;
         partners[_artist.collection] = _partner;
         emit PartnerBalanceUpdate(_partner.admin, _partnerAmount);
 
-        if (address(this).balance < msg.value - (_partnerAmount + _referralAmount)) revert DiscountError(2);
-        return true;
+        if(remain + _partnerAmount + _referralAmount < _deployFeeAfterDiscounts)revert DiscountError(2);
+        emit FactoryFeeKept(remain);
     }
+
+    event FactoryFeeKept (uint256);
 
     function _percent(uint256 a, uint96 b) internal pure returns (uint256) {
         return a.mulDiv(b, 10_000);
