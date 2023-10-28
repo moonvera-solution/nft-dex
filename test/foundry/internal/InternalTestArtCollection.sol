@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT O
 pragma solidity ^0.8.20;
+
 import {Test, console, console2, Vm} from "forge-std/Test.sol";
 
 import {Stages, Collection, Partner, Member} from "@src/libs/MvxStruct.sol";
@@ -11,7 +12,4 @@ import {MvxCollection} from "@src/MvxCollection.sol";
 
 error InvalidColletion(uint8);
 
-contract MvxFactoryInternalsTest  {
-
-
-}
+contract MvxFactoryInternalsTest {}

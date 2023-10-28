@@ -10,14 +10,18 @@ import {Stages, Collection} from "@src/libs/MvxStruct.sol";
 
 import "../helpers/BaseTest.sol";
 
-error InvalidColletion(uint8);
+error InvalidColletion();
 
 contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
     using LibString for string;
+    using Math for uint256;
+
 
     MvxCollection private _nftCollection;
     MvxCollectionNotERC721A private mvxCollectionNotERC721A;
     uint256 _platformFee;
+    address constant private ZERO_ADDRESS = 0x0000000000000000000000000000000000000000;
+
 
     function setUp() public {
         _platformFee = 1000; // 10%
@@ -80,8 +84,8 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
     }
 
     function test_fail_updateCollectionImpl() public {
-        vm.expectRevert(abi.encodeWithSelector(InvalidColletion.selector, 1));
         vm.startPrank(address(this));
+        vm.expectRevert(abi.encodeWithSelector(InvalidColletion.selector));
         factory.updateCollectionImpl(address(mvxCollectionNotERC721A));
     }
 
@@ -246,9 +250,42 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         uint256 balanceB4Withdraw = address(_nftCollection).balance;
         _nftCollection.withdraw();
 
-        assertEq(address(_nftCollection).balance,0);
+        assertEq(address(_nftCollection).balance, 0);
         assertEq(address(wallet5.addr).balance, balanceB4Withdraw);
     }
+
+    function test_withdraw_with_platform_fee() public {
+        uint96 _platformFee = 200; // bp 2%
+        vm.startPrank(address(this));
+        factory.updateMember(wallet3.addr,ZERO_ADDRESS , .5 ether, _platformFee, 0, 10);
+        vm.stopPrank();
+
+        vm.startPrank(address(wallet3.addr));
+        vm.deal(address(wallet3.addr), 10 ether);
+        (address[] memory _ogs, address[] memory _wls) = _getMinters();
+        address collectionAddress = factory.createCollection{value: 0.5 ether}(nftData, stages, _ogs, _wls);
+        MvxCollection _clone721A = MvxCollection(collectionAddress);
+        vm.stopPrank();
+
+        vm.startPrank(wallet3.addr);
+        uint256 amount = 5 ether;
+        vm.deal(address(wallet3.addr), amount);
+        _clone721A.mintForRegular{value: amount}(wallet3.addr,5);
+        assertEq(_clone721A.balanceOf(wallet3.addr),5);
+        vm.stopPrank();
+
+        uint256 _thisBalanceB4withdraw = address(factory).balance;
+
+        vm.startPrank(wallet3.addr);
+        uint256 _cloneBalance = address(_clone721A).balance;
+        uint256 _cloneAdminBalance = (_cloneBalance * _platformFee / 10_000); 
+        _clone721A.withdraw();
+        assertEq(address(wallet3.addr).balance, _cloneBalance - _cloneAdminBalance);
+        assertEq(address(factory).balance,  _thisBalanceB4withdraw +_cloneAdminBalance);
+        vm.stopPrank();
+    }
+
+
 
     event Log(string, uint256);
 

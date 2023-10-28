@@ -31,7 +31,6 @@ struct Artist {
     address referral; // referral address
     uint256 referralBalance; // track referral balance
     address collection; // memeber of collection the referral is
-    uint256 expiration;
 }
 
 // address collection => Partner

@@ -15,7 +15,7 @@ import "@src/abstracts/MintingStages.sol";
 /// @author MoonveraLabs
 /// @dev ERC721A template for minimal proxy clones
 contract MvxCollection is MintingStages {
-    event WithdrawEvent(address  sender, uint256 balance, address feeReceiver, uint256 fee);
+    event WithdrawEvent(address sender, uint256 balance, address feeReceiver, uint256 fee);
     event OGmintEvent(address indexed sender, uint256 value, address to, uint256 amount, uint256 _ogMintPrice);
     event WLmintEvent(address indexed sender, uint256 value, address to, uint256 amount, uint256 wlMintPrice);
     event MintEvent(address indexed sender, uint256 value, address to, uint256 amount, uint256 mintPrice);
@@ -29,18 +29,18 @@ contract MvxCollection is MintingStages {
     error MintError(string, uint8);
 
     /// @notice Called by MvxFactory on clone Deployment
-    /// @param platformFee uint96 fee in basis points
+    /// @param _platformFee uint96 fee in basis points
     /// @param _nftData maxSupply,royaltyFee,name,symbol,baseURI,baseExt
     /// @param _ogs address[]og,
     /// @param _wls address[] wl
     function initialize(
-        uint256 platformFee,
+        uint256 _platformFee,
         Collection calldata _nftData,
         Stages calldata _mintingStages,
         address[] calldata _ogs,
         address[] calldata _wls
     ) external {
-        require(!_initalized, "Already initialized");
+        require(!initalized, "Already initialized");
         address _owner = _getArgAddress(0); // immutable arguments
         address _mvxFactory = msg.sender;
 
@@ -60,10 +60,10 @@ contract MvxCollection is MintingStages {
 
         collectionData = _nftData;
         mintingStages = _mintingStages;
-        _platformFee = platformFee;
-        _platformFeeReceiver = platformFee > 0 ? _mvxFactory : address(0x0);
+        platformFee = _platformFee;
+        platformFeeReceiver = platformFee > 0 ? _mvxFactory : address(0x0);
         revokeRole(ADMIN_ROLE, _mvxFactory);
-        _initalized = true;
+        initalized = true;
     }
 
     /// @notice access: ADMIN_ROLE
@@ -116,7 +116,6 @@ contract MvxCollection is MintingStages {
         emit MintEvent(msg.sender, msg.value, _to, _amount, mintingStages.mintPrice);
     }
 
-
     /// @notice Checks for ether sent to this contract before calling _safeMint
 
     function _internalSafeMint(
@@ -130,12 +129,7 @@ contract MvxCollection is MintingStages {
         if (mintsPerWallet[msg.sender][mintType] + _mintAmount > _maxMintAmount) revert MintError(mintType, 1); // Exceeds mint per wallet amount
         uint256 _currentTime = block.timestamp;
         if (_currentTime < _mintStageStartsAt) revert MintError(mintType, 2); // Stage mintType has not started
-        if (_currentTime > _mintStageEndsAt) revert MintError(mintType, 3);   // Stage mint already end
-        
-        emit Log("totalSupply()::",totalSupply());
-        emit Log("_mintAmount()::",_mintAmount);
-        emit Log("collectionData.maxSupply()::",collectionData.maxSupply);
-
+        if (_currentTime > _mintStageEndsAt) revert MintError(mintType, 3); // Stage mint ended already
         if (totalSupply() + _mintAmount > collectionData.maxSupply) revert MintError(mintType, 4); // Mint amount exceeds supply
 
         unchecked {
@@ -202,27 +196,28 @@ contract MvxCollection is MintingStages {
         _burn(_tokenId);
         emit BurnEvent(msg.sender, _tokenId);
     }
-    
-        event Log(string, uint256);
-            event Log(string, address);
+
+    event Log(string, uint256);
+    event Log(string, address);
     /// @notice access: only ADMIN withdraw royalties
+
     function withdraw() external payable onlyRole(ADMIN_ROLE) {
         address _sender = msg.sender;
-        if (_platformFeeReceiver != address(0x0)) {
-            uint256 platformFee = address(this).balance * _platformFee / 10_000;
+        if (platformFeeReceiver != address(0x0)) {
+            uint256 fee = address(this).balance * platformFee / 10_000;
 
-            (bool feeSent,) = payable(_platformFeeReceiver).call{value: platformFee}("");
+            (bool feeSent,) = payable(platformFeeReceiver).call{value: fee}("");
             if (!feeSent) revert WithdrawError(0);
 
             uint256 _balance = address(this).balance;
             (bool sent,) = payable(_sender).call{value: _balance}("");
             if (!sent) revert WithdrawError(1);
-            emit WithdrawEvent(_sender, _balance - _platformFee, _platformFeeReceiver, _platformFee);
+            emit WithdrawEvent(_sender, _balance - fee, platformFeeReceiver, platformFee);
         } else {
             uint256 _balance = address(this).balance;
             (bool sent,) = payable(_sender).call{value: _balance}("");
             if (!sent) revert WithdrawError(2);
-            emit WithdrawEvent(_sender,_balance, _platformFeeReceiver, _platformFee);
+            emit WithdrawEvent(_sender, _balance, platformFeeReceiver, platformFee);
         }
     }
 

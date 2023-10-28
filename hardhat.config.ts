@@ -9,7 +9,7 @@ import '@openzeppelin/hardhat-upgrades';
 import "hardhat-gas-reporter"
 import "hardhat-tracer";
 import "@nomicfoundation/hardhat-ethers";
-
+// import "@tenderly/hardhat-tenderly"
 
 
 dotenv.config();
@@ -20,12 +20,15 @@ const {
     TENDERLY_PROJECT_SLUG,
     DEVNET_RPC_URL,
     MAINNET_NODE,
-    GOERLY_NODE,
     MAINNET_DEPLOYER_PK,
-    TES_DEPLOYER,
     ETHERSCAN_API_KEY,
+    GOERLI_NODE_1,
+    GOERLI_NODE_2,
+    GOERLI_NODE_3,
+    ADMIN_TEST_KEY,
     MEMBERT_TEST_KEY,
-    GOERLY_NODE_2
+    REFERRAL_TEST_KEY,
+    ARTISTI_TEST_KEY
 } = process.env;
 
 const config: HardhatUserConfig = {
@@ -64,10 +67,35 @@ const config: HardhatUserConfig = {
             chainId: 1,
             accounts:[`${MAINNET_DEPLOYER_PK}`]
         },
-        goerli:{
-            url: GOERLY_NODE_2,
+        goerli_1:{
+            url: GOERLI_NODE_1,
             chainId: 5,
-            accounts:[`0x${TES_DEPLOYER}`,`0x${MEMBERT_TEST_KEY}`]
+            accounts:[
+                `0x${ADMIN_TEST_KEY}`,
+                `0x${MEMBERT_TEST_KEY}`,
+                `0x${REFERRAL_TEST_KEY}`,
+                `0x${ARTISTI_TEST_KEY}`
+            ]
+        },
+        goerli_2:{
+            url: GOERLI_NODE_2,
+            chainId: 5,
+            accounts:[
+                `0x${ADMIN_TEST_KEY}`,
+                `0x${MEMBERT_TEST_KEY}`,
+                `0x${REFERRAL_TEST_KEY}`,
+                `0x${ARTISTI_TEST_KEY}`
+            ]
+        },
+        goerli_3:{
+            url: GOERLI_NODE_3,
+            chainId: 5,
+            accounts:[
+                `0x${ADMIN_TEST_KEY}`,
+                `0x${MEMBERT_TEST_KEY}`,
+                `0x${REFERRAL_TEST_KEY}`,
+                `0x${ARTISTI_TEST_KEY}`
+            ]
         },
         tenderly: {
             url: DEVNET_RPC_URL,

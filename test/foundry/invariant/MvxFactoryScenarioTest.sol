@@ -9,9 +9,10 @@ import "../helpers/BaseTest.sol";
 
 contract MvxFactoryScenarioTest is BaseTest, GasSnapshot {
     uint160 internal constant ALLOW_LAUNCH_PERIOD = 10 days;
-    uint256 internal constant DEPLOY_FEE = .5 ether;
+    uint256 internal constant DEPLOY_FEE = 0.5 ether;
     uint96 internal constant PLATFORM_FEE = 200; //bp 2%
     uint96 internal constant MEMBER_DISCOUNT = 2000; //bp 20%
+
     function setUp() public {
         clone = new MvxCollection();
         factory = new MvxFactory(); // takes fee on mint
@@ -20,7 +21,6 @@ contract MvxFactoryScenarioTest is BaseTest, GasSnapshot {
         snapSize("MvxCollection", address(clone));
         vm.deal(address(this), 10 ether);
         factory.updateCollectionImpl(address(clone));
-        factory.updateReferralExpiration(ALLOW_LAUNCH_PERIOD); // 10 days
     }
 
     function test_member_createCollection() public {
@@ -72,8 +72,6 @@ contract MvxFactoryScenarioTest is BaseTest, GasSnapshot {
         // mvx member grants referal AFTER creating collection & having balance on it
         vm.startPrank(referral.addr);
         factory.grantReferral(_cloneAddress, artist.addr);
-        (,,, uint256 expiration) = factory.artists(artist.addr);
-        assert(expiration > 0);
         vm.stopPrank();
 
         // Mvx grants member after Artist applies,
@@ -110,7 +108,7 @@ contract MvxFactoryScenarioTest is BaseTest, GasSnapshot {
         ///0x0000000000000000000000000000000000000000000000000000000000000000
 
         // mvs team reviews application and grants member to create coll
-        factory.updateMember(member.addr, address(0x0),DEPLOY_FEE, 0, 0, 10);
+        factory.updateMember(member.addr, address(0x0), DEPLOY_FEE, 0, 0, 10);
 
         // mvx member creates collection - NO DISCOUNT
         vm.startPrank(member.addr);
@@ -177,8 +175,6 @@ contract MvxFactoryScenarioTest is BaseTest, GasSnapshot {
         factory.grantReferral(_cloneAddress, artist.addr);
         factory.grantReferral(_cloneAddress, user1.addr);
         factory.grantReferral(_cloneAddress, user2.addr);
-        (,,, uint256 expiration) = factory.artists(artist.addr);
-        assert(expiration > 0);
         vm.stopPrank();
 
         ///0x0000000000000000000000000000000000000000000000000000000000000000
@@ -235,12 +231,23 @@ contract MvxFactoryScenarioTest is BaseTest, GasSnapshot {
         /// PARTNER
 
         vm.startPrank(member.addr);
-        (,,,uint256 balance,,) = factory.partners(_cloneAddress);
+        (,,, uint256 balance,,) = factory.partners(_cloneAddress);
         uint256 _balanceB4withdraw = member.addr.balance;
 
         factory.withdrawPartner(_cloneAddress);
-        assertEq(member.addr.balance ,_balanceB4withdraw + balance);
+        assertEq(member.addr.balance, _balanceB4withdraw + balance);
 
         vm.stopPrank();
+
+        factory.withdraw();
     }
+
+    function test_withdrawAdmin() public {
+        vm.deal(address(factory), 10 ether);
+        assert(address(factory).balance > 0);
+        factory.withdraw();
+        assert(address(factory).balance == 0);
+    }
+
+    fallback() external payable {}
 }

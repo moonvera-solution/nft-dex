@@ -36,14 +36,14 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
 
     // nft collection deploy fee
     uint256 public collectionCount;
-    uint256 private _referralExpiration;
 
     mapping(address => Artist) public artists; // artists addr => Artist data, expires
     mapping(address => Partner) public partners; // collection addr => Collection data, expires
     mapping(address => Member) public members; // Members addr => Member data, expires
 
-    error InvalidColletion(uint8);
-    error Unathorized(uint8);
+    error InvalidColletion();
+    error Unathorized();
+    error AdminWithdrawError();
     error DiscountError(uint8);
     error GrantReferralError(uint8);
     error WithdrawPartnerError(uint8);
@@ -51,15 +51,16 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
     error UpdateMemberError(uint8);
     error CreateError(uint8);
 
-    event CreateEvent(address indexed sender, address impl, address cloneAddress);
-    event InitCollectionEvent(address sender, address collection);
-    event CreateCollectionEvent(address sender, address template, address clone);
-    event ReferralDiscount(address indexed _artist, address indexed _sender, address indexed _collection);
-    event CollectionDiscount(address indexed _collection, uint96 indexed _discount);
-    event WithdrawPartner(address indexed _sender, address indexed _collection, uint256 _balance);
-    event WithdrawReferral(address indexed _sender, address indexed _artist, uint256 _referralBalance);
-    event ReferralBalanceUpdate(address, uint256);
-    event PartnerBalanceUpdate(address, uint256);
+    event WithdrawAdmin(uint256 amount);
+    event CreateEvent(address indexed _sender, address _impl, address _cloneAddress);
+    event ReferralDiscount(address indexed _artist, address _sender, address _collection);
+    event WithdrawPartner(address indexed _sender, address _collection, uint256 _balance);
+    event WithdrawReferral(address indexed _sender, address _artist, uint256 _referralBalance);
+    event ReferralBalanceUpdate(address indexed _referral, uint256 _amount);
+    event PartnerBalanceUpdate(address indexed _partner, uint256 _amount);
+    event UpdateCollectionImpl(address _newImpl);
+    event UpdatePartner(Partner);
+    event UpdateMember(Member);
 
     event Log(string, uint256);
 
@@ -72,21 +73,17 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
         __Ownable_init_unchained();
     }
 
-    receive() external payable {}
+    receive() external payable {emit Log("Receive factory",msg.value);}
 
     fallback() external payable {
-        revert Unathorized(0);
+        revert Unathorized();
     }
 
     ///0x0000000000000000000000000000000000000000000000000000000000000000
     ///                     OWNER UPDATES
     ///0x0000000000000000000000000000000000000000000000000000000000000000
 
-    function updateReferralExpiration(uint256 _expirationInDays) external payable onlyOwner {
-        _referralExpiration = _expirationInDays * (60 * 60 * 24);
-    }
     /// @notice Grants create colletion rights to MVX member
-
     function updateMember(
         address _newMember,
         address _collection,
@@ -96,7 +93,6 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
         uint256 _expirationDays
     ) external payable onlyOwner {
         if (_newMember == address(0x0)) revert UpdateMemberError(1);
-        if (members[_newMember].expiration != 0) revert UpdateMemberError(2);
         require(_platformFee < 10_000 && _discount < 10_000);
 
         members[_newMember] = Member({
@@ -106,6 +102,7 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
             discount: _discount,
             expiration: block.timestamp + (_expirationDays * 60 * 60 * 24)
         });
+        emit UpdateMember(members[_newMember]);
     }
 
     /// @notice All percentages are in bp
@@ -127,10 +124,8 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
             discount: _discountPercent,
             expiration: uint40(block.timestamp + (_expireDaysFromNow * (60 * 60 * 24)))
         });
-        emit UpdatePartnerEvent(partners[_collection]);
+        emit UpdatePartner(partners[_collection]);
     }
-
-event UpdatePartnerEvent(Partner);
 
     /// @notice Access: only Owner
     /// @param _impl Clone's proxy implementation of IMvxCollection logic
@@ -138,9 +133,10 @@ event UpdatePartnerEvent(Partner);
     function updateCollectionImpl(address _impl) external payable onlyOwner {
         if (!IMvxCollection(_impl).supportsInterface(0xc21b8f28)) {
             // ERC721A interface Id
-            revert InvalidColletion(1);
+            revert InvalidColletion();
         }
         collectionImpl = _impl;
+        emit UpdateCollectionImpl(collectionImpl);
     }
 
     function deleteArtist(address _artist) external onlyOwner {
@@ -156,8 +152,10 @@ event UpdatePartnerEvent(Partner);
     ///0x0000000000000000000000000000000000000000000000000000000000000000
 
     function withdraw() external payable onlyOwner {
-        (bool sent,) = owner().call{value: address(this).balance}("");
-        require(!sent);
+        uint256 _balance = address(this).balance;
+        (bool sent,) = payable(msg.sender).call{value: _balance}("");
+        if (!sent) revert AdminWithdrawError();
+        emit WithdrawAdmin(_balance);
     }
 
     function withdrawPartner(address _collection) external {
@@ -197,16 +195,16 @@ event UpdatePartnerEvent(Partner);
         address _referral = msg.sender;
         bool isCollectionMember = IMvxCollection(_extCollection).balanceOf(_referral) > 0;
         if (!isCollectionMember) revert GrantReferralError(1);
+        Partner memory partner = partners[_extCollection];
 
         // check called collection has a discount, set by MVX only
-        bool hasDiscount =
-            partners[_extCollection].discount > 0 && partners[_extCollection].expiration > block.timestamp;
+        bool hasDiscount = partner.discount > 0 && partner.expiration > block.timestamp;
         if (!hasDiscount) revert GrantReferralError(2);
 
         // check _artist has not a referral already
         if (artists[_artist].referral != address(0x0)) revert GrantReferralError(3);
 
-        artists[_artist] = Artist(_referral, 0, _extCollection, _referralExpiration); // 20% referrals
+        artists[_artist] = Artist(_referral, 0, _extCollection); // 20% referrals
         emit ReferralDiscount(_artist, _referral, _extCollection);
     }
 
@@ -224,12 +222,12 @@ event UpdatePartnerEvent(Partner);
     ) external payable auth returns (address _clone) {
         address _sender = msg.sender;
         uint256 _msgValue = msg.value;
-        
+
         Artist memory _artist = artists[_sender];
         Member memory member = members[_sender];
         uint256 _deployFee = member.deployFee;
 
-        if (_artist.expiration >= block.timestamp) _applyDiscount(_artist, _sender, _msgValue,_deployFee);
+        if (_artist.referral != address(0x0)) _applyDiscount(_artist, _sender, _msgValue, _deployFee);
         else if (_msgValue < _deployFee) revert CreateError(1);
 
         // encode seder to clone immutable arg
@@ -237,7 +235,7 @@ event UpdatePartnerEvent(Partner);
 
         // Lib clone minimal proxy with immutable args
         _clone = LibClone.clone(address(collectionImpl), data);
-        if (_clone == address(0x0)) revert CreateError(1);
+        if (_clone == address(0x0)) revert CreateError(2);
 
         // Init Art collection minimal proxy clone
         IMvxCollection(_clone).initialize(
@@ -278,44 +276,36 @@ event UpdatePartnerEvent(Partner);
         _balance = artists[_artist].referralBalance;
     }
 
-    function totalCollections() external view returns (uint256 _total) {
-        _total = collectionCount;
-    }
-
     ///0x0000000000000000000000000000000000000000000000000000000000000000
     ///                      INTERNAL LOGIC
     ///0x0000000000000000000000000000000000000000000000000000000000000000
 
-    function _applyDiscount(Artist memory _artist, address _sender, uint256 _msgValue,uint256 _deployFee) internal returns (bool) {
+    function _applyDiscount(Artist memory _artist, address _sender, uint256 _msgValue, uint256 _deployFee)
+        internal
+        returns (bool)
+    {
         Partner memory _partner = partners[_artist.collection];
         uint256 _discountAmount = _percent(_deployFee, _partner.discount); // 20% discount
-        
-        emit Log("_deployFee - _discountAmount: ",_deployFee - _discountAmount);
-        emit Log("_msgValue: ",_msgValue);
-        
-        if (_msgValue < _deployFee - _discountAmount) revert DiscountError(100);
 
-        // here we start deducting from msg.value
+        if (_msgValue < _deployFee - _discountAmount) revert DiscountError(1);
+
+        // Update Referral balance
         uint256 _referralAmount = _percent(_deployFee, _partner.referralOwnPercent);
-
-        _msgValue = _msgValue - _referralAmount; // -20% update
         _artist.referralBalance = _referralAmount;
-        emit ReferralBalanceUpdate(_artist.referral, _referralAmount);
-        _artist.expiration = 0;
         artists[_sender] = _artist;
+        emit ReferralBalanceUpdate(_artist.referral, _referralAmount);
 
+        // Update Partner balance
         uint256 _partnerAmount = _percent(_deployFee, _partner.adminOwnPercent);
-        if (_msgValue < _partnerAmount) revert DiscountError(2);
-
-        _msgValue = _msgValue - _partnerAmount; // -10% update
         _partner.balance = _partner.balance + _partnerAmount;
-        emit PartnerBalanceUpdate(_partner.admin, _partnerAmount);
         partners[_artist.collection] = _partner;
-        if (address(this).balance < msg.value - (_partnerAmount + _referralAmount)) revert DiscountError(3);
+        emit PartnerBalanceUpdate(_partner.admin, _partnerAmount);
+
+        if (address(this).balance < msg.value - (_partnerAmount + _referralAmount)) revert DiscountError(2);
         return true;
     }
 
-    function _percent(uint256 a, uint96 b) public pure returns (uint256) {
+    function _percent(uint256 a, uint96 b) internal pure returns (uint256) {
         return a.mulDiv(b, 10_000);
     }
 

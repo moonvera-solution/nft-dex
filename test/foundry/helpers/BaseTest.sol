@@ -22,6 +22,7 @@ contract BaseTest is Test {
 
     Vm.Wallet public wallet1 = vm.createWallet("w1");
     Vm.Wallet public wallet5 = vm.createWallet("w5");
+    Vm.Wallet public wallet3 = vm.createWallet("w3");
 
     address public user2 = address(2);
     address public user3 = address(3);
