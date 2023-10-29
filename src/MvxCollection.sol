@@ -11,9 +11,9 @@ import "@src/abstracts/MintingStages.sol";
 // ██║ ╚═╝ ██║╚██████╔╝╚██████╔╝██║ ╚████║ ╚████╔╝ ███████╗██║  ██║██║  ██║
 // ╚═╝     ╚═╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═══╝  ╚═══╝  ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝
 //
-/// @title Art Collection ERC721A Upgradable
+/// @title Art Collection
 /// @author MoonveraLabs
-/// @dev ERC721A template for minimal proxy clones
+/// @dev   Minimal proxy clones for ERC721A
 contract MvxCollection is MintingStages {
     event WithdrawEvent(address sender, uint256 balance, address feeReceiver, uint256 fee);
     event OGmintEvent(address indexed sender, uint256 value, address to, uint256 amount, uint256 _ogMintPrice);

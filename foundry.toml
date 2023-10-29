@@ -13,7 +13,7 @@ fs_permissions = [{ access = "read-write", path = ".forge-snapshots/"}]
 
 
 [rpc_endpoints]
-goerli = "${GOERLI_RPC_URL}"
+goerli = "${GOERLI_NODE_3}"
 
 [etherscan]
 goerli = { key = "${ETHERSCAN_API_KEY}" }

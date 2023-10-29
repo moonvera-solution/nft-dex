@@ -12,7 +12,7 @@ forge create src/MvxFactory.sol:MvxFactory  --rpc-url https://goerli.infura.io/v
 forge verify-contract 0x2c48d408f25B8100adEfeb9E8323C309F62e50Fd MvxFactory --watch --chain-id 5 --constructor-args $(cast abi-encode "constructor(uint256)" 0)
 
 forge create src/MvxCollection.sol:MvxCollection  --rpc-url https://rpc.ankr.com/eth_goerli --private-key 7a3b2dc7d031efa7d9e7c5a069c5941f0488e2c7b44c188763be7300e0a907ec
-forge verify-contract 0x5ff2B4d7fE3Bac7e7aC20E3a05a85D291c04970E MvxCollection --watch --chain-id 5
+forge verify-contract 0x3694D00df1e6bd5B6A2b2A43dcBD3b709A23C256 MvxCollection --watch --chain-id 5
 # remixd -s . --remix-ide https://remix.ethereum.org  
  
  ## MAINNET create collection

@@ -6,31 +6,28 @@ dotenv.config();
 import FactoryContract from "../out/MvxFactory.sol/MvxFactory.json";
 import { MvxFactory, MvxCollection } from "../typechain-types";
 import {CollectionStruct,StagesStruct} from "../typechain-types/src/MvxFactory";
-
 const _log = (a:any,b:any):any => console.log("\n",a,b,"\n");
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000' 
 const _sleep = (ms:any) => new Promise(resolve => setTimeout(resolve, ms));
 
 async function _deployFactory(){
-  const Factory: MvxFactory = await hre.ethers.getContractFactory("MvxFactory");
-  const FactoryProxy: MvxFactory = await upgrades.deployProxy(Factory, {initializer: "initialize",kind: 'uups'});
-  await FactoryProxy.waitForDeployment();
+  // const Factory: MvxFactory = await hre.ethers.getContractFactory("MvxFactory");
+  // const FactoryProxy: MvxFactory = await upgrades.deployProxy(Factory, {initializer: "initialize",kind: 'uups'});
+  // await FactoryProxy.waitForDeployment();
 
-  const FactoryAddress = await FactoryProxy.getAddress();
-  _log("FactoryProxy deployed to:", FactoryAddress);
-  let bbImplAddress = await upgrades.erc1967.getImplementationAddress(FactoryAddress);
-  _log("Impl deployed to:", bbImplAddress);
-  await hre.run("verify:verify", {address: bbImplAddress});
+  // const FactoryAddress = await FactoryProxy.getAddress();
+  // _log("FactoryProxy deployed to:", FactoryAddress);
+  // let bbImplAddress = await upgrades.erc1967.getImplementationAddress(FactoryAddress);
+  // _log("Impl deployed to:", bbImplAddress);
+  await hre.run("verify:verify", {address: "0x46037c76B82d0D982fec3a1e6587661FcAb35a81"});
 }
-
 async function _deployCollection(){
-  const Collection: any = await hre.ethers.getContractFactory("MvxCollection");
-  const CollectionInstance = await Collection.deploy();
-  const CollectionAddress = await CollectionInstance.getAddress();
-  _log("Collection 721A impl deployed to:",CollectionAddress);
-  await hre.run("verify:verify", {address: "0x7e65bA841b8B63E42e4bd9CF0BFd3c4a4d5Ba388"});
+  // const Collection: any = await hre.ethers.getContractFactory("MvxCollection");
+  // const CollectionInstance = await Collection.deploy();
+  // const CollectionAddress = await CollectionInstance.getAddress();
+  // _log("Collection 721A impl deployed to:",CollectionAddress);
+  await hre.run("verify:verify", {address: "0x42574C0A1AcecF1AA9cdBCB7259FC309DD8Db91e"});
 }
-
 async function _initFactory(FactoryProxyAddress: any, ImplAddr:any){
   const deployer = await ethers.getSigner(ADMIN);
   const FactoryProxy:MvxFactory = await ethers.getContractAt("MvxFactory",FactoryProxyAddress);
@@ -38,7 +35,6 @@ async function _initFactory(FactoryProxyAddress: any, ImplAddr:any){
   const receipt:any = await tx.wait();
   _log("Added impl...",receipt.logs);
 }
-
 async function _updateMember(FactoryProxyAddress:any, member:any){
   const FactoryProxy:MvxFactory = await ethers.getContractAt("MvxFactory",FactoryProxyAddress);
   const deployer = await ethers.getSigner(ADMIN);
@@ -47,7 +43,6 @@ async function _updateMember(FactoryProxyAddress:any, member:any){
   const rc : any  = await tx.wait();
   _log("Added Member", rc.logs);
 }
-
 async function _createCollection(FactoryProxyAddress:any,sender:any){
   const FactoryProxy:MvxFactory = await ethers.getContractAt("MvxFactory",FactoryProxyAddress);
   const block = {timestamp: (await ethers.provider.getBlock('latest')).timestamp  };
@@ -83,17 +78,32 @@ async function _createCollection(FactoryProxyAddress:any,sender:any){
   const rc :any = await tx.wait();  
   _log("Collection1 clone address",rc.logs);
 }
-
-async function _grantReferral(FactoryProxyAddress:any, sender:any, artist:any){
+async function _updatePartnership(FactoryProxyAddress:any, collection:any,partner:any){
+  const FactoryProxy:MvxFactory = await ethers.getContractAt("MvxFactory",FactoryProxyAddress);
+  const deployer = await ethers.getSigner(ADMIN);
+  const tx = await FactoryProxy.connect(deployer).updatePartnership(collection,partner,1000,2000,2000,10);
+  const rc : any  = await tx.wait();
+  _log("Added Partner", rc.logs);
+}
+async function _mint(CloneAddress:any,sender:any){
+  const MvxCollectionInstance : MvxCollection = await ethers.getContractAt("MvxCollection",CloneAddress);
+  const signer = await ethers.getSigner(sender);
+  const tx = await MvxCollectionInstance.connect(signer).mintForRegular(sender,1,{value: 30000000000000000n});
+  const rc : any  = await tx.wait();
+  _log("Added Member", rc.logs);
 
 }
-
-async function _updatePartnership(FactoryProxyAddress:any, partner:any){
-
+async function _grantReferral(FactoryProxyAddress:any, sender:any, artist:any, collection:any,){
+  const FactoryProxy:MvxFactory = await ethers.getContractAt("MvxFactory",FactoryProxyAddress);
+  const signer = await ethers.getSigner(sender);
+  const tx = await FactoryProxy.connect(signer).grantReferral(collection,artist);
+  const rc : any  = await tx.wait();
+  _log("Added Member", rc.logs);
 }
 
-const FACTORY_PROXY_GOERLI = "0x4D2cc8B6FeF51A95Ea78F0C9EE49Bc2620bA038C";
-const CLONE_IMPL_GOERLI = "0x5ff2B4d7fE3Bac7e7aC20E3a05a85D291c04970E";
+const FACTORY_PROXY_GOERLI = "0xD04422798e6016d195fd34E282998ae8168E3723";
+const CLONE_IMPL_GOERLI = "0x42574c0a1acecf1aa9cdbcb7259fc309dd8db91e";
+const CLONE_721A= "0xbf6092a4ae99e6382a70102c99415fb1671dcd03";
 
 const ADMIN = "0x37aa961D37F3513ae760ea7B704dAe3415f67B2F";
 const MEMBER = "0x985Ec7d924Fc4e18ab99C2c7F1Bb83f7898cA146";
@@ -102,11 +112,16 @@ const ARTIST = "0x57511A8BDe2940229d3bddF20d0FC58097dDd771";
 
 async function main() {
   // _deployFactory();
-  // _deployCollection();
+  _deployCollection();
   // _initFactory(FACTORY_PROXY_GOERLI, CLONE_IMPL_GOERLI);
-  _createCollection(FACTORY_PROXY_GOERLI, MEMBER);
+  // _updateMember(FACTORY_PROXY_GOERLI,MEMBER);
+  // _createCollection(FACTORY_PROXY_GOERLI, MEMBER);
+  // _updatePartnership(FACTORY_PROXY_GOERLI,CLONE_721A,MEMBER);
+  // _mint(CLONE_721A,REFERRAL);
+  // _grantReferral(FACTORY_PROXY_GOERLI,REFERRAL,ARTIST,CLONE_721A);
+  // _updateMember(FACTORY_PROXY_GOERLI,ARTIST);
+  // _createCollection(FACTORY_PROXY_GOERLI, ARTIST); //bingo!
 }
-
 
 main().catch((error) => {
   console.error(error);

@@ -16,12 +16,10 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
     using LibString for string;
     using Math for uint256;
 
-
     MvxCollection private _nftCollection;
     MvxCollectionNotERC721A private mvxCollectionNotERC721A;
     uint256 _platformFee;
-    address constant private ZERO_ADDRESS = 0x0000000000000000000000000000000000000000;
-
+    address private constant ZERO_ADDRESS = 0x0000000000000000000000000000000000000000;
 
     function setUp() public {
         _platformFee = 1000; // 10%
@@ -54,7 +52,7 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         _nftCollection.grantRole(ADMIN_ROLE_TEST, wallet5.addr);
     }
 
-    function test_updateRoyaltyInfo(address receiver, uint96 royaltyFee) external {
+    function test_fuzz_updateRoyaltyInfo(address receiver, uint96 royaltyFee) external {
         vm.assume(receiver != address(0x0));
         vm.assume(royaltyFee > 0 && royaltyFee < 10_000);
 
@@ -65,7 +63,7 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         assertEq(royaltyFee, _royaltyFee);
     }
 
-    function test_royaltyInfoFuzz(uint256 salePrice, uint96 royaltyFee) external {
+    function test_fuzz_royaltyInfo(uint256 salePrice, uint96 royaltyFee) external {
         vm.assume(royaltyFee > 0 && royaltyFee < 10_000);
 
         _nftCollection.updateRoyaltyInfo(address(this), royaltyFee);
@@ -109,7 +107,7 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         );
     }
 
-    function test_mintForRegular(address to, uint256 mintAmount) public {
+    function test_fuzz_mintForRegular(address to, uint256 mintAmount) public {
         (,,, uint256 mintMaxPerUser,,,,,,,,) = _nftCollection.mintingStages();
         vm.assume(mintAmount > 0 && mintAmount <= mintMaxPerUser);
         _nftCollection.updateMintPrice(5 wei);
@@ -117,7 +115,7 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         assert(_nftCollection.balanceOf(to) > 0);
     }
 
-    function test_mintForWhitelist(address to, uint256 mintAmount) public {
+    function test_fuzz_mintForWhitelist(address to, uint256 mintAmount) public {
         Vm.Wallet memory WLmember = vm.createWallet("WL-member");
         vm.deal(WLmember.addr, 10 ether);
         vm.assume(to != address(0x0));
@@ -135,7 +133,7 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         assert(_nftCollection.balanceOf(to) > 0);
     }
 
-    function test_mintForOG(address to, uint256 mintAmount) public {
+    function test_fuzz_mintForOG(address to, uint256 mintAmount) public {
         Vm.Wallet memory OGmember = vm.createWallet("OG-member");
         vm.deal(OGmember.addr, 10 ether);
         vm.assume(to != address(0x0));
@@ -157,14 +155,14 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
     Fuzz Test Abstract Minting Stages Contract
     */
     // OG MINTING
-    function test_updateOGMintPrice(uint256 price) public {
+    function test_fuzz_updateOGMintPrice(uint256 price) public {
         vm.assume(price > 0);
         _nftCollection.updateOGMintPrice(price);
         (uint256 ogMintPrice,,,,,,,,,,,) = _nftCollection.mintingStages();
         assert(ogMintPrice == price);
     }
 
-    function test_updateOGMintMax(uint256 price) public {
+    function test_fuzz_updateOGMintMax(uint256 price) public {
         vm.assume(price > 0);
         _nftCollection.updateOGMintMax(price);
         (,,,, uint256 ogMintMaxPerUser,,,,,,,) = _nftCollection.mintingStages();
@@ -172,14 +170,14 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
     }
 
     // WL MINTING
-    function test_updateWhitelistMintPrice(uint256 price) public {
+    function test_fuzz_updateWhitelistMintPrice(uint256 price) public {
         vm.assume(price > 0);
         _nftCollection.updateWhitelistMintPrice(price);
         (, uint256 whitelistMintPrice,,,,,,,,,,) = _nftCollection.mintingStages();
         assert(whitelistMintPrice == price);
     }
 
-    function test_updateWLMintMax(uint256 mintMax) public {
+    function test_fuzz_updateWLMintMax(uint256 mintMax) public {
         vm.assume(mintMax > 0);
         (,,,, uint256 _maxSupply,,) = _nftCollection.collectionData();
         vm.assume(mintMax > _maxSupply);
@@ -188,7 +186,7 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         assert(whitelistMintMaxPerUser == mintMax);
     }
 
-    function test_updateMinterRoles(uint256 index, address[] calldata minterList, uint8 role) public {
+    function test_fuzz_updateMinterRoles(uint256 index, address[] calldata minterList, uint8 role) public {
         vm.assume(role == 1 || role == 0);
         vm.assume(minterList.length > 0);
         vm.assume(index > 0 && index < minterList.length);
@@ -200,14 +198,14 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
     }
 
     // REGULAR MINTING
-    function test_updateMintPrice(uint256 price) public {
+    function test_fuzz_updateMintPrice(uint256 price) public {
         vm.assume(price > 0);
         _nftCollection.updateMintPrice(price);
         (,, uint256 mintPrice,,,,,,,,,) = _nftCollection.mintingStages();
         assert(mintPrice == price);
     }
 
-    function test_updateMintMax(uint256 mintMax) public {
+    function test_fuzz_updateMintMax(uint256 mintMax) public {
         vm.assume(mintMax > 0);
         (,,,, uint256 _maxSupply,,) = _nftCollection.collectionData();
         vm.assume(mintMax < _maxSupply);
@@ -216,7 +214,7 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         assert(mintMaxPerUser == mintMax);
     }
 
-    function test_updateTime(uint256 start, uint256 end) public {
+    function test_fuzz_updateTime(uint256 start, uint256 end) public {
         vm.assume(start > block.timestamp);
         vm.assume(end > start && end < block.timestamp + 5 days);
         _nftCollection.updateTime(start, end);
@@ -257,7 +255,7 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
     function test_withdraw_with_platform_fee() public {
         uint96 _platformFee = 200; // bp 2%
         vm.startPrank(address(this));
-        factory.updateMember(wallet3.addr,ZERO_ADDRESS , .5 ether, _platformFee, 0, 10);
+        factory.updateMember(wallet3.addr, ZERO_ADDRESS, 0.5 ether, _platformFee, 0, 10);
         vm.stopPrank();
 
         vm.startPrank(address(wallet3.addr));
@@ -270,21 +268,20 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         vm.startPrank(wallet3.addr);
         uint256 amount = 5 ether;
         vm.deal(address(wallet3.addr), amount);
-        _clone721A.mintForRegular{value: amount}(wallet3.addr,5);
-        assertEq(_clone721A.balanceOf(wallet3.addr),5);
+        _clone721A.mintForRegular{value: amount}(wallet3.addr, 5);
+        assertEq(_clone721A.balanceOf(wallet3.addr), 5);
         vm.stopPrank();
 
         uint256 _thisBalanceB4withdraw = address(factory).balance;
 
         vm.startPrank(wallet3.addr);
         uint256 _cloneBalance = address(_clone721A).balance;
-        uint256 _cloneAdminBalance = (_cloneBalance * _platformFee / 10_000); 
+        uint256 _cloneAdminBalance = (_cloneBalance * _platformFee / 10_000);
         _clone721A.withdraw();
         assertEq(address(wallet3.addr).balance, _cloneBalance - _cloneAdminBalance);
-        assertEq(address(factory).balance,  _thisBalanceB4withdraw +_cloneAdminBalance);
+        assertEq(address(factory).balance, _thisBalanceB4withdraw + _cloneAdminBalance);
         vm.stopPrank();
     }
-
 
     event Log(string, uint256);
 
@@ -312,7 +309,6 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
     }
 
     error MintError(string, uint8);
-
     fallback() external payable {}
 }
 

@@ -7,19 +7,19 @@ import {MvxFactory} from "@src/MvxFactory.sol";
 import {MvxCollection} from "@src/MvxCollection.sol";
 import "../helpers/BaseTest.sol";
 
-contract MvxFactoryScenarioTest is BaseTest, GasSnapshot {
+contract MvxFactoryReferralDiscountTest is BaseTest, GasSnapshot {
     uint160 internal constant ALLOW_LAUNCH_PERIOD = 10 days;
     uint256 internal constant DEPLOY_FEE = 0.5 ether;
     uint96 internal constant PLATFORM_FEE = 200; //bp 2%
-    uint96 internal constant MEMBER_DISCOUNT = 2000; //bp 20%
+    uint96 internal constant MEMBER_DISCOUNT = 0; //bp 20%
 
     function setUp() public {
         clone = new MvxCollection();
         factory = new MvxFactory(); // takes fee on mint
         factory.initialize();
 
-        snapSize("MvxCollection", address(clone));
         vm.deal(address(this), 10 ether);
+        snapSize("MvxCollection", address(clone));
         factory.updateCollectionImpl(address(clone));
     }
 
@@ -33,7 +33,9 @@ contract MvxFactoryScenarioTest is BaseTest, GasSnapshot {
 
         vm.startPrank(member.addr, member.addr);
         vm.deal(member.addr, 1 ether);
+        snapStart("CreateClone No discount"); // GAS tracking
         _factoryCreate(factory, member.addr, 1 ether);
+        snapEnd();
     }
 
     function test_artist_createCollection() public {
@@ -81,9 +83,7 @@ contract MvxFactoryScenarioTest is BaseTest, GasSnapshot {
         vm.startPrank(artist.addr);
         vm.deal(artist.addr, 1 ether);
 
-        snapStart("init_clone V2"); // GAS tracking
         _factoryCreate(factory, artist.addr, 0.4 ether);
-        snapEnd();
         vm.stopPrank();
 
         vm.startPrank(referral.addr);
@@ -205,7 +205,7 @@ contract MvxFactoryScenarioTest is BaseTest, GasSnapshot {
         // Artist Launches
         vm.startPrank(artist.addr);
         vm.deal(artist.addr, 1 ether);
-        snapStart("init_clone V2"); // GAS tracking
+        snapStart("CreateClone Artist Discount"); // GAS tracking
         _factoryCreate(factory, artist.addr, 0.5 ether); // feploy fee = .5 eth - referral discount 20% = .4 eth
         snapEnd();
         vm.stopPrank();
