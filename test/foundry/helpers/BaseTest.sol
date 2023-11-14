@@ -46,18 +46,19 @@ contract BaseTest is Test {
 
     function _setStages() public {
         stages = Stages({
-            ogMintPrice: 1 ether,
-            whitelistMintPrice: 1 ether,
-            mintPrice: 1 ether,
-            mintMaxPerUser: 60,
-            ogMintMaxPerUser: 60,
-            whitelistMintMaxPerUser: 50,
-            mintStart: block.timestamp,
-            mintEnd: block.timestamp + 5 * 60 * 60 * 24,
-            ogMintStart: block.timestamp,
-            ogMintEnd: block.timestamp + 5 * 60 * 60 * 24,
-            whitelistMintStart: block.timestamp,
-            whitelistMintEnd: block.timestamp + 5 * 60 * 60 * 24
+            isMaxSupplyUpdatable: true,
+            ogMintPrice: uint72(1 ether),
+            whitelistMintPrice: uint72(1 ether),
+            mintPrice: uint72(1 ether),
+            mintMaxPerUser: uint16(60),
+            ogMintMaxPerUser: uint16(60),
+            whitelistMintMaxPerUser: uint16(50),
+            mintStart: uint40(block.timestamp),
+            mintEnd: uint40(block.timestamp + 5 * 60 * 60 * 24),
+            ogMintStart: uint40(block.timestamp),
+            ogMintEnd: uint40(block.timestamp + 5 * 60 * 60 * 24),
+            whitelistMintStart: uint40(block.timestamp),
+            whitelistMintEnd: uint40(block.timestamp + 5 * 60 * 60 * 24)
         });
     }
 
@@ -67,8 +68,8 @@ contract BaseTest is Test {
             symbol: "MVX",
             baseURI: "ipfs://QmXPHaxtTKxa58ise75a4vRAhLzZK3cANKV3zWb6KMoGUU/",
             baseExt: ".json",
-            maxSupply: 300,
-            royaltyFee: 1000,
+            maxSupply: uint128(2000),
+            royaltyFee: uint128(1000),
             royaltyReceiver: royaltyReiver
         });
     }

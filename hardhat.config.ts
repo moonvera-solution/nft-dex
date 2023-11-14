@@ -9,6 +9,8 @@ import '@openzeppelin/hardhat-upgrades';
 import "hardhat-gas-reporter"
 import "hardhat-tracer";
 import "@nomicfoundation/hardhat-ethers";
+import '@typechain/hardhat'
+
 // import "@tenderly/hardhat-tenderly"
 
 

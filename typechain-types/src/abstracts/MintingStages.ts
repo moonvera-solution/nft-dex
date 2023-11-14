@@ -38,11 +38,14 @@ export interface MintingStagesInterface extends Interface {
       | "getRoleAdmin"
       | "grantRole"
       | "hasRole"
+      | "initalized"
       | "isApprovedForAll"
       | "mintingStages"
       | "mintsPerWallet"
       | "name"
       | "ownerOf"
+      | "platformFee"
+      | "platformFeeReceiver"
       | "renounceRole"
       | "revokeRole"
       | "royaltyInfo"
@@ -126,6 +129,10 @@ export interface MintingStagesInterface extends Interface {
     values: [BytesLike, AddressLike]
   ): string;
   encodeFunctionData(
+    functionFragment: "initalized",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "isApprovedForAll",
     values: [AddressLike, AddressLike]
   ): string;
@@ -141,6 +148,14 @@ export interface MintingStagesInterface extends Interface {
   encodeFunctionData(
     functionFragment: "ownerOf",
     values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "platformFee",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "platformFeeReceiver",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "renounceRole",
@@ -249,6 +264,7 @@ export interface MintingStagesInterface extends Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "hasRole", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "initalized", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "isApprovedForAll",
     data: BytesLike
@@ -263,6 +279,14 @@ export interface MintingStagesInterface extends Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "ownerOf", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "platformFee",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "platformFeeReceiver",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "renounceRole",
     data: BytesLike
@@ -560,7 +584,7 @@ export interface MintingStages extends BaseContract {
   collectionData: TypedContractMethod<
     [],
     [
-      [string, string, string, string, bigint, bigint, string] & {
+      [string, string, string, string, bigint, bigint, string, boolean] & {
         name: string;
         symbol: string;
         baseURI: string;
@@ -568,6 +592,7 @@ export interface MintingStages extends BaseContract {
         maxSupply: bigint;
         royaltyFee: bigint;
         royaltyReceiver: string;
+        isMaxSupplyUpdatable: boolean;
       }
     ],
     "view"
@@ -588,6 +613,8 @@ export interface MintingStages extends BaseContract {
     [boolean],
     "view"
   >;
+
+  initalized: TypedContractMethod<[], [boolean], "view">;
 
   isApprovedForAll: TypedContractMethod<
     [owner: AddressLike, operator: AddressLike],
@@ -638,6 +665,10 @@ export interface MintingStages extends BaseContract {
   name: TypedContractMethod<[], [string], "view">;
 
   ownerOf: TypedContractMethod<[tokenId: BigNumberish], [string], "view">;
+
+  platformFee: TypedContractMethod<[], [bigint], "view">;
+
+  platformFeeReceiver: TypedContractMethod<[], [string], "view">;
 
   renounceRole: TypedContractMethod<
     [role: BytesLike, account: AddressLike],
@@ -780,7 +811,7 @@ export interface MintingStages extends BaseContract {
   ): TypedContractMethod<
     [],
     [
-      [string, string, string, string, bigint, bigint, string] & {
+      [string, string, string, string, bigint, bigint, string, boolean] & {
         name: string;
         symbol: string;
         baseURI: string;
@@ -788,6 +819,7 @@ export interface MintingStages extends BaseContract {
         maxSupply: bigint;
         royaltyFee: bigint;
         royaltyReceiver: string;
+        isMaxSupplyUpdatable: boolean;
       }
     ],
     "view"
@@ -812,6 +844,9 @@ export interface MintingStages extends BaseContract {
     [boolean],
     "view"
   >;
+  getFunction(
+    nameOrSignature: "initalized"
+  ): TypedContractMethod<[], [boolean], "view">;
   getFunction(
     nameOrSignature: "isApprovedForAll"
   ): TypedContractMethod<
@@ -863,6 +898,12 @@ export interface MintingStages extends BaseContract {
   getFunction(
     nameOrSignature: "ownerOf"
   ): TypedContractMethod<[tokenId: BigNumberish], [string], "view">;
+  getFunction(
+    nameOrSignature: "platformFee"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "platformFeeReceiver"
+  ): TypedContractMethod<[], [string], "view">;
   getFunction(
     nameOrSignature: "renounceRole"
   ): TypedContractMethod<

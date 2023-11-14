@@ -427,6 +427,11 @@
           "internalType": "address",
           "name": "royaltyReceiver",
           "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "isMaxSupplyUpdatable",
+          "type": "bool"
         }
       ],
       "stateMutability": "view",

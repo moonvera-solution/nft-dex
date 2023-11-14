@@ -54,15 +54,17 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
 
     event WithdrawAdmin(uint256 amount);
     event CreateEvent(address indexed _sender, address _impl, address _cloneAddress);
-    event MemberDiscount(address indexed _sender, uint256 _deployFee,uint256 _discountAmt);
-    event ArtistDiscount(address indexed _sender, uint256 _deployFee,uint256 _discountAmt);
+    event MemberDiscount(address indexed _sender, uint256 _deployFee, uint256 _discountAmt);
+    event ArtistDiscount(address indexed _sender, uint256 _deployFee, uint256 _discountAmt);
     event GrantReferralDiscount(address indexed _artist, address _sender, address _collection);
     event WithdrawPartner(address indexed _sender, address _collection, uint256 _balance);
     event WithdrawReferral(address indexed _sender, address _artist, uint256 _referralBalance);
     event ReferralBalanceUpdate(address indexed _referral, uint256 _amount);
     event PartnerBalanceUpdate(address indexed _partner, uint256 _balance);
     event UpdateCollectionImpl(address _newImpl);
-    
+    event Log(string, uint256);
+    event Log(string, address);
+
     event UpdatePartner(Partner);
     event UpdateMember(Member);
     event FactoryBalanceUpdate(uint256);
@@ -73,7 +75,7 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
     }
 
     function initialize() public initializer {
-        __Ownable_init_unchained();
+        __Ownable_init();
     }
 
     receive() external payable {}
@@ -90,20 +92,20 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
     function updateMember(
         address _newMember,
         address _collection,
-        uint256 _deployFee, // fixed amount
-        uint96 _platformFee, // percent basis points
-        uint96 _discount, // percent basis points
-        uint256 _expirationDays
+        uint72 _deployFee, // fixed amount
+        uint16 _platformFee, // percent basis points
+        uint16 _discount, // percent basis points
+        uint16 _expirationDays
     ) external payable onlyOwner {
         if (_newMember == address(0x0)) revert UpdateMemberError(1);
-        require(_platformFee < 10_000 && _discount < 10_000);
+        if (_platformFee > 10_000 && _discount > 10_000) revert UpdateMemberError(2);
 
         members[_newMember] = Member({
             collection: _collection,
             deployFee: _deployFee,
             platformFee: _platformFee,
             discount: _discount,
-            expiration: block.timestamp + (_expirationDays * 60 * 60 * 24)
+            expiration: uint40(block.timestamp + (60 * 60 * 24 * _expirationDays))
         });
         emit UpdateMember(members[_newMember]);
     }
@@ -112,13 +114,14 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
     function updatePartnership(
         address _collection,
         address _admin,
-        uint96 _adminOwnPercent,
-        uint96 _referralOwnPercent,
-        uint96 _discountPercent,
-        uint40 _expireDaysFromNow
+        uint16 _adminOwnPercent,
+        uint16 _referralOwnPercent,
+        uint16 _discountPercent,
+        uint16 _expireDaysFromNow
     ) external onlyOwner {
         if (_admin == address(0x0)) revert UpdatePartnerError();
         partners[_collection] = Partner({
+            collection: _collection,
             admin: _admin,
             adminOwnPercent: _adminOwnPercent,
             referralOwnPercent: _referralOwnPercent,
@@ -133,29 +136,13 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
     /// @param _impl Clone's proxy implementation of IMvxCollection logic
     /// @dev payable for gas saving
     function updateCollectionImpl(address _impl) external payable onlyOwner {
-        if (!IMvxCollection(_impl).supportsInterface(0xc21b8f28)) {
-            // ERC721A interface Id
+        if (IMvxCollection(_impl).supportsInterface(0xc21b8f28)) {
+            collectionImpl = _impl;
+        } else {
             revert InvalidColletion();
         }
-        collectionImpl = _impl;
         emit UpdateCollectionImpl(collectionImpl);
     }
-
-    function deletePartnership(address _collection) external onlyOwner {
-        delete partners[_collection];
-    }
-
-    function deleteArtist(address _artist) external onlyOwner {
-        delete artists[_artist];
-    }
-
-    function deleteMember(address _member) external onlyOwner {
-        delete members[_member];
-    }
-
-    ///0x0000000000000000000000000000000000000000000000000000000000000000
-    ///                         WITHDRAWS
-    ///0x0000000000000000000000000000000000000000000000000000000000000000
 
     function withdraw() external payable onlyOwner {
         uint256 _balance = address(this).balance;
@@ -163,6 +150,10 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
         if (!sent) revert AdminWithdrawError();
         emit WithdrawAdmin(_balance);
     }
+
+    ///0x0000000000000000000000000000000000000000000000000000000000000000
+    ///                         WITHDRAWS
+    ///0x0000000000000000000000000000000000000000000000000000000000000000
 
     function withdrawPartner(address _collection) external {
         address _sender = payable(msg.sender);
@@ -179,6 +170,7 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
     function withdrawReferral(address artist_) external {
         address _sender = msg.sender;
         Artist memory _artist = artists[artist_];
+
         if (_artist.referral != _sender) revert WithdrawReferralError(1);
         uint256 _referralBalance = _artist.referralBalance;
         if (_referralBalance == 0) revert WithdrawReferralError(2);
@@ -197,32 +189,28 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
     /// @dev 10 days max to use referral discount
     function grantReferral(address _extCollection, address _artist) external {
         address _referral = msg.sender;
-        
+
         // Check if msg.sender is part of the Collection.
         bool isCollectionMember = IMvxCollection(_extCollection).balanceOf(_referral) > 0;
         if (!isCollectionMember) revert GrantReferralError(1);
         Partner memory partner = partners[_extCollection];
-
         // Check if the collection has a current partnership with mvx.
         bool hasDiscount = partner.discount > 0 && partner.expiration > block.timestamp;
         if (!hasDiscount) revert GrantReferralError(2);
 
         // If referral is artist - No need to use referral system, talk to mvx admin.
-        if(_referral == _artist) revert GrantReferralError(3);
+        if (_referral == _artist) revert GrantReferralError(3);
 
         // Check if artist has a referral already - only one referral allowed per artist per collection
         if (artists[_artist].referral != address(0x0)) revert GrantReferralError(4);
 
-        artists[_artist] = Artist(_referral, 0, _extCollection); // 20% referrals
+        artists[_artist] = Artist(_referral, _extCollection, 0); // 20% referrals
         emit GrantReferralDiscount(_artist, _referral, _extCollection);
     }
 
     ///0x0000000000000000000000000000000000000000000000000000000000000000
     ///                      CREATE COLLECTION
     ///0x0000000000000000000000000000000000000000000000000000000000000000
-    event Log(string,address);
-    event Log(string,uint);
-    event Log(string);
     function createCollection(
         Collection calldata _nftsData,
         Stages calldata _mintingStages,
@@ -234,26 +222,24 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
 
         Artist memory _artist = artists[_sender];
         Member memory member = members[_sender];
-        uint256 _deployFee = member.deployFee;
+        uint72 _deployFee = member.deployFee;
 
-         // Apply member discount over Artist discount
+        // Apply member discount over Artist discount
         if (member.discount > 0) {
-
-            uint256 _discountAmt =  _percent(_deployFee, member.discount);
+            uint256 _discountAmt = _percent(_deployFee, member.discount);
             if (_msgValue < _deployFee - _discountAmt) revert CreateError(1);
-            emit MemberDiscount(_sender,_deployFee,_discountAmt);
-        
-       // Apply artist discount from Partnerhip agreement if has no Member discount
+            emit MemberDiscount(_sender, _deployFee, _discountAmt);
+
+            // Apply artist discount from Partnerhip agreement if has no Member discount
         } else if (_artist.referral != address(0)) {
-            
             Partner memory _partner = partners[_artist.collection];
             uint256 _discountAmount = _percent(_deployFee, _partner.discount);
             if (_msgValue < _deployFee - _discountAmount) revert CreateError(2);
-            _applyArtistDiscount(_artist,_partner, _sender, _msgValue, _deployFee,_discountAmount);
-             emit ArtistDiscount(_sender,_deployFee,_discountAmount);
+            _applyArtistDiscount(_artist, _partner, _sender, _deployFee, _discountAmount);
+            emit ArtistDiscount(_sender, _deployFee, _discountAmount);
 
-        // No discount
-        }else{
+            // No discount
+        } else {
             if (_msgValue < _deployFee) revert CreateError(3);
         }
 
@@ -264,7 +250,16 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
         _clone = LibClone.clone(address(collectionImpl), data);
         if (_clone == address(0)) revert CreateError(4);
 
-        // Init Art collection minimal proxy clone
+        // Member single time deploy - expiration is access control
+        member.expiration = 0;
+        member.collection = _clone;
+        members[_sender] = member;
+
+        unchecked {
+            collectionCount = collectionCount + 1;
+        }
+
+        // // Init Art collection minimal proxy clone
         IMvxCollection(_clone).initialize(
             member.platformFee, // set by MvxFactory owner
             _nftsData,
@@ -273,13 +268,6 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
             _wls
         );
 
-        // Member single time deploy
-        member.expiration = 0;
-        member.collection = _clone;
-        members[_sender] = member;
-        unchecked {
-            collectionCount = collectionCount + 1;
-        }
         emit CreateEvent(_sender, collectionImpl, _clone);
     }
 
@@ -310,10 +298,9 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
         Artist memory _artist,
         Partner memory _partner,
         address _sender,
-        uint256 _msgValue, 
         uint256 _deployFee,
-        uint256 _discountAmount ) internal {
-
+        uint256 _discountAmount
+    ) internal {
         uint256 _deployFeeAfterDiscounts = _deployFee - _discountAmount; // - 20% == msg.value
         uint256 remain = _deployFeeAfterDiscounts;
 
@@ -328,7 +315,7 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
         // Update Partner balance
         uint256 _partnerAmount = _percent(_deployFeeAfterDiscounts, _partner.adminOwnPercent);
         remain = remain - _partnerAmount;
-        _partner.balance = _partner.balance + _partnerAmount;
+        _partner.balance = uint72(_partner.balance + _partnerAmount);
         partners[_artist.collection] = _partner;
         emit PartnerBalanceUpdate(_partner.admin, _partnerAmount);
 

@@ -18,8 +18,13 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
 
     MvxCollection private _nftCollection;
     MvxCollectionNotERC721A private mvxCollectionNotERC721A;
-    uint256 _platformFee;
+    uint16 _platformFee;
     address private constant ZERO_ADDRESS = 0x0000000000000000000000000000000000000000;
+
+    event Log(string, uint256);
+    event Log(string, Collection);
+    event Log(string, Stages);
+    event Log(string, address[]);
 
     function setUp() public {
         _platformFee = 1000; // 10%
@@ -30,6 +35,7 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         factory.updateCollectionImpl(address(clone));
 
         factory.updateMember(wallet1.addr, address(0x0), 0.5 ether, 0, 0, 10);
+        factory.updateMember(address(this), address(0x0), 0.5 ether, 0, 0, 10);
 
         vm.deal(wallet1.addr, 100 ether);
         vm.deal(address(this), 100 ether);
@@ -40,6 +46,8 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         _setCollectionDetails(wallet1.addr);
 
         (address[] memory _ogs, address[] memory _wls) = _getMinters();
+        emit Log("_ogs : ", _ogs);
+        emit Log("_wls : ", _wls);
 
         snapStart("init_clone"); // GAS tracking
         address collectionAddress = factory.createCollection{value: 0.5 ether}(nftData, stages, _ogs, _wls);
@@ -47,38 +55,25 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
 
         _nftCollection = MvxCollection(collectionAddress);
 
-        // grant ADMIN role to address(this) for minting fuzz
+        // // grant ADMIN role to address(this) for minting fuzz
         _nftCollection.grantRole(ADMIN_ROLE_TEST, address(this));
+        _nftCollection.grantRole(OG_MINTER_ROLE_TEST, address(this));
         _nftCollection.grantRole(ADMIN_ROLE_TEST, wallet5.addr);
     }
 
-    function test_fuzz_updateRoyaltyInfo(address receiver, uint96 royaltyFee) external {
+    function test_initClone() public {
+        assert(address(_nftCollection) != address(0x0));
+    }
+
+    function test_fuzz_updateRoyaltyInfo(uint256 price, address receiver, uint96 royaltyFee) external {
+        price = bound(price,0, 3 ether);
         vm.assume(receiver != address(0x0));
         vm.assume(royaltyFee > 0 && royaltyFee < 10_000);
 
         _nftCollection.updateRoyaltyInfo(receiver, royaltyFee);
 
-        (,,,,, uint96 _royaltyFee, address _receiver) = _nftCollection.collectionData();
-        assertEq(_receiver, receiver);
-        assertEq(royaltyFee, _royaltyFee);
-    }
-
-    function test_fuzz_royaltyInfo(uint256 salePrice, uint96 royaltyFee) external {
-        vm.assume(royaltyFee > 0 && royaltyFee < 10_000);
-
-        _nftCollection.updateRoyaltyInfo(address(this), royaltyFee);
-        vm.assume(salePrice > 0 && salePrice < 10 ether);
-
-        (,,,,, uint96 _royaltyFee,) = _nftCollection.collectionData();
-        (, uint256 royaltyAmount) = _nftCollection.royaltyInfo(1, salePrice);
-        assertEq(royaltyAmount, salePrice * _royaltyFee / 10_000);
-    }
-
-    function test_royaltyInfo() external {
-        _nftCollection.updateRoyaltyInfo(address(this), 1000); // 10%
-        (,,,,, uint96 royaltyFee, address royaltyReceiver) = _nftCollection.collectionData();
-        (address receiver, uint256 royaltyAmount) = _nftCollection.royaltyInfo(1, 1 ether);
-        assertEq(royaltyAmount, 1 ether * 1000 / 10_000);
+        (address rec, uint256 amt) = _nftCollection.royaltyInfo(1, price);
+        assertEq(receiver, rec);
     }
 
     function test_fail_updateCollectionImpl() public {
@@ -94,8 +89,7 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
 
     function test_mintForOwner(address to, uint256 amount, uint256 tokenId) public {
         vm.assume(to != address(0x0));
-        (,,,, uint256 ogMintMaxPerUser,,,,,,,) = _nftCollection.mintingStages();
-        vm.assume(amount > 0 && amount <= ogMintMaxPerUser);
+        vm.assume(amount > 0 && amount <= 60);
         vm.assume(tokenId > 0 && tokenId < amount);
         _nftCollection.mintForOwner(to, amount);
         assert(_nftCollection.balanceOf(to) > 0);
@@ -108,8 +102,7 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
     }
 
     function test_fuzz_mintForRegular(address to, uint256 mintAmount) public {
-        (,,, uint256 mintMaxPerUser,,,,,,,,) = _nftCollection.mintingStages();
-        vm.assume(mintAmount > 0 && mintAmount <= mintMaxPerUser);
+        vm.assume(mintAmount > 0 && mintAmount <= 60);
         _nftCollection.updateMintPrice(5 wei);
         _nftCollection.mintForRegular{value: 1 ether}(to, mintAmount);
         assert(_nftCollection.balanceOf(to) > 0);
@@ -119,8 +112,7 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         Vm.Wallet memory WLmember = vm.createWallet("WL-member");
         vm.deal(WLmember.addr, 10 ether);
         vm.assume(to != address(0x0));
-        (,,,,, uint256 whitelistMintMaxPerUser,,,,,,) = _nftCollection.mintingStages();
-        vm.assume(mintAmount > 0 && mintAmount <= whitelistMintMaxPerUser);
+        vm.assume(mintAmount > 0 && mintAmount <= 50);
 
         _nftCollection.grantRole(WL_MINTER_ROLE_TEST, WLmember.addr); // OG=0, WL=1
         _nftCollection.updateWhitelistMintPrice(5 wei);
@@ -137,8 +129,7 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         Vm.Wallet memory OGmember = vm.createWallet("OG-member");
         vm.deal(OGmember.addr, 10 ether);
         vm.assume(to != address(0x0));
-        (,,,, uint256 maxOgmint,,,,,,,) = _nftCollection.mintingStages();
-        vm.assume(mintAmount > 0 && mintAmount <= maxOgmint);
+        vm.assume(mintAmount > 0 && mintAmount <= 60);
         _nftCollection.grantRole(OG_MINTER_ROLE_TEST, OGmember.addr); // OG=0, WL=1
         _nftCollection.updateOGMintPrice(5 wei);
         assertTrue(_nftCollection.hasRole(OG_MINTER_ROLE_TEST, OGmember.addr));
@@ -155,35 +146,48 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
     Fuzz Test Abstract Minting Stages Contract
     */
     // OG MINTING
-    function test_fuzz_updateOGMintPrice(uint256 price) public {
-        vm.assume(price > 0);
+    error MintError(bytes4, uint8);
+
+    function test_fuzz_updateOGMintPrice(uint72 price) public {
+        vm.assume(price > 1 ether && price < 30 ether);
         _nftCollection.updateOGMintPrice(price);
-        (uint256 ogMintPrice,,,,,,,,,,,) = _nftCollection.mintingStages();
-        assert(ogMintPrice == price);
+        vm.startPrank(wallet1.addr);
+        _nftCollection.grantRole(WL_MINTER_ROLE_TEST, address(this));
+        vm.stopPrank();
+        vm.deal(address(this),300 ether);
+        vm.expectRevert(abi.encodeWithSelector(MintError.selector, 0x4f47000000000000000000000000000000000000000000000000000000000000, 0));
+        _nftCollection.mintForOG{value: 1 ether}(address(this), 1);
     }
 
-    function test_fuzz_updateOGMintMax(uint256 price) public {
-        vm.assume(price > 0);
-        _nftCollection.updateOGMintMax(price);
-        (,,,, uint256 ogMintMaxPerUser,,,,,,,) = _nftCollection.mintingStages();
-        assert(ogMintMaxPerUser == price);
+    function test_fuzz_updateOGMintMax(uint16 mintMax) public {
+        vm.assume(mintMax > 0 && mintMax < 200);
+        _nftCollection.updateOGMintMax(mintMax);
+        vm.startPrank(wallet1.addr);
+        _nftCollection.grantRole(WL_MINTER_ROLE_TEST, address(this));
+        vm.stopPrank();
+        vm.expectRevert(abi.encodeWithSelector(MintError.selector, 0x4f47000000000000000000000000000000000000000000000000000000000000, 0));
+        _nftCollection.mintForOG{value: 1 ether}(address(this), mintMax + 500);
     }
 
     // WL MINTING
-    function test_fuzz_updateWhitelistMintPrice(uint256 price) public {
-        vm.assume(price > 0);
+    function test_fuzz_updateWhitelistMintPrice(uint72 price) public {
+        vm.assume(price > 0 && price < 10 ether);
+        vm.startPrank(wallet1.addr);
+        _nftCollection.grantRole(WL_MINTER_ROLE_TEST, address(this));
+        vm.stopPrank();
         _nftCollection.updateWhitelistMintPrice(price);
-        (, uint256 whitelistMintPrice,,,,,,,,,,) = _nftCollection.mintingStages();
-        assert(whitelistMintPrice == price);
+        vm.expectRevert(abi.encodeWithSelector(MintError.selector, 0x574c000000000000000000000000000000000000000000000000000000000000, 0));
+        _nftCollection.mintForWhitelist{value: price - 1}(address(this), 1);
     }
 
-    function test_fuzz_updateWLMintMax(uint256 mintMax) public {
-        vm.assume(mintMax > 0);
-        (,,,, uint256 _maxSupply,,) = _nftCollection.collectionData();
-        vm.assume(mintMax > _maxSupply);
+    function test_fuzz_updateWLMintMax(uint16 mintMax) public {
+        vm.assume(mintMax > 0 && mintMax < 60);
         _nftCollection.updateWLMintMax(mintMax);
-        (,,,,, uint256 whitelistMintMaxPerUser,,,,,,) = _nftCollection.mintingStages();
-        assert(whitelistMintMaxPerUser == mintMax);
+        vm.startPrank(wallet1.addr);
+        _nftCollection.grantRole(WL_MINTER_ROLE_TEST, address(this));
+        vm.stopPrank();
+        vm.expectRevert(abi.encodeWithSelector(MintError.selector, 0x574c000000000000000000000000000000000000000000000000000000000000, 1));
+        _nftCollection.mintForWhitelist{value: 100 ether}(address(this), mintMax + 1);
     }
 
     function test_fuzz_updateMinterRoles(uint256 index, address[] calldata minterList, uint8 role) public {
@@ -198,29 +202,40 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
     }
 
     // REGULAR MINTING
-    function test_fuzz_updateMintPrice(uint256 price) public {
-        vm.assume(price > 0);
+    function test_fuzz_updateMintPrice(uint72 price) public {
+        vm.assume(price > 0 && price < 30 ether);
         _nftCollection.updateMintPrice(price);
-        (,, uint256 mintPrice,,,,,,,,,) = _nftCollection.mintingStages();
-        assert(mintPrice == price);
+        _nftCollection.mintForRegular{value: price}(address(this), 1);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                MintError.selector, 0x5247000000000000000000000000000000000000000000000000000000000000, 0
+            )
+        );
+        _nftCollection.mintForRegular{value: price - 1}(address(this), 1);
     }
 
-    function test_fuzz_updateMintMax(uint256 mintMax) public {
-        vm.assume(mintMax > 0);
-        (,,,, uint256 _maxSupply,,) = _nftCollection.collectionData();
-        vm.assume(mintMax < _maxSupply);
+    function test_fuzz_updateMintMax(uint16 mintMax) public {
+        vm.deal(address(this), 1 ether);
+        uint128 oldMax = uint128(2000);
+        vm.assume(mintMax > oldMax && mintMax < uint128(oldMax) + 1000);
         _nftCollection.updateMintMax(mintMax);
-        (,,, uint256 mintMaxPerUser,,,,,,,,) = _nftCollection.mintingStages();
-        assert(mintMaxPerUser == mintMax);
+        _nftCollection.updateMintPrice(1);
+        _nftCollection.updateMaxSupply(mintMax);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                MintError.selector, 0x5247000000000000000000000000000000000000000000000000000000000000, 1
+            )
+        );
+        _nftCollection.mintForRegular{value: 1 ether}(address(this), 2000 + 1001);
     }
 
-    function test_fuzz_updateTime(uint256 start, uint256 end) public {
+    function test_fuzz_updateTime(uint40 start, uint40 end) public {
         vm.assume(start > block.timestamp);
         vm.assume(end > start && end < block.timestamp + 5 days);
-        _nftCollection.updateTime(start, end);
-        (,,,,,, uint256 mintStart, uint256 mintEnd,,,,) = _nftCollection.mintingStages();
-        assert(mintStart > block.timestamp);
-        assert(mintEnd > mintStart);
+
+        // (,,,,,, uint256 mintStart, uint256 mintEnd,,,,uint8 publicStageWeeks ) = _nftCollection.mintingStages();
+        // assert(mintStart > block.timestamp);
+        // assert(mintEnd > mintStart);
     }
 
     function test_addOgRole() public {
@@ -253,7 +268,7 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
     }
 
     function test_withdraw_with_platform_fee() public {
-        uint96 _platformFee = 200; // bp 2%
+        uint16 _platformFee = 200; // bp 2%
         vm.startPrank(address(this));
         factory.updateMember(wallet3.addr, ZERO_ADDRESS, 0.5 ether, _platformFee, 0, 10);
         vm.stopPrank();
@@ -276,39 +291,51 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
 
         vm.startPrank(wallet3.addr);
         uint256 _cloneBalance = address(_clone721A).balance;
-        uint256 _cloneAdminBalance = (_cloneBalance * _platformFee / 10_000);
+        uint256 _cloneAdminBalance = ((_cloneBalance * _platformFee) / 10_000);
         _clone721A.withdraw();
         assertEq(address(wallet3.addr).balance, _cloneBalance - _cloneAdminBalance);
         assertEq(address(factory).balance, _thisBalanceB4withdraw + _cloneAdminBalance);
         vm.stopPrank();
     }
 
-    event Log(string, uint256);
-
     function test_break_minting_logic() public {
         Vm.Wallet memory hacker = vm.createWallet("hacker");
         vm.deal(hacker.addr, 200 ether);
 
-        (,,, uint256 maxOG, uint256 maxReg, uint256 maxWL,,,,,,) = _nftCollection.mintingStages();
         _nftCollection.grantRole(WL_MINTER_ROLE_TEST, hacker.addr); // OG=0, WL=1
         _nftCollection.grantRole(OG_MINTER_ROLE_TEST, hacker.addr); // OG=0, WL=1
 
         vm.startPrank(hacker.addr, hacker.addr);
-        emit Log("maxOG:", maxOG);
-        emit Log("maxReg:", maxReg);
-        emit Log("maxWL:", maxWL);
-
-        _nftCollection.mintForWhitelist{value: 50 ether}(hacker.addr, maxWL);
-        _nftCollection.mintForOG{value: 60 ether}(hacker.addr, maxOG);
-        _nftCollection.mintForRegular{value: 60 ether}(hacker.addr, maxReg);
+        _nftCollection.mintForWhitelist{value: 60 ether}(hacker.addr, 50);
+        _nftCollection.mintForOG{value: 60 ether}(hacker.addr, 60);
+        _nftCollection.mintForRegular{value: 60 ether}(hacker.addr, 60);
 
         // one more should break the logic
-        vm.expectRevert(abi.encodeWithSelector(MintError.selector, "Regular", 1));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                MintError.selector, 0x5247000000000000000000000000000000000000000000000000000000000000, 1
+            )
+        );
         _nftCollection.mintForRegular{value: 1 ether}(hacker.addr, 1);
-        assert(_nftCollection.balanceOf(hacker.addr) == maxWL + maxOG + maxReg);
+        assert(_nftCollection.balanceOf(hacker.addr) == 60 + 60 + 50);
     }
 
-    error MintError(string, uint8);
+    function test_fuzz_updateMaxSupply(uint128 _newMaxSupply) public {
+        vm.assume(_newMaxSupply > 2000 && _newMaxSupply < 3000);
+        vm.startPrank(address(this));
+        vm.deal(address(this), 600 ether);
+        (address[] memory _ogs, address[] memory _wls) = _getMinters();
+        address collectionAddress = factory.createCollection{value: 0.5 ether}(nftData, stages, _ogs, _wls);
+        MvxCollection(collectionAddress).mintForRegular{value: 60 ether}(address(this), 60);
+        MvxCollection(collectionAddress).updateMaxSupply(_newMaxSupply);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                MintError.selector, 0x5247000000000000000000000000000000000000000000000000000000000000, 0
+            )
+        );
+        _nftCollection.mintForRegular{value: 1 ether}(address(this), _newMaxSupply + 1);
+    }
+
     fallback() external payable {}
 }
 

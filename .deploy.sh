@@ -5,14 +5,14 @@ forge verify-contract 0x6A213cDDb2f5eD08ef3D27c66E7f6493970e9426 MvxFactory --wa
 forge create src/MvxFactory.sol:MvxFactory --rpc-url  https://goerli.infura.io/v3/41da61585a3c420cb9067f9e5edb5d0c --private-key  7a3b2dc7d031efa7d9e7c5a069c5941f0488e2c7b44c188763be7300e0a907ec --gas-limit 30000000
 
 forge create src/MvxCollection.sol:MvxCollection  --rpc-url  https://goerli.infura.io/v3/41da61585a3c420cb9067f9e5edb5d0c --private-key  7a3b2dc7d031efa7d9e7c5a069c5941f0488e2c7b44c188763be7300e0a907ec --gas-limit 30000000
-forge verify-contract 0x2451BC046B353c941847208b387F32237D51eBfc MvxCollection --watch --chain-id 5
+forge verify-contract 0xfa42e6F8e7130F8E9A79CA99e30A7f59fBc3310F MvxCollection --watch --chain-id 5
 
  ## GOERLI
 forge create src/MvxFactory.sol:MvxFactory  --rpc-url https://goerli.infura.io/v3/0f16b26af1dc41ceb5ebf74a86e1d5b3 --private-key 7a3b2dc7d031efa7d9e7c5a069c5941f0488e2c7b44c188763be7300e0a907ec
-forge verify-contract 0x2c48d408f25B8100adEfeb9E8323C309F62e50Fd MvxFactory --watch --chain-id 5 --constructor-args $(cast abi-encode "constructor(uint256)" 0)
+forge verify-contract 0x65Ff246871e0D5a80031C6644b4500f56f5a2e01 MvxFactory --watch --chain-id 5
 
 forge create src/MvxCollection.sol:MvxCollection  --rpc-url https://rpc.ankr.com/eth_goerli --private-key 7a3b2dc7d031efa7d9e7c5a069c5941f0488e2c7b44c188763be7300e0a907ec
-forge verify-contract 0x3694D00df1e6bd5B6A2b2A43dcBD3b709A23C256 MvxCollection --watch --chain-id 5
+forge verify-contract 0x30A1a6d0b15c47891cD63Fb714403F3D81421Cfa MvxCollection --watch --chain-id 5
 # remixd -s . --remix-ide https://remix.ethereum.org  
  
  ## MAINNET create collection

@@ -10,7 +10,7 @@ import {ERC721A, IERC721A} from "@src/tokens/ERC721A.sol";
 
 abstract contract MintingStages is Clone, AccessControl, ERC721A, IERC2981 {
     /// sender => mintType => counter amount
-    mapping(address => mapping(string => uint256)) public mintsPerWallet;
+    mapping(address => mapping(bytes4 => uint256)) public mintsPerWallet;
 
     /* ACCESS ROLES */
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
@@ -23,7 +23,7 @@ abstract contract MintingStages is Clone, AccessControl, ERC721A, IERC2981 {
     Stages public mintingStages;
     Collection public collectionData;
     address public platformFeeReceiver;
-    uint256 public platformFee;
+    uint96 public platformFee;
     bool public initalized = false;
 
     event UpdateWLevent(address indexed sender, uint256 listLength);
@@ -35,42 +35,36 @@ abstract contract MintingStages is Clone, AccessControl, ERC721A, IERC2981 {
     }
 
     /// OG MINTING
-    function updateOGMintPrice(uint256 _price) external OnlyAdminOrOperator {
+    function updateOGMintPrice(uint72 _price) external OnlyAdminOrOperator {
         require(_price > 0, "Invalid price amount");
         mintingStages.ogMintPrice = _price;
     }
 
-    function updateOGMintMax(uint256 _ogMintMax) external OnlyAdminOrOperator {
+    function updateOGMintMax(uint16 _ogMintMax) external OnlyAdminOrOperator {
         require(_ogMintMax > 0, "Invalid max amount");
         mintingStages.ogMintMaxPerUser = _ogMintMax;
     }
 
     /// WL MINTING
-    function updateWhitelistMintPrice(uint256 _whitelistMintPrice) external OnlyAdminOrOperator {
+    function updateWhitelistMintPrice(uint72 _whitelistMintPrice) external OnlyAdminOrOperator {
         require(_whitelistMintPrice > 0, "Invalid price amount");
         mintingStages.whitelistMintPrice = _whitelistMintPrice;
     }
 
-    function updateWLMintMax(uint256 _whitelistMintMax) external OnlyAdminOrOperator {
+    function updateWLMintMax(uint16 _whitelistMintMax) external OnlyAdminOrOperator {
         require(_whitelistMintMax > 0, "Invalid max amount");
         mintingStages.whitelistMintMaxPerUser = _whitelistMintMax;
     }
 
     // REGULAR MINTING
-    function updateMintPrice(uint256 _mintPrice) external OnlyAdminOrOperator {
+    function updateMintPrice(uint72 _mintPrice) external OnlyAdminOrOperator {
         require(_mintPrice > 0, "Invalid price amount");
         mintingStages.mintPrice = _mintPrice;
     }
 
-    function updateMintMax(uint256 _mintMax) external OnlyAdminOrOperator {
+    function updateMintMax(uint16 _mintMax) external OnlyAdminOrOperator {
         require(_mintMax > 0, "Invalid mint amount");
         mintingStages.mintMaxPerUser = _mintMax;
-    }
-
-    function updateTime(uint256 _start, uint256 _end) external OnlyAdminOrOperator {
-        require(_end > _start, "End not > start");
-        mintingStages.mintStart = _start;
-        mintingStages.mintEnd = _end;
     }
 
     /// @param _minterList address array of OG's or WL's

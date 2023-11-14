@@ -434,6 +434,11 @@ const _abi = [
         name: "royaltyReceiver",
         type: "address",
       },
+      {
+        internalType: "bool",
+        name: "isMaxSupplyUpdatable",
+        type: "bool",
+      },
     ],
     stateMutability: "view",
     type: "function",
@@ -508,6 +513,19 @@ const _abi = [
       },
     ],
     name: "hasRole",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "initalized",
     outputs: [
       {
         internalType: "bool",
@@ -656,6 +674,32 @@ const _abi = [
       },
     ],
     name: "ownerOf",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "platformFee",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "platformFeeReceiver",
     outputs: [
       {
         internalType: "address",
