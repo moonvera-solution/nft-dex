@@ -170,7 +170,6 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
     function withdrawReferral(address artist_) external {
         address _sender = msg.sender;
         Artist memory _artist = artists[artist_];
-
         if (_artist.referral != _sender) revert WithdrawReferralError(1);
         uint256 _referralBalance = _artist.referralBalance;
         if (_referralBalance == 0) revert WithdrawReferralError(2);
@@ -211,6 +210,8 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
     ///0x0000000000000000000000000000000000000000000000000000000000000000
     ///                      CREATE COLLECTION
     ///0x0000000000000000000000000000000000000000000000000000000000000000
+
+    uint8 week= 101;
     function createCollection(
         Collection calldata _nftsData,
         Stages calldata _mintingStages,
@@ -243,8 +244,9 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
             if (_msgValue < _deployFee) revert CreateError(3);
         }
 
+
         // encode seder to clone immutable arg
-        bytes memory data = abi.encodePacked(_sender);
+        bytes memory data = abi.encodePacked(_sender,week,member.platformFee);
 
         // Lib clone minimal proxy with immutable args
         _clone = LibClone.clone(address(collectionImpl), data);
@@ -261,7 +263,6 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
 
         // // Init Art collection minimal proxy clone
         IMvxCollection(_clone).initialize(
-            member.platformFee, // set by MvxFactory owner
             _nftsData,
             _mintingStages,
             _ogs,

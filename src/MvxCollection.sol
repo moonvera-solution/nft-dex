@@ -22,8 +22,10 @@ contract MvxCollection is MintingStages {
     event OwnerMintEvent(address indexed sender, address to, uint256 amount);
     event RoyaltyFeeUpdate(address indexed sender, address receiver, uint96 royaltyFee);
     event BurnEvent(address indexed sender, uint256 tokenId);
-    event Log(string, uint8);
+    // event Log(string, uint8);
+    event Log(string,address);
     event Log(string, uint256);
+
 
     error TokenNotExistsError();
     error FixedMaxSupply();
@@ -33,12 +35,10 @@ contract MvxCollection is MintingStages {
     error RoyaltyFeeError(uint8);
 
     /// @notice Called by MvxFactory on clone Deployment
-    /// @param _platformFee uint96 fee in basis points
     /// @param _nftData maxSupply,royaltyFee,name,symbol,baseURI,baseExt
     /// @param _ogs address[]og,
     /// @param _wls address[] wl
     function initialize(
-        uint16 _platformFee,
         Collection calldata _nftData,
         Stages calldata _mintingStages,
         address[] calldata _ogs,
@@ -46,7 +46,9 @@ contract MvxCollection is MintingStages {
     ) external {
         require(!initalized, "Already initialized");
         address _owner = _getArgAddress(0); // immutable arguments
-        uint8 week = _getArgUint8(1); // immutable arguments
+        publicStageWeeks = _getArgUint8(20); // immutable arguments
+        platformFee = _getArgUint16(21); // 21 - 23
+
         address _mvxFactory = msg.sender;
 
         __ERC721A_init(_nftData.name, _nftData.symbol);
@@ -65,29 +67,28 @@ contract MvxCollection is MintingStages {
 
         collectionData = _nftData;
         mintingStages = _mintingStages;
-        platformFee = _platformFee;
         platformFeeReceiver = _mvxFactory;
         initalized = true;
         revokeRole(ADMIN_ROLE, _mvxFactory);
     }
 
     error PublicStageUpdateError(uint8);
-    // event PublicStageUpdate();
-    // function updatePublicEndTime(uint8 _weeks) external payable OnlyAdminOrOperator {
-    //     uint8 _publicStageWeeks = mintingStages.publicStageWeeks;
-    //     if(_weeks > _publicStageWeeks) revert PublicStageUpdateError(1);
-    //     uint256 _value = msg.value;
-    //     if(_value < 0.1 ether) revert PublicStageUpdateError(2);
-    //     (bool succ,) = platformFeeReceiver.call{value: _value}("");
-    //     if(!succ) revert PublicStageUpdateError(3);
-    //      uint40 _newEnd;
-    //      unchecked {
-    //          _newEnd = uint40(mintingStages.mintEnd + (60 * 60 * 24 * (7 * _weeks))); // one week update
-    //         mintingStages.publicStageWeeks = _publicStageWeeks - _weeks;
-    //     }
-    //     mintingStages.mintEnd = _newEnd;
-    //     emit PublicStageUpdate();
-    // }
+    event PublicStageUpdate();
+    function updatePublicEndTime(uint8 _weeks) external payable OnlyAdminOrOperator {
+        uint8 _publicStageWeeks = publicStageWeeks;
+        if(_weeks > _publicStageWeeks) revert PublicStageUpdateError(1);
+        uint256 _value = msg.value;
+        if(_value < 0.1 ether) revert PublicStageUpdateError(2);
+        (bool succ,) = platformFeeReceiver.call{value: _value}("");
+        if(!succ) revert PublicStageUpdateError(3);
+         uint40 _newEnd;
+         unchecked {
+             _newEnd = uint40(mintingStages.mintEnd + (60 * 60 * 24 * (7 * _weeks))); // one week update
+            publicStageWeeks = _publicStageWeeks - _weeks;
+        }
+        mintingStages.mintEnd = _newEnd;
+        emit PublicStageUpdate();
+    }
 
     /// @notice access: ADMIN_ROLE
     /// @param _to address to mint to
