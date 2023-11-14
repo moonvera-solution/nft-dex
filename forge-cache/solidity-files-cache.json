@@ -2474,8 +2474,8 @@
       }
     },
     "src/MvxCollection.sol": {
-      "lastModificationDate": 1699924881255,
-      "contentHash": "ea432c508d41aaa14192073c69a1bcdb",
+      "lastModificationDate": 1699929753499,
+      "contentHash": "b550ad4ada103ae6056238451bcb504c",
       "sourceName": "src/MvxCollection.sol",
       "solcConfig": {
         "settings": {
@@ -2524,8 +2524,8 @@
       }
     },
     "src/MvxFactory.sol": {
-      "lastModificationDate": 1699927023145,
-      "contentHash": "79dd6780937734273d48f17f05512c2c",
+      "lastModificationDate": 1699929820498,
+      "contentHash": "e95ac57cff610919aed9d78f07b0c119",
       "sourceName": "src/MvxFactory.sol",
       "solcConfig": {
         "settings": {
@@ -2639,8 +2639,8 @@
       }
     },
     "src/abstracts/MintingStages.sol": {
-      "lastModificationDate": 1699925037689,
-      "contentHash": "34e3d19e823f10e0b63a42a0dc535145",
+      "lastModificationDate": 1699929616721,
+      "contentHash": "b31a17dd3816b17ecc2168ee92fcdd67",
       "sourceName": "src/abstracts/MintingStages.sol",
       "solcConfig": {
         "settings": {
@@ -3470,8 +3470,8 @@
       }
     },
     "test/foundry/unit/MvxCollectionTest.t.sol": {
-      "lastModificationDate": 1699927154654,
-      "contentHash": "db655ff50a47d3260f6a346f23cd3fe3",
+      "lastModificationDate": 1699929680598,
+      "contentHash": "e9354b6d38ae9cb5d1fe34319cff0ada",
       "sourceName": "test/foundry/unit/MvxCollectionTest.t.sol",
       "solcConfig": {
         "settings": {

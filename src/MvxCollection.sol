@@ -48,6 +48,7 @@ contract MvxCollection is MintingStages {
         address _owner = _getArgAddress(0); // immutable arguments
         publicStageWeeks = _getArgUint8(20); // immutable arguments
         platformFee = _getArgUint16(21); // 21 - 23
+        updateStageFee = _getArgUint72(30);
 
         address _mvxFactory = msg.sender;
 
@@ -78,7 +79,7 @@ contract MvxCollection is MintingStages {
         uint8 _publicStageWeeks = publicStageWeeks;
         if(_weeks > _publicStageWeeks) revert PublicStageUpdateError(1);
         uint256 _value = msg.value;
-        if(_value < 0.1 ether) revert PublicStageUpdateError(2);
+        if(_value < updateStageFee) revert PublicStageUpdateError(2);
         (bool succ,) = platformFeeReceiver.call{value: _value}("");
         if(!succ) revert PublicStageUpdateError(3);
          uint40 _newEnd;

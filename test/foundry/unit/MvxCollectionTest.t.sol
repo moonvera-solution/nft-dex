@@ -36,7 +36,7 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
 
         factory.updateMember(wallet1.addr, address(0x0), 0.5 ether, 0, 0, 10);
         factory.updateMember(address(this), address(0x0), 0.5 ether, 0, 0, 10);
-
+        factory.updateStageDateFtr(2,.1 ether);
         vm.deal(wallet1.addr, 100 ether);
         vm.deal(address(this), 100 ether);
 
@@ -336,6 +336,10 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         _nftCollection.mintForRegular{value: 1 ether}(address(this), _newMaxSupply + 1);
     }
 
+    function test_updatePublicEndTime() public{
+        _nftCollection.updatePublicEndTime{value: 0.1 ether}(2);
+    }
+
     fallback() external payable {}
 }
 
@@ -344,3 +348,10 @@ contract MvxCollectionNotERC721A {
         return false;
     }
 }
+
+
+/**
+stage
+fee
+update
+ */

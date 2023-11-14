@@ -62,6 +62,9 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
     event ReferralBalanceUpdate(address indexed _referral, uint256 _amount);
     event PartnerBalanceUpdate(address indexed _partner, uint256 _balance);
     event UpdateCollectionImpl(address _newImpl);
+    uint8 public publicStageWeeks;
+    uint72 public updateStageFee;
+    
     event Log(string, uint256);
     event Log(string, address);
 
@@ -207,11 +210,15 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
         emit GrantReferralDiscount(_artist, _referral, _extCollection);
     }
 
+    function updateStageDateFtr(uint8 _publicStageWeeks, uint72 _updateStageFee ) external onlyOwner(){
+            publicStageWeeks = _publicStageWeeks;
+            updateStageFee = _updateStageFee;
+    }
+
     ///0x0000000000000000000000000000000000000000000000000000000000000000
     ///                      CREATE COLLECTION
     ///0x0000000000000000000000000000000000000000000000000000000000000000
 
-    uint8 week= 101;
     function createCollection(
         Collection calldata _nftsData,
         Stages calldata _mintingStages,
@@ -246,7 +253,11 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
 
 
         // encode seder to clone immutable arg
-        bytes memory data = abi.encodePacked(_sender,week,member.platformFee);
+        bytes memory data = abi.encodePacked(
+            _sender,
+            publicStageWeeks,
+            member.platformFee,
+            updateStageFee);
 
         // Lib clone minimal proxy with immutable args
         _clone = LibClone.clone(address(collectionImpl), data);
