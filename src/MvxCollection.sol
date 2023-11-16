@@ -23,9 +23,8 @@ contract MvxCollection is MintingStages {
     event RoyaltyFeeUpdate(address indexed sender, address receiver, uint96 royaltyFee);
     event BurnEvent(address indexed sender, uint256 tokenId);
     // event Log(string, uint8);
-    event Log(string,address);
+    event Log(string, address);
     event Log(string, uint256);
-
 
     error TokenNotExistsError();
     error FixedMaxSupply();
@@ -74,17 +73,19 @@ contract MvxCollection is MintingStages {
     }
 
     error PublicStageUpdateError(uint8);
+
     event PublicStageUpdate();
+
     function updatePublicEndTime(uint8 _weeks) external payable OnlyAdminOrOperator {
         uint8 _publicStageWeeks = publicStageWeeks;
-        if(_weeks > _publicStageWeeks) revert PublicStageUpdateError(1);
+        if (_weeks > _publicStageWeeks) revert PublicStageUpdateError(1);
         uint256 _value = msg.value;
-        if(_value < updateStageFee) revert PublicStageUpdateError(2);
+        if (_value < updateStageFee) revert PublicStageUpdateError(2);
         (bool succ,) = platformFeeReceiver.call{value: _value}("");
-        if(!succ) revert PublicStageUpdateError(3);
-         uint40 _newEnd;
-         unchecked {
-             _newEnd = uint40(mintingStages.mintEnd + (60 * 60 * 24 * (7 * _weeks))); // one week update
+        if (!succ) revert PublicStageUpdateError(3);
+        uint40 _newEnd;
+        unchecked {
+            _newEnd = uint40(mintingStages.mintEnd + (60 * 60 * 24 * (7 * _weeks))); // one week update
             publicStageWeeks = _publicStageWeeks - _weeks;
         }
         mintingStages.mintEnd = _newEnd;

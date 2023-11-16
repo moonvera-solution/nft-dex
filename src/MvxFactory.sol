@@ -36,6 +36,9 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
 
     // nft collection deploy fee
     uint256 public collectionCount;
+    uint8 public publicStageWeeks;
+    uint72 public updateStageFee;
+
 
     mapping(address => Artist) public artists; // artists addr => Artist data, expires
     mapping(address => Partner) public partners; // collection addr => Collection data, expires
@@ -52,6 +55,9 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
     error UpdateMemberError(uint8);
     error CreateError(uint8);
 
+    event Log(string, uint256);
+    event Log(string, address);
+
     event WithdrawAdmin(uint256 amount);
     event CreateEvent(address indexed _sender, address _impl, address _cloneAddress);
     event MemberDiscount(address indexed _sender, uint256 _deployFee, uint256 _discountAmt);
@@ -59,17 +65,13 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
     event GrantReferralDiscount(address indexed _artist, address _sender, address _collection);
     event WithdrawPartner(address indexed _sender, address _collection, uint256 _balance);
     event WithdrawReferral(address indexed _sender, address _artist, uint256 _referralBalance);
+    event UpdateCollectionImpl(address indexed _newImpl);
+
+    event UpdatePartnerEvent(address indexed _admin, address indexed _collection, uint16 _expirationDays);
+    event UpdateMemberEvent(address indexed _member, address indexed _collection, uint16 _expirationDays);
     event ReferralBalanceUpdate(address indexed _referral, uint256 _amount);
     event PartnerBalanceUpdate(address indexed _partner, uint256 _balance);
-    event UpdateCollectionImpl(address _newImpl);
-    uint8 public publicStageWeeks;
-    uint72 public updateStageFee;
-    
-    event Log(string, uint256);
-    event Log(string, address);
 
-    event UpdatePartner(Partner);
-    event UpdateMember(Member);
     event FactoryBalanceUpdate(uint256);
 
     modifier auth() {
@@ -110,7 +112,7 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
             discount: _discount,
             expiration: uint40(block.timestamp + (60 * 60 * 24 * _expirationDays))
         });
-        emit UpdateMember(members[_newMember]);
+        emit UpdateMemberEvent(_newMember, _collection, _expirationDays);
     }
 
     /// @notice All percentages are in bp
@@ -120,7 +122,7 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
         uint16 _adminOwnPercent,
         uint16 _referralOwnPercent,
         uint16 _discountPercent,
-        uint16 _expireDaysFromNow
+        uint16 _expirationDays
     ) external onlyOwner {
         if (_admin == address(0x0)) revert UpdatePartnerError();
         partners[_collection] = Partner({
@@ -130,9 +132,9 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
             referralOwnPercent: _referralOwnPercent,
             balance: 0,
             discount: _discountPercent,
-            expiration: uint40(block.timestamp + (_expireDaysFromNow * (60 * 60 * 24)))
+            expiration: uint40(block.timestamp + (_expirationDays * (60 * 60 * 24)))
         });
-        emit UpdatePartner(partners[_collection]);
+        emit UpdatePartnerEvent(_admin, _collection, _expirationDays);
     }
 
     /// @notice Access: only Owner
@@ -210,9 +212,9 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
         emit GrantReferralDiscount(_artist, _referral, _extCollection);
     }
 
-    function updateStageDateFtr(uint8 _publicStageWeeks, uint72 _updateStageFee ) external onlyOwner(){
-            publicStageWeeks = _publicStageWeeks;
-            updateStageFee = _updateStageFee;
+    function updateStageDateFtr(uint8 _publicStageWeeks, uint72 _updateStageFee) external onlyOwner {
+        publicStageWeeks = _publicStageWeeks;
+        updateStageFee = _updateStageFee;
     }
 
     ///0x0000000000000000000000000000000000000000000000000000000000000000
@@ -251,13 +253,8 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
             if (_msgValue < _deployFee) revert CreateError(3);
         }
 
-
         // encode seder to clone immutable arg
-        bytes memory data = abi.encodePacked(
-            _sender,
-            publicStageWeeks,
-            member.platformFee,
-            updateStageFee);
+        bytes memory data = abi.encodePacked(_sender, publicStageWeeks, member.platformFee, updateStageFee);
 
         // Lib clone minimal proxy with immutable args
         _clone = LibClone.clone(address(collectionImpl), data);
@@ -273,12 +270,7 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
         }
 
         // // Init Art collection minimal proxy clone
-        IMvxCollection(_clone).initialize(
-            _nftsData,
-            _mintingStages,
-            _ogs,
-            _wls
-        );
+        IMvxCollection(_clone).initialize(_nftsData, _mintingStages, _ogs, _wls);
 
         emit CreateEvent(_sender, collectionImpl, _clone);
     }

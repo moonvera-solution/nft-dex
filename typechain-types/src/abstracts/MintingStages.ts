@@ -46,6 +46,7 @@ export interface MintingStagesInterface extends Interface {
       | "ownerOf"
       | "platformFee"
       | "platformFeeReceiver"
+      | "publicStageWeeks"
       | "renounceRole"
       | "revokeRole"
       | "royaltyInfo"
@@ -62,7 +63,7 @@ export interface MintingStagesInterface extends Interface {
       | "updateMinterRoles"
       | "updateOGMintMax"
       | "updateOGMintPrice"
-      | "updateTime"
+      | "updateStageFee"
       | "updateWLMintMax"
       | "updateWhitelistMintPrice"
   ): FunctionFragment;
@@ -142,7 +143,7 @@ export interface MintingStagesInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "mintsPerWallet",
-    values: [AddressLike, string]
+    values: [AddressLike, BytesLike]
   ): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
   encodeFunctionData(
@@ -155,6 +156,10 @@ export interface MintingStagesInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "platformFeeReceiver",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "publicStageWeeks",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -219,8 +224,8 @@ export interface MintingStagesInterface extends Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "updateTime",
-    values: [BigNumberish, BigNumberish]
+    functionFragment: "updateStageFee",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "updateWLMintMax",
@@ -288,6 +293,10 @@ export interface MintingStagesInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "publicStageWeeks",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "renounceRole",
     data: BytesLike
   ): Result;
@@ -342,7 +351,10 @@ export interface MintingStagesInterface extends Interface {
     functionFragment: "updateOGMintPrice",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "updateTime", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "updateStageFee",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "updateWLMintMax",
     data: BytesLike
@@ -584,15 +596,14 @@ export interface MintingStages extends BaseContract {
   collectionData: TypedContractMethod<
     [],
     [
-      [string, string, string, string, bigint, bigint, string, boolean] & {
+      [string, string, string, string, string, bigint, bigint] & {
         name: string;
         symbol: string;
         baseURI: string;
         baseExt: string;
+        royaltyReceiver: string;
         maxSupply: bigint;
         royaltyFee: bigint;
-        royaltyReceiver: string;
-        isMaxSupplyUpdatable: boolean;
       }
     ],
     "view"
@@ -626,6 +637,7 @@ export interface MintingStages extends BaseContract {
     [],
     [
       [
+        boolean,
         bigint,
         bigint,
         bigint,
@@ -639,25 +651,26 @@ export interface MintingStages extends BaseContract {
         bigint,
         bigint
       ] & {
+        isMaxSupplyUpdatable: boolean;
         ogMintPrice: bigint;
         whitelistMintPrice: bigint;
         mintPrice: bigint;
         mintMaxPerUser: bigint;
         ogMintMaxPerUser: bigint;
-        whitelistMintMaxPerUser: bigint;
         mintStart: bigint;
         mintEnd: bigint;
         ogMintStart: bigint;
         ogMintEnd: bigint;
         whitelistMintStart: bigint;
         whitelistMintEnd: bigint;
+        whitelistMintMaxPerUser: bigint;
       }
     ],
     "view"
   >;
 
   mintsPerWallet: TypedContractMethod<
-    [arg0: AddressLike, arg1: string],
+    [arg0: AddressLike, arg1: BytesLike],
     [bigint],
     "view"
   >;
@@ -669,6 +682,8 @@ export interface MintingStages extends BaseContract {
   platformFee: TypedContractMethod<[], [bigint], "view">;
 
   platformFeeReceiver: TypedContractMethod<[], [string], "view">;
+
+  publicStageWeeks: TypedContractMethod<[], [bigint], "view">;
 
   renounceRole: TypedContractMethod<
     [role: BytesLike, account: AddressLike],
@@ -759,11 +774,7 @@ export interface MintingStages extends BaseContract {
     "nonpayable"
   >;
 
-  updateTime: TypedContractMethod<
-    [_start: BigNumberish, _end: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
+  updateStageFee: TypedContractMethod<[], [bigint], "view">;
 
   updateWLMintMax: TypedContractMethod<
     [_whitelistMintMax: BigNumberish],
@@ -811,15 +822,14 @@ export interface MintingStages extends BaseContract {
   ): TypedContractMethod<
     [],
     [
-      [string, string, string, string, bigint, bigint, string, boolean] & {
+      [string, string, string, string, string, bigint, bigint] & {
         name: string;
         symbol: string;
         baseURI: string;
         baseExt: string;
+        royaltyReceiver: string;
         maxSupply: bigint;
         royaltyFee: bigint;
-        royaltyReceiver: string;
-        isMaxSupplyUpdatable: boolean;
       }
     ],
     "view"
@@ -860,6 +870,7 @@ export interface MintingStages extends BaseContract {
     [],
     [
       [
+        boolean,
         bigint,
         bigint,
         bigint,
@@ -873,25 +884,30 @@ export interface MintingStages extends BaseContract {
         bigint,
         bigint
       ] & {
+        isMaxSupplyUpdatable: boolean;
         ogMintPrice: bigint;
         whitelistMintPrice: bigint;
         mintPrice: bigint;
         mintMaxPerUser: bigint;
         ogMintMaxPerUser: bigint;
-        whitelistMintMaxPerUser: bigint;
         mintStart: bigint;
         mintEnd: bigint;
         ogMintStart: bigint;
         ogMintEnd: bigint;
         whitelistMintStart: bigint;
         whitelistMintEnd: bigint;
+        whitelistMintMaxPerUser: bigint;
       }
     ],
     "view"
   >;
   getFunction(
     nameOrSignature: "mintsPerWallet"
-  ): TypedContractMethod<[arg0: AddressLike, arg1: string], [bigint], "view">;
+  ): TypedContractMethod<
+    [arg0: AddressLike, arg1: BytesLike],
+    [bigint],
+    "view"
+  >;
   getFunction(
     nameOrSignature: "name"
   ): TypedContractMethod<[], [string], "view">;
@@ -904,6 +920,9 @@ export interface MintingStages extends BaseContract {
   getFunction(
     nameOrSignature: "platformFeeReceiver"
   ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "publicStageWeeks"
+  ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "renounceRole"
   ): TypedContractMethod<
@@ -990,12 +1009,8 @@ export interface MintingStages extends BaseContract {
     nameOrSignature: "updateOGMintPrice"
   ): TypedContractMethod<[_price: BigNumberish], [void], "nonpayable">;
   getFunction(
-    nameOrSignature: "updateTime"
-  ): TypedContractMethod<
-    [_start: BigNumberish, _end: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
+    nameOrSignature: "updateStageFee"
+  ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "updateWLMintMax"
   ): TypedContractMethod<

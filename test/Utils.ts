@@ -1,8 +1,34 @@
-import {ethers} from "hardhat";
 import * as dotenv from "dotenv";
 import  BigNumber from 'bignumber.js';
 BigNumber.config({ DECIMAL_PLACES: 20, ROUNDING_MODE: 4 })
 
+const { ethers, upgrades} = require("hardhat");
+
+
+const Stages = {
+    isMaxSupplyUpdatable: false,
+    ogMintPrice: "",
+    whitelistMintPrice: " ",
+    mintPrice: " ",
+    mintMaxPerUser: " ",
+    ogMintMaxPerUser: " ",
+    mintStart: " ",
+    mintEnd: " ",
+    ogMintStart: " ",
+    ogMintEnd: " ",
+    whitelistMintStart: " ",
+    whitelistMintEnd: " ",
+    whitelistMintMaxPerUser: " "
+};
+const Collection = {
+    name: "",
+    symbol: "",
+    baseURI: "",
+    baseExt: "",
+    royaltyReceiver: "",
+    maxSupply: "",
+    royaltyFee: "",
+};
 dotenv.config();
 const axios = require('axios');
 
@@ -14,13 +40,9 @@ function _getGasPrice() {
     return new Promise(async (resolve, reject) => {
         try {
             response = await axios.get(`https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=${ETHERSCAN_API_KEY}`, {
-                // headers: {
-                //     'X-CMC_PRO_API_KEY': 'b54bcf4d-1bca-4e8e-9a24-22ff2c3d462c',
-                // },
             });
         } catch (ex) {
             response = null;
-            // error
             console.log(ex);
             reject(ex);
         }
@@ -34,59 +56,35 @@ function _getGasPrice() {
 }
 
 
-async function _getColletionData(){
-    const encoder = new ethers.AbiCoder; 
-    return encoder.encode(
-        [
-            "string",
-            "string",
-            "string",
-            "string",
-            "uint256",
-            "uint96",
-            "address"
-        ],[
-            "MVX", // name
-            "mvx", // symbol
-            "ipfs://QmVjYK4hPdZ7Jn5GBuaMUsUAaGE6RpzHxaZVE29toYUrRZ/", // baseURI
-            ".json", // baseExt
-            10, // maxSupply
-            300, // royaltyFee
-            "0x2ff9cb5A21981e8196b09AD651470b41Ba28b9C6", // royaltyReceiver
-        ]
-    );
+async function _getColletionData(royaltyReceiver:any){
+    return {
+        name: "MVX ART",
+        symbol: "MVX",
+        baseURI: "ipfs://QmXPHaxtTKxa58ise75a4vRAhLzZK3cANKV3zWb6KMoGUU/",
+        baseExt: ".json",
+        maxSupply: 3333n,
+        royaltyFee: 1000n,
+        royaltyReceiver: royaltyReceiver
+      };
+      
 }
 async function _getStageData() {
-
-    const encoder =  new ethers.AbiCoder; 
-    return encoder.encode(
-        [
-            "uint256",
-            "uint256",
-            "uint256",
-            "uint256",
-            "uint256",
-            "uint256",
-            "uint256",
-            "uint256",
-            "uint256",
-            "uint256",
-            "uint256",
-            "uint256"
-        ], [
-        18415248,
-        18415248,
-        18415248,
-        20, // mintMaxPerUser;
-        10, // ogMintMaxPerUser;
-        10, // whitelistMintMaxPerUser;
-         18415248,
-         18415248,
-         18415248,
-         18415248,
-         18415248,
-         18415248
-]);
+    const block = {timestamp: (await ethers.provider.getBlock('latest')).timestamp  };
+    return {
+        "isMaxSupplyUpdatable": true,
+        "ogMintPrice" :300000000000000n,
+        "whitelistMintPrice" :300000000000000n,
+        "mintPrice" :300000000000000n,
+        "mintMaxPerUser" :100n,
+        "ogMintMaxPerUser" :100n,
+        "whitelistMintMaxPerUser" :100n,
+        "mintStart" :block.timestamp,
+        "mintEnd" :block.timestamp + 10 * 60 * 60 * 24,
+        "ogMintStart" :block.timestamp,
+        "ogMintEnd" :block.timestamp + 10 * 60 * 60 * 24,
+        "whitelistMintStart" :block.timestamp,
+        "whitelistMintEnd" :block.timestamp + 10 * 60 * 60 * 24
+    };
 }
 function _getMinters() {
     const og = [

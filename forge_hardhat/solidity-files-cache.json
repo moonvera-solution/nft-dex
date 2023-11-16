@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/src/MvxCollection.sol": {
-      "lastModificationDate": 1699203162983,
-      "contentHash": "d235f3fabf81dac9ff3cca449cb1e7cb",
+      "lastModificationDate": 1699929753499,
+      "contentHash": "cfeac7e8a6f21d85f217d2cda71a375d",
       "sourceName": "src/MvxCollection.sol",
       "solcConfig": {
         "version": "0.8.20",
@@ -29,7 +29,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -45,8 +45,8 @@
       ]
     },
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/src/abstracts/MintingStages.sol": {
-      "lastModificationDate": 1698975592038,
-      "contentHash": "a365934b5959026595345949852fea33",
+      "lastModificationDate": 1699929616722,
+      "contentHash": "6a13d5db5a4889bff56cf320d9410251",
       "sourceName": "src/abstracts/MintingStages.sol",
       "solcConfig": {
         "version": "0.8.20",
@@ -72,7 +72,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -92,7 +92,7 @@
       ]
     },
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/src/libs/AccessControl.sol": {
-      "lastModificationDate": 1698975592037,
+      "lastModificationDate": 1699920162905,
       "contentHash": "d7fc5f77a2b5595bc20438af60a167da",
       "sourceName": "src/libs/AccessControl.sol",
       "solcConfig": {
@@ -119,7 +119,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -136,8 +136,8 @@
       ]
     },
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/src/libs/MvxStruct.sol": {
-      "lastModificationDate": 1699207727374,
-      "contentHash": "3ce39b69f90fac9fd55fca717edcd119",
+      "lastModificationDate": 1699920162899,
+      "contentHash": "11a5f91fdbe3816a6821437a3e3c120a",
       "sourceName": "src/libs/MvxStruct.sol",
       "solcConfig": {
         "version": "0.8.20",
@@ -163,7 +163,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -175,7 +175,7 @@
       "artifacts": []
     },
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/src/tokens/ERC721A.sol": {
-      "lastModificationDate": 1698975592066,
+      "lastModificationDate": 1699920162928,
       "contentHash": "37fc251f01b8a28769e9e45011fe1332",
       "sourceName": "src/tokens/ERC721A.sol",
       "solcConfig": {
@@ -202,7 +202,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -216,49 +216,6 @@
       "artifacts": [
         "ERC721A",
         "ERC721A__IERC721Receiver"
-      ]
-    },
-    "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/lib/openzeppelin-contracts/contracts/interfaces/IERC2981.sol": {
-      "lastModificationDate": 1697133541205,
-      "contentHash": "23ed9f4f05068d7fc726138726c34bee",
-      "sourceName": "lib/openzeppelin-contracts/contracts/interfaces/IERC2981.sol",
-      "solcConfig": {
-        "version": "0.8.20",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 100000
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "storageLayout",
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "libraries": {
-            "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
-            }
-          }
-        }
-      },
-      "imports": [
-        "../utils/introspection/IERC165.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.0"
-      ],
-      "artifacts": [
-        "IERC2981"
       ]
     },
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/lib/solady/src/utils/Clone.sol": {
@@ -289,7 +246,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -302,8 +259,51 @@
         "Clone"
       ]
     },
+    "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/lib/openzeppelin-contracts/contracts/interfaces/IERC2981.sol": {
+      "lastModificationDate": 1697133541205,
+      "contentHash": "23ed9f4f05068d7fc726138726c34bee",
+      "sourceName": "lib/openzeppelin-contracts/contracts/interfaces/IERC2981.sol",
+      "solcConfig": {
+        "version": "0.8.20",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 100000
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "storageLayout",
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "libraries": {
+            "": {
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
+            }
+          }
+        }
+      },
+      "imports": [
+        "../utils/introspection/IERC165.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "IERC2981"
+      ]
+    },
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/src/interfaces/IERC721A.sol": {
-      "lastModificationDate": 1698975592042,
+      "lastModificationDate": 1699920162893,
       "contentHash": "e2bd882b05d84d4abc16bd284d546d69",
       "sourceName": "src/interfaces/IERC721A.sol",
       "solcConfig": {
@@ -330,7 +330,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -371,7 +371,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -412,7 +412,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -455,7 +455,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -474,49 +474,6 @@
       ],
       "artifacts": [
         "ERC721"
-      ]
-    },
-    "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/lib/openzeppelin-contracts/contracts/token/ERC721/IERC721.sol": {
-      "lastModificationDate": 1697133541248,
-      "contentHash": "48de4c9a3a4ae5ef66a2aa620843413f",
-      "sourceName": "lib/openzeppelin-contracts/contracts/token/ERC721/IERC721.sol",
-      "solcConfig": {
-        "version": "0.8.20",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 100000
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "storageLayout",
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "libraries": {
-            "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
-            }
-          }
-        }
-      },
-      "imports": [
-        "../../utils/introspection/IERC165.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.0"
-      ],
-      "artifacts": [
-        "IERC721"
       ]
     },
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/lib/openzeppelin-contracts/contracts/token/ERC721/IERC721Receiver.sol": {
@@ -547,7 +504,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -560,10 +517,10 @@
         "IERC721Receiver"
       ]
     },
-    "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/lib/openzeppelin-contracts/contracts/utils/Strings.sol": {
-      "lastModificationDate": 1697133541259,
-      "contentHash": "48686fc32a22a3754b8e63321857dd2a",
-      "sourceName": "lib/openzeppelin-contracts/contracts/utils/Strings.sol",
+    "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/lib/openzeppelin-contracts/contracts/token/ERC721/IERC721.sol": {
+      "lastModificationDate": 1697133541248,
+      "contentHash": "48de4c9a3a4ae5ef66a2aa620843413f",
+      "sourceName": "lib/openzeppelin-contracts/contracts/token/ERC721/IERC721.sol",
       "solcConfig": {
         "version": "0.8.20",
         "settings": {
@@ -588,20 +545,19 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
       },
       "imports": [
-        "./math/Math.sol",
-        "./math/SignedMath.sol"
+        "../../utils/introspection/IERC165.sol"
       ],
       "versionPragmas": [
         "^0.8.0"
       ],
       "artifacts": [
-        "Strings"
+        "IERC721"
       ]
     },
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/lib/openzeppelin-contracts/contracts/utils/Context.sol": {
@@ -632,7 +588,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -643,6 +599,50 @@
       ],
       "artifacts": [
         "Context"
+      ]
+    },
+    "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/lib/openzeppelin-contracts/contracts/utils/Strings.sol": {
+      "lastModificationDate": 1697133541259,
+      "contentHash": "48686fc32a22a3754b8e63321857dd2a",
+      "sourceName": "lib/openzeppelin-contracts/contracts/utils/Strings.sol",
+      "solcConfig": {
+        "version": "0.8.20",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 100000
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "storageLayout",
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "libraries": {
+            "": {
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
+            }
+          }
+        }
+      },
+      "imports": [
+        "./math/Math.sol",
+        "./math/SignedMath.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "Strings"
       ]
     },
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/lib/openzeppelin-contracts/contracts/utils/Address.sol": {
@@ -673,7 +673,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -714,7 +714,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -757,7 +757,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -798,7 +798,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -812,7 +812,7 @@
       ]
     },
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/src/dex/OrderMatcher.sol": {
-      "lastModificationDate": 1698975592036,
+      "lastModificationDate": 1699920162896,
       "contentHash": "d694bf5ab27065c6b6a8d4853c5c4040",
       "sourceName": "src/dex/OrderMatcher.sol",
       "solcConfig": {
@@ -839,7 +839,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -890,7 +890,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -931,7 +931,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -974,7 +974,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -1017,7 +1017,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -1033,7 +1033,7 @@
       ]
     },
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/src/MvxMarket.sol": {
-      "lastModificationDate": 1698975592039,
+      "lastModificationDate": 1699920162897,
       "contentHash": "98ee04c7c13601874bd29079155be8ab",
       "sourceName": "src/MvxMarket.sol",
       "solcConfig": {
@@ -1060,7 +1060,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -1077,50 +1077,6 @@
       ],
       "artifacts": [
         "MvxMarket"
-      ]
-    },
-    "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/lib/openzeppelin-contracts-upgradeable/contracts/access/OwnableUpgradeable.sol": {
-      "lastModificationDate": 1698860192502,
-      "contentHash": "db24b956904575cc79d02867ec03263c",
-      "sourceName": "lib/openzeppelin-contracts-upgradeable/contracts/access/OwnableUpgradeable.sol",
-      "solcConfig": {
-        "version": "0.8.20",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 100000
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "storageLayout",
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "libraries": {
-            "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
-            }
-          }
-        }
-      },
-      "imports": [
-        "../utils/ContextUpgradeable.sol",
-        "../proxy/utils/Initializable.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.0"
-      ],
-      "artifacts": [
-        "OwnableUpgradeable"
       ]
     },
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/lib/openzeppelin-contracts-upgradeable/contracts/security/ReentrancyGuardUpgradeable.sol": {
@@ -1151,7 +1107,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -1166,10 +1122,10 @@
         "ReentrancyGuardUpgradeable"
       ]
     },
-    "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/lib/openzeppelin-contracts-upgradeable/contracts/token/ERC721/IERC721ReceiverUpgradeable.sol": {
-      "lastModificationDate": 1698860192528,
-      "contentHash": "ba28cf60b52b00d2b3a190bcdf0952bd",
-      "sourceName": "lib/openzeppelin-contracts-upgradeable/contracts/token/ERC721/IERC721ReceiverUpgradeable.sol",
+    "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/lib/openzeppelin-contracts-upgradeable/contracts/access/OwnableUpgradeable.sol": {
+      "lastModificationDate": 1698860192502,
+      "contentHash": "db24b956904575cc79d02867ec03263c",
+      "sourceName": "lib/openzeppelin-contracts-upgradeable/contracts/access/OwnableUpgradeable.sol",
       "solcConfig": {
         "version": "0.8.20",
         "settings": {
@@ -1194,17 +1150,20 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
       },
-      "imports": [],
+      "imports": [
+        "../utils/ContextUpgradeable.sol",
+        "../proxy/utils/Initializable.sol"
+      ],
       "versionPragmas": [
         "^0.8.0"
       ],
       "artifacts": [
-        "IERC721ReceiverUpgradeable"
+        "OwnableUpgradeable"
       ]
     },
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/lib/openzeppelin-contracts/contracts/interfaces/IERC20.sol": {
@@ -1235,7 +1194,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -1248,10 +1207,10 @@
       ],
       "artifacts": []
     },
-    "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/lib/openzeppelin-contracts-upgradeable/contracts/utils/ContextUpgradeable.sol": {
-      "lastModificationDate": 1698860192532,
-      "contentHash": "6200b84950eb05b4a92a39fd1d6e0f9b",
-      "sourceName": "lib/openzeppelin-contracts-upgradeable/contracts/utils/ContextUpgradeable.sol",
+    "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/lib/openzeppelin-contracts-upgradeable/contracts/token/ERC721/IERC721ReceiverUpgradeable.sol": {
+      "lastModificationDate": 1698860192528,
+      "contentHash": "ba28cf60b52b00d2b3a190bcdf0952bd",
+      "sourceName": "lib/openzeppelin-contracts-upgradeable/contracts/token/ERC721/IERC721ReceiverUpgradeable.sol",
       "solcConfig": {
         "version": "0.8.20",
         "settings": {
@@ -1276,19 +1235,17 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
       },
-      "imports": [
-        "../proxy/utils/Initializable.sol"
-      ],
+      "imports": [],
       "versionPragmas": [
         "^0.8.0"
       ],
       "artifacts": [
-        "ContextUpgradeable"
+        "IERC721ReceiverUpgradeable"
       ]
     },
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/lib/openzeppelin-contracts-upgradeable/contracts/proxy/utils/Initializable.sol": {
@@ -1319,7 +1276,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -1362,7 +1319,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -1373,6 +1330,49 @@
       ],
       "artifacts": [
         "AddressUpgradeable"
+      ]
+    },
+    "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/lib/openzeppelin-contracts-upgradeable/contracts/utils/ContextUpgradeable.sol": {
+      "lastModificationDate": 1698860192532,
+      "contentHash": "6200b84950eb05b4a92a39fd1d6e0f9b",
+      "sourceName": "lib/openzeppelin-contracts-upgradeable/contracts/utils/ContextUpgradeable.sol",
+      "solcConfig": {
+        "version": "0.8.20",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 100000
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "storageLayout",
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "libraries": {
+            "": {
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
+            }
+          }
+        }
+      },
+      "imports": [
+        "../proxy/utils/Initializable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "ContextUpgradeable"
       ]
     },
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol": {
@@ -1403,7 +1403,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -1444,7 +1444,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -1492,7 +1492,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -1503,47 +1503,6 @@
       ],
       "artifacts": [
         "IERC1822ProxiableUpgradeable"
-      ]
-    },
-    "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/lib/openzeppelin-contracts-upgradeable/contracts/interfaces/IERC1967Upgradeable.sol": {
-      "lastModificationDate": 1698860192509,
-      "contentHash": "a5421a5e611067b9202e83329fbf6fc7",
-      "sourceName": "lib/openzeppelin-contracts-upgradeable/contracts/interfaces/IERC1967Upgradeable.sol",
-      "solcConfig": {
-        "version": "0.8.20",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 100000
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "storageLayout",
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "libraries": {
-            "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.0"
-      ],
-      "artifacts": [
-        "IERC1967Upgradeable"
       ]
     },
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/lib/openzeppelin-contracts-upgradeable/contracts/utils/StorageSlotUpgradeable.sol": {
@@ -1574,7 +1533,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -1615,7 +1574,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -1626,6 +1585,47 @@
       ],
       "artifacts": [
         "IBeaconUpgradeable"
+      ]
+    },
+    "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/lib/openzeppelin-contracts-upgradeable/contracts/interfaces/IERC1967Upgradeable.sol": {
+      "lastModificationDate": 1698860192509,
+      "contentHash": "a5421a5e611067b9202e83329fbf6fc7",
+      "sourceName": "lib/openzeppelin-contracts-upgradeable/contracts/interfaces/IERC1967Upgradeable.sol",
+      "solcConfig": {
+        "version": "0.8.20",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 100000
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "storageLayout",
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "libraries": {
+            "": {
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "IERC1967Upgradeable"
       ]
     },
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/lib/openzeppelin-contracts-upgradeable/contracts/proxy/utils/UUPSUpgradeable.sol": {
@@ -1656,7 +1656,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -1674,8 +1674,8 @@
       ]
     },
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/src/MvxFactory.sol": {
-      "lastModificationDate": 1699743087647,
-      "contentHash": "8015f93cef3483a8e13871effd95ecc4",
+      "lastModificationDate": 1699929842601,
+      "contentHash": "f6a670f91125643d73b88b6a978e273e",
       "sourceName": "src/MvxFactory.sol",
       "solcConfig": {
         "version": "0.8.20",
@@ -1701,7 +1701,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -1709,7 +1709,6 @@
       "imports": [
         "lib/openzeppelin-contracts-upgradeable/contracts/access/OwnableUpgradeable.sol",
         "lib/openzeppelin-contracts-upgradeable/contracts/proxy/utils/UUPSUpgradeable.sol",
-        "lib/openzeppelin-contracts-upgradeable/contracts/security/PausableUpgradeable.sol",
         "./libs/FactoryLibs.sol"
       ],
       "versionPragmas": [
@@ -1720,8 +1719,8 @@
       ]
     },
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/src/libs/FactoryLibs.sol": {
-      "lastModificationDate": 1698975592044,
-      "contentHash": "870a439fff7f5409f287d8d29561e095",
+      "lastModificationDate": 1699923171893,
+      "contentHash": "7e8e3652cb9cb01c06ede0d69c8fe910",
       "sourceName": "src/libs/FactoryLibs.sol",
       "solcConfig": {
         "version": "0.8.20",
@@ -1747,7 +1746,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -1766,51 +1765,8 @@
         "Strings"
       ]
     },
-    "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/src/libs/Encoder.sol": {
-      "lastModificationDate": 1698975592035,
-      "contentHash": "d52a9684c52622dc165a6aead8189387",
-      "sourceName": "src/libs/Encoder.sol",
-      "solcConfig": {
-        "version": "0.8.20",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 100000
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "storageLayout",
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "libraries": {
-            "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
-            }
-          }
-        }
-      },
-      "imports": [
-        "./MvxStruct.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.5"
-      ],
-      "artifacts": [
-        "Encoder"
-      ]
-    },
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/src/dex/OrderStructs.sol": {
-      "lastModificationDate": 1698975592032,
+      "lastModificationDate": 1699920162892,
       "contentHash": "8e1810c6bea5730c902e4df47768b253",
       "sourceName": "src/dex/OrderStructs.sol",
       "solcConfig": {
@@ -1837,7 +1793,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -1849,7 +1805,7 @@
       "artifacts": []
     },
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/src/interfaces/IDutchAuction.sol": {
-      "lastModificationDate": 1698975592039,
+      "lastModificationDate": 1699920162892,
       "contentHash": "7985059d7cbcf4a4c69b895847b39e34",
       "sourceName": "src/interfaces/IDutchAuction.sol",
       "solcConfig": {
@@ -1876,7 +1832,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -1889,8 +1845,45 @@
         "IDutchAuction"
       ]
     },
+    "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/src/libs/Encoder.sol": {
+      "lastModificationDate": 1699920162889,
+      "contentHash": "09b1bbc1eac5012f4d45f75d55abe11c",
+      "sourceName": "src/libs/Encoder.sol",
+      "solcConfig": {
+        "version": "0.8.20",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 100000
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "storageLayout",
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "libraries": {
+            "": {
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [],
+      "artifacts": []
+    },
     "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/src/libs/FullMath.sol": {
-      "lastModificationDate": 1698975592036,
+      "lastModificationDate": 1699920162895,
       "contentHash": "a9d3665e8a310b8611992cab2a47aaae",
       "sourceName": "src/libs/FullMath.sol",
       "solcConfig": {
@@ -1917,7 +1910,7 @@
           },
           "libraries": {
             "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
+              "__CACHE_BREAKER__": "0x0000000000000031373030313039343035333639"
             }
           }
         }
@@ -1928,50 +1921,6 @@
       ],
       "artifacts": [
         "FullMath"
-      ]
-    },
-    "/Users/danielguerrero/workspace/__portfolio/MOON/nft-dex/lib/openzeppelin-contracts-upgradeable/contracts/security/PausableUpgradeable.sol": {
-      "lastModificationDate": 1699505798075,
-      "contentHash": "cbe53d6b803c1102081e00b3a0418ea3",
-      "sourceName": "lib/openzeppelin-contracts-upgradeable/contracts/security/PausableUpgradeable.sol",
-      "solcConfig": {
-        "version": "0.8.20",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 100000
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "storageLayout",
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "libraries": {
-            "": {
-              "__CACHE_BREAKER__": "0x0000000000000031363939373433323135383531"
-            }
-          }
-        }
-      },
-      "imports": [
-        "../utils/ContextUpgradeable.sol",
-        "../proxy/utils/Initializable.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.0"
-      ],
-      "artifacts": [
-        "PausableUpgradeable"
       ]
     }
   }

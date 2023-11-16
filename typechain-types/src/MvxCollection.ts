@@ -28,10 +28,9 @@ export type CollectionStruct = {
   symbol: string;
   baseURI: string;
   baseExt: string;
+  royaltyReceiver: AddressLike;
   maxSupply: BigNumberish;
   royaltyFee: BigNumberish;
-  royaltyReceiver: AddressLike;
-  isMaxSupplyUpdatable: boolean;
 };
 
 export type CollectionStructOutput = [
@@ -39,62 +38,63 @@ export type CollectionStructOutput = [
   symbol: string,
   baseURI: string,
   baseExt: string,
-  maxSupply: bigint,
-  royaltyFee: bigint,
   royaltyReceiver: string,
-  isMaxSupplyUpdatable: boolean
+  maxSupply: bigint,
+  royaltyFee: bigint
 ] & {
   name: string;
   symbol: string;
   baseURI: string;
   baseExt: string;
+  royaltyReceiver: string;
   maxSupply: bigint;
   royaltyFee: bigint;
-  royaltyReceiver: string;
-  isMaxSupplyUpdatable: boolean;
 };
 
 export type StagesStruct = {
+  isMaxSupplyUpdatable: boolean;
   ogMintPrice: BigNumberish;
   whitelistMintPrice: BigNumberish;
   mintPrice: BigNumberish;
   mintMaxPerUser: BigNumberish;
   ogMintMaxPerUser: BigNumberish;
-  whitelistMintMaxPerUser: BigNumberish;
   mintStart: BigNumberish;
   mintEnd: BigNumberish;
   ogMintStart: BigNumberish;
   ogMintEnd: BigNumberish;
   whitelistMintStart: BigNumberish;
   whitelistMintEnd: BigNumberish;
+  whitelistMintMaxPerUser: BigNumberish;
 };
 
 export type StagesStructOutput = [
+  isMaxSupplyUpdatable: boolean,
   ogMintPrice: bigint,
   whitelistMintPrice: bigint,
   mintPrice: bigint,
   mintMaxPerUser: bigint,
   ogMintMaxPerUser: bigint,
-  whitelistMintMaxPerUser: bigint,
   mintStart: bigint,
   mintEnd: bigint,
   ogMintStart: bigint,
   ogMintEnd: bigint,
   whitelistMintStart: bigint,
-  whitelistMintEnd: bigint
+  whitelistMintEnd: bigint,
+  whitelistMintMaxPerUser: bigint
 ] & {
+  isMaxSupplyUpdatable: boolean;
   ogMintPrice: bigint;
   whitelistMintPrice: bigint;
   mintPrice: bigint;
   mintMaxPerUser: bigint;
   ogMintMaxPerUser: bigint;
-  whitelistMintMaxPerUser: bigint;
   mintStart: bigint;
   mintEnd: bigint;
   ogMintStart: bigint;
   ogMintEnd: bigint;
   whitelistMintStart: bigint;
   whitelistMintEnd: bigint;
+  whitelistMintMaxPerUser: bigint;
 };
 
 export interface MvxCollectionInterface extends Interface {
@@ -128,6 +128,7 @@ export interface MvxCollectionInterface extends Interface {
       | "ownerOf"
       | "platformFee"
       | "platformFeeReceiver"
+      | "publicStageWeeks"
       | "renounceRole"
       | "revokeRole"
       | "royaltyInfo"
@@ -147,8 +148,9 @@ export interface MvxCollectionInterface extends Interface {
       | "updateMinterRoles"
       | "updateOGMintMax"
       | "updateOGMintPrice"
+      | "updatePublicEndTime"
       | "updateRoyaltyInfo"
-      | "updateTime"
+      | "updateStageFee"
       | "updateWLMintMax"
       | "updateWhitelistMintPrice"
       | "version"
@@ -161,12 +163,13 @@ export interface MvxCollectionInterface extends Interface {
       | "ApprovalForAll"
       | "BurnEvent"
       | "ConsecutiveTransfer"
-      | "Log(string,uint256)"
       | "Log(string,address)"
+      | "Log(string,uint256)"
       | "MintEvent"
       | "NewMaxSupply"
       | "OGmintEvent"
       | "OwnerMintEvent"
+      | "PublicStageUpdate"
       | "RoleAdminChanged"
       | "RoleGranted"
       | "RoleRevoked"
@@ -218,7 +221,7 @@ export interface MvxCollectionInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "getMintCountOf",
-    values: [string, AddressLike]
+    values: [BytesLike, AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "getRoleAdmin",
@@ -238,13 +241,7 @@ export interface MvxCollectionInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "initialize",
-    values: [
-      BigNumberish,
-      CollectionStruct,
-      StagesStruct,
-      AddressLike[],
-      AddressLike[]
-    ]
+    values: [CollectionStruct, StagesStruct, AddressLike[], AddressLike[]]
   ): string;
   encodeFunctionData(
     functionFragment: "isApprovedForAll",
@@ -272,7 +269,7 @@ export interface MvxCollectionInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "mintsPerWallet",
-    values: [AddressLike, string]
+    values: [AddressLike, BytesLike]
   ): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
   encodeFunctionData(
@@ -285,6 +282,10 @@ export interface MvxCollectionInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "platformFeeReceiver",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "publicStageWeeks",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -358,12 +359,16 @@ export interface MvxCollectionInterface extends Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "updatePublicEndTime",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "updateRoyaltyInfo",
     values: [AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "updateTime",
-    values: [BigNumberish, BigNumberish]
+    functionFragment: "updateStageFee",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "updateWLMintMax",
@@ -453,6 +458,10 @@ export interface MvxCollectionInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "publicStageWeeks",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "renounceRole",
     data: BytesLike
   ): Result;
@@ -517,10 +526,17 @@ export interface MvxCollectionInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "updatePublicEndTime",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "updateRoyaltyInfo",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "updateTime", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "updateStageFee",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "updateWLMintMax",
     data: BytesLike
@@ -611,12 +627,12 @@ export namespace ConsecutiveTransferEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export namespace Log_string_uint256_Event {
-  export type InputTuple = [arg0: string, arg1: BigNumberish];
-  export type OutputTuple = [arg0: string, arg1: bigint];
+export namespace Log_string_address_Event {
+  export type InputTuple = [arg0: string, arg1: AddressLike];
+  export type OutputTuple = [arg0: string, arg1: string];
   export interface OutputObject {
     arg0: string;
-    arg1: bigint;
+    arg1: string;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -624,12 +640,12 @@ export namespace Log_string_uint256_Event {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export namespace Log_string_address_Event {
-  export type InputTuple = [arg0: string, arg1: AddressLike];
-  export type OutputTuple = [arg0: string, arg1: string];
+export namespace Log_string_uint256_Event {
+  export type InputTuple = [arg0: string, arg1: BigNumberish];
+  export type OutputTuple = [arg0: string, arg1: bigint];
   export interface OutputObject {
     arg0: string;
-    arg1: string;
+    arg1: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -717,6 +733,16 @@ export namespace OwnerMintEventEvent {
     to: string;
     amount: bigint;
   }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace PublicStageUpdateEvent {
+  export type InputTuple = [];
+  export type OutputTuple = [];
+  export interface OutputObject {}
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
   export type Log = TypedEventLog<Event>;
@@ -968,15 +994,14 @@ export interface MvxCollection extends BaseContract {
   collectionData: TypedContractMethod<
     [],
     [
-      [string, string, string, string, bigint, bigint, string, boolean] & {
+      [string, string, string, string, string, bigint, bigint] & {
         name: string;
         symbol: string;
         baseURI: string;
         baseExt: string;
+        royaltyReceiver: string;
         maxSupply: bigint;
         royaltyFee: bigint;
-        royaltyReceiver: string;
-        isMaxSupplyUpdatable: boolean;
       }
     ],
     "view"
@@ -985,7 +1010,7 @@ export interface MvxCollection extends BaseContract {
   getApproved: TypedContractMethod<[tokenId: BigNumberish], [string], "view">;
 
   getMintCountOf: TypedContractMethod<
-    [mintType: string, _user: AddressLike],
+    [mintType: BytesLike, _user: AddressLike],
     [bigint],
     "view"
   >;
@@ -1008,7 +1033,6 @@ export interface MvxCollection extends BaseContract {
 
   initialize: TypedContractMethod<
     [
-      _platformFee: BigNumberish,
       _nftData: CollectionStruct,
       _mintingStages: StagesStruct,
       _ogs: AddressLike[],
@@ -1052,6 +1076,7 @@ export interface MvxCollection extends BaseContract {
     [],
     [
       [
+        boolean,
         bigint,
         bigint,
         bigint,
@@ -1065,25 +1090,26 @@ export interface MvxCollection extends BaseContract {
         bigint,
         bigint
       ] & {
+        isMaxSupplyUpdatable: boolean;
         ogMintPrice: bigint;
         whitelistMintPrice: bigint;
         mintPrice: bigint;
         mintMaxPerUser: bigint;
         ogMintMaxPerUser: bigint;
-        whitelistMintMaxPerUser: bigint;
         mintStart: bigint;
         mintEnd: bigint;
         ogMintStart: bigint;
         ogMintEnd: bigint;
         whitelistMintStart: bigint;
         whitelistMintEnd: bigint;
+        whitelistMintMaxPerUser: bigint;
       }
     ],
     "view"
   >;
 
   mintsPerWallet: TypedContractMethod<
-    [arg0: AddressLike, arg1: string],
+    [arg0: AddressLike, arg1: BytesLike],
     [bigint],
     "view"
   >;
@@ -1095,6 +1121,8 @@ export interface MvxCollection extends BaseContract {
   platformFee: TypedContractMethod<[], [bigint], "view">;
 
   platformFeeReceiver: TypedContractMethod<[], [string], "view">;
+
+  publicStageWeeks: TypedContractMethod<[], [bigint], "view">;
 
   renounceRole: TypedContractMethod<
     [role: BytesLike, account: AddressLike],
@@ -1199,17 +1227,19 @@ export interface MvxCollection extends BaseContract {
     "nonpayable"
   >;
 
+  updatePublicEndTime: TypedContractMethod<
+    [_weeks: BigNumberish],
+    [void],
+    "payable"
+  >;
+
   updateRoyaltyInfo: TypedContractMethod<
     [_receiver: AddressLike, _royaltyFee: BigNumberish],
     [void],
     "nonpayable"
   >;
 
-  updateTime: TypedContractMethod<
-    [_start: BigNumberish, _end: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
+  updateStageFee: TypedContractMethod<[], [bigint], "view">;
 
   updateWLMintMax: TypedContractMethod<
     [_whitelistMintMax: BigNumberish],
@@ -1267,15 +1297,14 @@ export interface MvxCollection extends BaseContract {
   ): TypedContractMethod<
     [],
     [
-      [string, string, string, string, bigint, bigint, string, boolean] & {
+      [string, string, string, string, string, bigint, bigint] & {
         name: string;
         symbol: string;
         baseURI: string;
         baseExt: string;
+        royaltyReceiver: string;
         maxSupply: bigint;
         royaltyFee: bigint;
-        royaltyReceiver: string;
-        isMaxSupplyUpdatable: boolean;
       }
     ],
     "view"
@@ -1286,7 +1315,7 @@ export interface MvxCollection extends BaseContract {
   getFunction(
     nameOrSignature: "getMintCountOf"
   ): TypedContractMethod<
-    [mintType: string, _user: AddressLike],
+    [mintType: BytesLike, _user: AddressLike],
     [bigint],
     "view"
   >;
@@ -1314,7 +1343,6 @@ export interface MvxCollection extends BaseContract {
     nameOrSignature: "initialize"
   ): TypedContractMethod<
     [
-      _platformFee: BigNumberish,
       _nftData: CollectionStruct,
       _mintingStages: StagesStruct,
       _ogs: AddressLike[],
@@ -1364,6 +1392,7 @@ export interface MvxCollection extends BaseContract {
     [],
     [
       [
+        boolean,
         bigint,
         bigint,
         bigint,
@@ -1377,25 +1406,30 @@ export interface MvxCollection extends BaseContract {
         bigint,
         bigint
       ] & {
+        isMaxSupplyUpdatable: boolean;
         ogMintPrice: bigint;
         whitelistMintPrice: bigint;
         mintPrice: bigint;
         mintMaxPerUser: bigint;
         ogMintMaxPerUser: bigint;
-        whitelistMintMaxPerUser: bigint;
         mintStart: bigint;
         mintEnd: bigint;
         ogMintStart: bigint;
         ogMintEnd: bigint;
         whitelistMintStart: bigint;
         whitelistMintEnd: bigint;
+        whitelistMintMaxPerUser: bigint;
       }
     ],
     "view"
   >;
   getFunction(
     nameOrSignature: "mintsPerWallet"
-  ): TypedContractMethod<[arg0: AddressLike, arg1: string], [bigint], "view">;
+  ): TypedContractMethod<
+    [arg0: AddressLike, arg1: BytesLike],
+    [bigint],
+    "view"
+  >;
   getFunction(
     nameOrSignature: "name"
   ): TypedContractMethod<[], [string], "view">;
@@ -1408,6 +1442,9 @@ export interface MvxCollection extends BaseContract {
   getFunction(
     nameOrSignature: "platformFeeReceiver"
   ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "publicStageWeeks"
+  ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "renounceRole"
   ): TypedContractMethod<
@@ -1503,6 +1540,9 @@ export interface MvxCollection extends BaseContract {
     nameOrSignature: "updateOGMintPrice"
   ): TypedContractMethod<[_price: BigNumberish], [void], "nonpayable">;
   getFunction(
+    nameOrSignature: "updatePublicEndTime"
+  ): TypedContractMethod<[_weeks: BigNumberish], [void], "payable">;
+  getFunction(
     nameOrSignature: "updateRoyaltyInfo"
   ): TypedContractMethod<
     [_receiver: AddressLike, _royaltyFee: BigNumberish],
@@ -1510,12 +1550,8 @@ export interface MvxCollection extends BaseContract {
     "nonpayable"
   >;
   getFunction(
-    nameOrSignature: "updateTime"
-  ): TypedContractMethod<
-    [_start: BigNumberish, _end: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
+    nameOrSignature: "updateStageFee"
+  ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "updateWLMintMax"
   ): TypedContractMethod<
@@ -1566,18 +1602,18 @@ export interface MvxCollection extends BaseContract {
     ConsecutiveTransferEvent.OutputObject
   >;
   getEvent(
-    key: "Log(string,uint256)"
-  ): TypedContractEvent<
-    Log_string_uint256_Event.InputTuple,
-    Log_string_uint256_Event.OutputTuple,
-    Log_string_uint256_Event.OutputObject
-  >;
-  getEvent(
     key: "Log(string,address)"
   ): TypedContractEvent<
     Log_string_address_Event.InputTuple,
     Log_string_address_Event.OutputTuple,
     Log_string_address_Event.OutputObject
+  >;
+  getEvent(
+    key: "Log(string,uint256)"
+  ): TypedContractEvent<
+    Log_string_uint256_Event.InputTuple,
+    Log_string_uint256_Event.OutputTuple,
+    Log_string_uint256_Event.OutputObject
   >;
   getEvent(
     key: "MintEvent"
@@ -1606,6 +1642,13 @@ export interface MvxCollection extends BaseContract {
     OwnerMintEventEvent.InputTuple,
     OwnerMintEventEvent.OutputTuple,
     OwnerMintEventEvent.OutputObject
+  >;
+  getEvent(
+    key: "PublicStageUpdate"
+  ): TypedContractEvent<
+    PublicStageUpdateEvent.InputTuple,
+    PublicStageUpdateEvent.OutputTuple,
+    PublicStageUpdateEvent.OutputObject
   >;
   getEvent(
     key: "RoleAdminChanged"
@@ -1716,15 +1759,15 @@ export interface MvxCollection extends BaseContract {
       ConsecutiveTransferEvent.OutputObject
     >;
 
-    "Log(string,uint256)": TypedContractEvent<
-      Log_string_uint256_Event.InputTuple,
-      Log_string_uint256_Event.OutputTuple,
-      Log_string_uint256_Event.OutputObject
-    >;
     "Log(string,address)": TypedContractEvent<
       Log_string_address_Event.InputTuple,
       Log_string_address_Event.OutputTuple,
       Log_string_address_Event.OutputObject
+    >;
+    "Log(string,uint256)": TypedContractEvent<
+      Log_string_uint256_Event.InputTuple,
+      Log_string_uint256_Event.OutputTuple,
+      Log_string_uint256_Event.OutputObject
     >;
 
     "MintEvent(address,uint256,address,uint256,uint256)": TypedContractEvent<
@@ -1769,6 +1812,17 @@ export interface MvxCollection extends BaseContract {
       OwnerMintEventEvent.InputTuple,
       OwnerMintEventEvent.OutputTuple,
       OwnerMintEventEvent.OutputObject
+    >;
+
+    "PublicStageUpdate()": TypedContractEvent<
+      PublicStageUpdateEvent.InputTuple,
+      PublicStageUpdateEvent.OutputTuple,
+      PublicStageUpdateEvent.OutputObject
+    >;
+    PublicStageUpdate: TypedContractEvent<
+      PublicStageUpdateEvent.InputTuple,
+      PublicStageUpdateEvent.OutputTuple,
+      PublicStageUpdateEvent.OutputObject
     >;
 
     "RoleAdminChanged(bytes32,bytes32,bytes32)": TypedContractEvent<

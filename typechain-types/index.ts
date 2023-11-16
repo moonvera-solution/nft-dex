@@ -20,8 +20,6 @@ export type { Initializable } from "./lib/openzeppelin-contracts-upgradeable/con
 export { Initializable__factory } from "./factories/lib/openzeppelin-contracts-upgradeable/contracts/proxy/utils/Initializable__factory";
 export type { UUPSUpgradeable } from "./lib/openzeppelin-contracts-upgradeable/contracts/proxy/utils/UUPSUpgradeable";
 export { UUPSUpgradeable__factory } from "./factories/lib/openzeppelin-contracts-upgradeable/contracts/proxy/utils/UUPSUpgradeable__factory";
-export type { PausableUpgradeable } from "./lib/openzeppelin-contracts-upgradeable/contracts/security/PausableUpgradeable";
-export { PausableUpgradeable__factory } from "./factories/lib/openzeppelin-contracts-upgradeable/contracts/security/PausableUpgradeable__factory";
 export type { ReentrancyGuardUpgradeable } from "./lib/openzeppelin-contracts-upgradeable/contracts/security/ReentrancyGuardUpgradeable";
 export { ReentrancyGuardUpgradeable__factory } from "./factories/lib/openzeppelin-contracts-upgradeable/contracts/security/ReentrancyGuardUpgradeable__factory";
 export type { IERC721ReceiverUpgradeable } from "./lib/openzeppelin-contracts-upgradeable/contracts/token/ERC721/IERC721ReceiverUpgradeable";
@@ -60,8 +58,6 @@ export type { IERC721A } from "./src/interfaces/IERC721A";
 export { IERC721A__factory } from "./factories/src/interfaces/IERC721A__factory";
 export type { AccessControl } from "./src/libs/AccessControl";
 export { AccessControl__factory } from "./factories/src/libs/AccessControl__factory";
-export type { Encoder } from "./src/libs/Encoder";
-export { Encoder__factory } from "./factories/src/libs/Encoder__factory";
 export type { IMvxCollection } from "./src/libs/FactoryLibs.sol/IMvxCollection";
 export { IMvxCollection__factory } from "./factories/src/libs/FactoryLibs.sol/IMvxCollection__factory";
 export type { MvxCollection } from "./src/MvxCollection";

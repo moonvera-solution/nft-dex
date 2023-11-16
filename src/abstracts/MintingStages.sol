@@ -24,7 +24,7 @@ abstract contract MintingStages is Clone, AccessControl, ERC721A, IERC2981 {
     Collection public collectionData;
     address public platformFeeReceiver;
     uint72 public updateStageFee;
-    
+
     uint16 public platformFee;
     uint8 public publicStageWeeks;
     bool public initalized = false;

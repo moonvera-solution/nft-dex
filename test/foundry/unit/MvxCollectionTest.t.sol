@@ -36,7 +36,7 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
 
         factory.updateMember(wallet1.addr, address(0x0), 0.5 ether, 0, 0, 10);
         factory.updateMember(address(this), address(0x0), 0.5 ether, 0, 0, 10);
-        factory.updateStageDateFtr(2,.1 ether);
+        factory.updateStageDateFtr(2, 0.1 ether);
         vm.deal(wallet1.addr, 100 ether);
         vm.deal(address(this), 100 ether);
 
@@ -66,7 +66,7 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
     }
 
     function test_fuzz_updateRoyaltyInfo(uint256 price, address receiver, uint96 royaltyFee) external {
-        price = bound(price,0, 3 ether);
+        price = bound(price, 0, 3 ether);
         vm.assume(receiver != address(0x0));
         vm.assume(royaltyFee > 0 && royaltyFee < 10_000);
 
@@ -154,8 +154,12 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         vm.startPrank(wallet1.addr);
         _nftCollection.grantRole(WL_MINTER_ROLE_TEST, address(this));
         vm.stopPrank();
-        vm.deal(address(this),300 ether);
-        vm.expectRevert(abi.encodeWithSelector(MintError.selector, 0x4f47000000000000000000000000000000000000000000000000000000000000, 0));
+        vm.deal(address(this), 300 ether);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                MintError.selector, 0x4f47000000000000000000000000000000000000000000000000000000000000, 0
+            )
+        );
         _nftCollection.mintForOG{value: 1 ether}(address(this), 1);
     }
 
@@ -165,7 +169,11 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         vm.startPrank(wallet1.addr);
         _nftCollection.grantRole(WL_MINTER_ROLE_TEST, address(this));
         vm.stopPrank();
-        vm.expectRevert(abi.encodeWithSelector(MintError.selector, 0x4f47000000000000000000000000000000000000000000000000000000000000, 0));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                MintError.selector, 0x4f47000000000000000000000000000000000000000000000000000000000000, 0
+            )
+        );
         _nftCollection.mintForOG{value: 1 ether}(address(this), mintMax + 500);
     }
 
@@ -176,7 +184,11 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         _nftCollection.grantRole(WL_MINTER_ROLE_TEST, address(this));
         vm.stopPrank();
         _nftCollection.updateWhitelistMintPrice(price);
-        vm.expectRevert(abi.encodeWithSelector(MintError.selector, 0x574c000000000000000000000000000000000000000000000000000000000000, 0));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                MintError.selector, 0x574c000000000000000000000000000000000000000000000000000000000000, 0
+            )
+        );
         _nftCollection.mintForWhitelist{value: price - 1}(address(this), 1);
     }
 
@@ -186,7 +198,11 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         vm.startPrank(wallet1.addr);
         _nftCollection.grantRole(WL_MINTER_ROLE_TEST, address(this));
         vm.stopPrank();
-        vm.expectRevert(abi.encodeWithSelector(MintError.selector, 0x574c000000000000000000000000000000000000000000000000000000000000, 1));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                MintError.selector, 0x574c000000000000000000000000000000000000000000000000000000000000, 1
+            )
+        );
         _nftCollection.mintForWhitelist{value: 100 ether}(address(this), mintMax + 1);
     }
 
@@ -336,7 +352,7 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         _nftCollection.mintForRegular{value: 1 ether}(address(this), _newMaxSupply + 1);
     }
 
-    function test_updatePublicEndTime() public{
+    function test_updatePublicEndTime() public {
         _nftCollection.updatePublicEndTime{value: 0.1 ether}(2);
     }
 
@@ -349,9 +365,8 @@ contract MvxCollectionNotERC721A {
     }
 }
 
-
 /**
-stage
-fee
-update
+ * stage
+ * fee
+ * update
  */

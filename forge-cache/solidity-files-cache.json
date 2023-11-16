@@ -2412,70 +2412,9 @@
         }
       }
     },
-    "script/Encoder.s.sol": {
-      "lastModificationDate": 1699920162900,
-      "contentHash": "b52cd417a31e8ab8e4876d96341ef345",
-      "sourceName": "script/Encoder.s.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "useLiteralContent": false,
-            "bytecodeHash": "ipfs",
-            "appendCBOR": true
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ]
-            }
-          },
-          "evmVersion": "paris",
-          "libraries": {}
-        }
-      },
-      "imports": [
-        "lib/forge-std/lib/ds-test/src/test.sol",
-        "lib/forge-std/src/Base.sol",
-        "lib/forge-std/src/Script.sol",
-        "lib/forge-std/src/StdAssertions.sol",
-        "lib/forge-std/src/StdChains.sol",
-        "lib/forge-std/src/StdCheats.sol",
-        "lib/forge-std/src/StdError.sol",
-        "lib/forge-std/src/StdInvariant.sol",
-        "lib/forge-std/src/StdJson.sol",
-        "lib/forge-std/src/StdMath.sol",
-        "lib/forge-std/src/StdStorage.sol",
-        "lib/forge-std/src/StdStyle.sol",
-        "lib/forge-std/src/StdUtils.sol",
-        "lib/forge-std/src/Test.sol",
-        "lib/forge-std/src/Vm.sol",
-        "lib/forge-std/src/console.sol",
-        "lib/forge-std/src/console2.sol",
-        "lib/forge-std/src/interfaces/IMulticall3.sol",
-        "lib/forge-std/src/safeconsole.sol"
-      ],
-      "versionRequirement": "^0.8.5",
-      "artifacts": {
-        "Encoder": {
-          "0.8.20+commit.a1b79de6.Darwin.appleclang": "Encoder.s.sol/Encoder.json"
-        }
-      }
-    },
     "src/MvxCollection.sol": {
-      "lastModificationDate": 1699929753499,
-      "contentHash": "b550ad4ada103ae6056238451bcb504c",
+      "lastModificationDate": 1700160842348,
+      "contentHash": "3ce16ccbc4f6ce4fac3d0a4e79ea8892",
       "sourceName": "src/MvxCollection.sol",
       "solcConfig": {
         "settings": {
@@ -2524,8 +2463,8 @@
       }
     },
     "src/MvxFactory.sol": {
-      "lastModificationDate": 1699929820498,
-      "contentHash": "e95ac57cff610919aed9d78f07b0c119",
+      "lastModificationDate": 1700162374877,
+      "contentHash": "6cdedfed5d39fea7a67954e57afaa60a",
       "sourceName": "src/MvxFactory.sol",
       "solcConfig": {
         "settings": {
@@ -2639,8 +2578,8 @@
       }
     },
     "src/abstracts/MintingStages.sol": {
-      "lastModificationDate": 1699929616721,
-      "contentHash": "b31a17dd3816b17ecc2168ee92fcdd67",
+      "lastModificationDate": 1700160842342,
+      "contentHash": "6e6211b4db2fdde509ca6a72d9f7cc73",
       "sourceName": "src/abstracts/MintingStages.sol",
       "solcConfig": {
         "settings": {
@@ -3146,7 +3085,7 @@
       }
     },
     "test/foundry/helpers/BaseTest.sol": {
-      "lastModificationDate": 1699922893256,
+      "lastModificationDate": 1700160842381,
       "contentHash": "5fcfd260cdfcafbc149f8d3b6044b380",
       "sourceName": "test/foundry/helpers/BaseTest.sol",
       "solcConfig": {
@@ -3227,7 +3166,7 @@
       }
     },
     "test/foundry/internal/MvxFactoryInternalTest.sol": {
-      "lastModificationDate": 1699920162896,
+      "lastModificationDate": 1700160842349,
       "contentHash": "1410f634687d1a705a6624516abf83b6",
       "sourceName": "test/foundry/internal/MvxFactoryInternalTest.sol",
       "solcConfig": {
@@ -3300,7 +3239,7 @@
       }
     },
     "test/foundry/invariant/MvxFactoryMemberDiscountTest.sol": {
-      "lastModificationDate": 1699920162900,
+      "lastModificationDate": 1700160842348,
       "contentHash": "b9149e998c2748e9b500dd12854192c1",
       "sourceName": "test/foundry/invariant/MvxFactoryMemberDiscountTest.sol",
       "solcConfig": {
@@ -3385,7 +3324,7 @@
       }
     },
     "test/foundry/invariant/MvxFactoryReferralDiscountTest.sol": {
-      "lastModificationDate": 1699920162906,
+      "lastModificationDate": 1700160842351,
       "contentHash": "a8819de341f93553c844cafca2bc4248",
       "sourceName": "test/foundry/invariant/MvxFactoryReferralDiscountTest.sol",
       "solcConfig": {
@@ -3470,8 +3409,8 @@
       }
     },
     "test/foundry/unit/MvxCollectionTest.t.sol": {
-      "lastModificationDate": 1699929680598,
-      "contentHash": "e9354b6d38ae9cb5d1fe34319cff0ada",
+      "lastModificationDate": 1700160842351,
+      "contentHash": "2872f6a75177345030f06e330b13a1e4",
       "sourceName": "test/foundry/unit/MvxCollectionTest.t.sol",
       "solcConfig": {
         "settings": {
@@ -3559,7 +3498,7 @@
       }
     },
     "test/foundry/unit/MvxFactoryUnitTest.sol": {
-      "lastModificationDate": 1699920162893,
+      "lastModificationDate": 1700160842348,
       "contentHash": "c362ec52a914102df8a9ce70f98d043f",
       "sourceName": "test/foundry/unit/MvxFactoryUnitTest.sol",
       "solcConfig": {
