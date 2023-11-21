@@ -70,6 +70,7 @@ async function _getColletionData(royaltyReceiver:any){
 }
 async function _getStageData() {
     const block = {timestamp: (await ethers.provider.getBlock('latest')).timestamp  };
+    const _getTime = (num:any) => block.timestamp + (60 * 60 * 24 * num);
     return {
         "isMaxSupplyUpdatable": true,
         "ogMintPrice" :300000000000000n,
@@ -78,12 +79,12 @@ async function _getStageData() {
         "mintMaxPerUser" :100n,
         "ogMintMaxPerUser" :100n,
         "whitelistMintMaxPerUser" :100n,
-        "mintStart" :block.timestamp,
-        "mintEnd" :block.timestamp + 10 * 60 * 60 * 24,
-        "ogMintStart" :block.timestamp,
-        "ogMintEnd" :block.timestamp + 10 * 60 * 60 * 24,
-        "whitelistMintStart" :block.timestamp,
-        "whitelistMintEnd" :block.timestamp + 10 * 60 * 60 * 24
+        "ogMintStart" :_getTime(0),
+        "ogMintEnd" :_getTime(1),
+        "whitelistMintStart" :_getTime(2),
+        "whitelistMintEnd" :_getTime(3),
+        "mintStart" : _getTime(3),
+        "mintEnd" :_getTime(7),
     };
 }
 function _getMinters() {

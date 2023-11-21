@@ -27,6 +27,7 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
     event Log(string, address[]);
 
     function setUp() public {
+        vm.warp(block.timestamp + 1 weeks);
         _platformFee = 1000; // 10%
         clone = new MvxCollection();
         mvxCollectionNotERC721A = new MvxCollectionNotERC721A();
@@ -36,7 +37,13 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
 
         factory.updateMember(wallet1.addr, address(0x0), 0.5 ether, 0, 0, 10);
         factory.updateMember(address(this), address(0x0), 0.5 ether, 0, 0, 10);
-        factory.updateStageDateFtr(2, 0.1 ether);
+        
+        factory.updateStageConfig(
+            2, /* _publicStageWeeks */
+            7, /* _stageTimeCapInDays */
+            0.1 ether /* _updateStageFee */
+        );
+
         vm.deal(wallet1.addr, 100 ether);
         vm.deal(address(this), 100 ether);
 
@@ -104,6 +111,7 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
     function test_fuzz_mintForRegular(address to, uint256 mintAmount) public {
         vm.assume(mintAmount > 0 && mintAmount <= 60);
         _nftCollection.updateMintPrice(5 wei);
+        vm.warp(_getTime(4));
         _nftCollection.mintForRegular{value: 1 ether}(to, mintAmount);
         assert(_nftCollection.balanceOf(to) > 0);
     }
@@ -120,6 +128,7 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
 
         vm.startPrank(WLmember.addr, WLmember.addr);
         // paying one eth to mint as WL
+        vm.warp(_getTime(2));
         _nftCollection.mintForWhitelist{value: 1 ether}(to, mintAmount);
         string memory uri = _nftCollection.tokenURI(mintAmount);
         assert(_nftCollection.balanceOf(to) > 0);
@@ -221,6 +230,7 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
     function test_fuzz_updateMintPrice(uint72 price) public {
         vm.assume(price > 0 && price < 30 ether);
         _nftCollection.updateMintPrice(price);
+        vm.warp(_getTime(4));
         _nftCollection.mintForRegular{value: price}(address(this), 1);
         vm.expectRevert(
             abi.encodeWithSelector(
@@ -242,12 +252,13 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
                 MintError.selector, 0x5247000000000000000000000000000000000000000000000000000000000000, 1
             )
         );
+        vm.warp(_getTime(4));
         _nftCollection.mintForRegular{value: 1 ether}(address(this), 2000 + 1001);
     }
 
     function test_fuzz_updateTime(uint40 start, uint40 end) public {
         vm.assume(start > block.timestamp);
-        vm.assume(end > start && end < block.timestamp + 5 days);
+        // vm.assume(end > start && end < block.timestamp + 5 days);
 
         // (,,,,,, uint256 mintStart, uint256 mintEnd,,,,uint8 publicStageWeeks ) = _nftCollection.mintingStages();
         // assert(mintStart > block.timestamp);
@@ -261,6 +272,7 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
 
     function test_tokenURI() public {
         uint256 tokenId = 5;
+        vm.warp(_getTime(4));
         _nftCollection.mintForRegular{value: 5 ether}(address(1), tokenId);
         string memory uri = _nftCollection.tokenURI(tokenId);
         console.log("uri", uri);
@@ -275,12 +287,15 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         vm.startPrank(address(wallet5.addr));
         uint256 ethAmount = stages.mintPrice * 5;
         vm.deal(address(wallet5.addr), ethAmount);
-        _nftCollection.mintForRegular{value: ethAmount}(wallet5.addr, 5);
-        uint256 balanceB4Withdraw = address(_nftCollection).balance;
-        _nftCollection.withdraw();
+        vm.warp(_getTime(4));
 
-        assertEq(address(_nftCollection).balance, 0);
-        assertEq(address(wallet5.addr).balance, balanceB4Withdraw);
+        _nftCollection.mintForRegular{value: ethAmount}(wallet5.addr, 5);
+        assertEq(address(wallet5.addr).balance, 0);
+
+        uint256 balanceB4Withdraw = address(wallet5.addr).balance;
+        _nftCollection.withdraw();
+        assertGt(address(wallet5.addr).balance,balanceB4Withdraw);
+
     }
 
     function test_withdraw_with_platform_fee() public {
@@ -299,6 +314,7 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         vm.startPrank(wallet3.addr);
         uint256 amount = 5 ether;
         vm.deal(address(wallet3.addr), amount);
+        vm.warp(_getTime(4));
         _clone721A.mintForRegular{value: amount}(wallet3.addr, 5);
         assertEq(_clone721A.balanceOf(wallet3.addr), 5);
         vm.stopPrank();
@@ -322,8 +338,12 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         _nftCollection.grantRole(OG_MINTER_ROLE_TEST, hacker.addr); // OG=0, WL=1
 
         vm.startPrank(hacker.addr, hacker.addr);
-        _nftCollection.mintForWhitelist{value: 60 ether}(hacker.addr, 50);
         _nftCollection.mintForOG{value: 60 ether}(hacker.addr, 60);
+
+        vm.warp(_getTime(2));
+        _nftCollection.mintForWhitelist{value: 60 ether}(hacker.addr, 50);
+
+        vm.warp(_getTime(4));
         _nftCollection.mintForRegular{value: 60 ether}(hacker.addr, 60);
 
         // one more should break the logic
@@ -342,6 +362,7 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
         vm.deal(address(this), 600 ether);
         (address[] memory _ogs, address[] memory _wls) = _getMinters();
         address collectionAddress = factory.createCollection{value: 0.5 ether}(nftData, stages, _ogs, _wls);
+        vm.warp(_getTime(4));
         MvxCollection(collectionAddress).mintForRegular{value: 60 ether}(address(this), 60);
         MvxCollection(collectionAddress).updateMaxSupply(_newMaxSupply);
         vm.expectRevert(

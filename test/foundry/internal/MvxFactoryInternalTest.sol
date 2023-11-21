@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT O
 pragma solidity ^0.8.20;
 
-import {Test, console, console2, Vm} from "forge-std/Test.sol";
+import {Test, console, console2, Vm, StdUtils} from "forge-std/Test.sol";
 
 import {Stages, Collection, Partner, Member, Artist} from "@src/libs/MvxStruct.sol";
 import {MvxFactory} from "@src/MvxFactory.sol";
@@ -35,7 +35,7 @@ contract MvxFactoryInternalsTest is MvxFactory, Test {
         address sender = artist.addr;
 
         // get artist by artist address
-        Artist memory artistObj = Artist({referral: referral.addr, referralBalance: 0, collection: collection});
+        Artist memory artistObj = Artist({referral: referral.addr, collection: collection});
         artists[artist.addr] = artistObj;
 
         // get partner by collection
@@ -57,10 +57,11 @@ contract MvxFactoryInternalsTest is MvxFactory, Test {
         partnerObj = partners[artistObj.collection];
 
         uint256 _referalDiscount = _percent(_deployFeeAfterDiscounts, partnerObj.referralOwnPercent);
-        assertEq(artistObj.referralBalance, _referalDiscount);
+        assertEq(referralBalances[artistObj.referral], _referalDiscount);
+
         uint256 _partnerDiscount = _percent(_deployFeeAfterDiscounts, partnerObj.adminOwnPercent);
         assertEq(partnerObj.balance, _partnerDiscount);
         uint256 remain = _deployFeeAfterDiscounts - (_referalDiscount + _partnerDiscount);
-        assertEq(remain, (_deployFeeAfterDiscounts - (artistObj.referralBalance + partnerObj.balance)));
+        assertEq(remain, (_deployFeeAfterDiscounts - (referralBalances[artistObj.referral] + partnerObj.balance)));
     }
 }

@@ -36,10 +36,9 @@ struct Collection {
 
 // address artist => Artist
 struct Artist {
-    // 3 storage slots total
+    // 2 storage slots total
     address referral; // referral address
     address collection; // memeber of collection the referral is
-    uint256 referralBalance; // track referral balance
 }
 
 // address collection => Partner

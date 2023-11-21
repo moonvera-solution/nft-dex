@@ -18,6 +18,7 @@ contract MvxFactoryMemberDiscountTest is BaseTest, GasSnapshot {
     event MemberDiscount(address indexed _sender, uint256 _deployFee, uint256 _discountAmt);
 
     function setUp() public {
+        vm.warp(block.timestamp + 10056739);
         clone = new MvxCollection();
         factory = new MvxFactory(); // takes fee on mint
         factory.initialize();

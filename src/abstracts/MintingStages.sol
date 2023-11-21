@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity 0.8.20;
 
 import {IERC2981, IERC165} from "@openzeppelin-contracts/interfaces/IERC2981.sol";
 
@@ -27,10 +27,31 @@ abstract contract MintingStages is Clone, AccessControl, ERC721A, IERC2981 {
 
     uint16 public platformFee;
     uint8 public publicStageWeeks;
+    uint40 public stageTimeCap;
     bool public initalized = false;
 
     event UpdateWLevent(address indexed sender, uint256 listLength);
     event UpdateOgEvent(address indexed sender, uint256 listLength);
+    event WithdrawEvent(address sender, uint256 balance, address feeReceiver, uint256 fee);
+    event OGmintEvent(address indexed sender, uint256 value, address to, uint256 amount, uint256 _ogMintPrice);
+    event WLmintEvent(address indexed sender, uint256 value, address to, uint256 amount, uint256 wlMintPrice);
+    event MintEvent(address indexed sender, uint256 value, address to, uint256 amount, uint256 mintPrice);
+    event OwnerMintEvent(address indexed sender, address to, uint256 amount);
+    event RoyaltyFeeUpdate(address indexed sender, address receiver, uint96 royaltyFee);
+    event BurnEvent(address indexed sender, uint256 tokenId);
+    event ValidStages();
+    // event Log(string, uint8);
+    event Log(string, address);
+    event Log(string, uint256);
+
+
+    error TokenNotExistsError();
+    error FixedMaxSupply();
+    error WithdrawError(uint8 isPlaformCall); // 0 = yes, 1 = no, fail admin
+    error MintForOwnerError(uint8);
+    error MintError(bytes4, uint8);
+    error RoyaltyFeeError(uint8);
+    error InvalidStageError(uint8);
 
     modifier OnlyAdminOrOperator() {
         require(hasRole(ADMIN_ROLE, msg.sender) || hasRole(OPERATOR_ROLE, msg.sender), "Only Admin or Operator");
@@ -90,5 +111,23 @@ abstract contract MintingStages is Clone, AccessControl, ERC721A, IERC2981 {
     function supportsInterface(bytes4 _interfaceId) public view override(ERC721A, IERC165) returns (bool) {
         return _interfaceId == type(IERC721A).interfaceId || _interfaceId == type(IERC2981).interfaceId
             || super.supportsInterface(_interfaceId);
+    }
+
+    function _maxDiff(uint40 a, uint40 b) internal returns (uint40) {
+        if (b > a) {
+            return b - a;
+        } else {
+            revert InvalidStageError(1);
+        }
+    }
+
+    /// @notice Ensures stage order as 1st og, 2nd wl, 3rd public, even is one is not present.
+    function _validateStages(Stages calldata mintingStages_) internal returns (Stages memory _stg) {
+        _stg = mintingStages_;
+        uint256 ogTime = _stg.ogMintStart > 0 ? _maxDiff(_stg.ogMintStart, _stg.ogMintEnd) : 0;
+        uint256 wlTime = _stg.whitelistMintStart > 0 ? _maxDiff(_stg.whitelistMintStart, _stg.whitelistMintEnd) : 0;
+        uint256 pbTime = _stg.mintStart > 0 ? _maxDiff(_stg.mintStart, _stg.mintEnd) : 0;
+        if ((ogTime + wlTime + pbTime) > (60 * 60 * 24 * stageTimeCap)) revert InvalidStageError(4);
+        emit ValidStages();
     }
 }

@@ -15,24 +15,6 @@ import "@src/abstracts/MintingStages.sol";
 /// @author MoonveraLabs
 /// @dev   Minimal proxy clones for ERC721A
 contract MvxCollection is MintingStages {
-    event WithdrawEvent(address sender, uint256 balance, address feeReceiver, uint256 fee);
-    event OGmintEvent(address indexed sender, uint256 value, address to, uint256 amount, uint256 _ogMintPrice);
-    event WLmintEvent(address indexed sender, uint256 value, address to, uint256 amount, uint256 wlMintPrice);
-    event MintEvent(address indexed sender, uint256 value, address to, uint256 amount, uint256 mintPrice);
-    event OwnerMintEvent(address indexed sender, address to, uint256 amount);
-    event RoyaltyFeeUpdate(address indexed sender, address receiver, uint96 royaltyFee);
-    event BurnEvent(address indexed sender, uint256 tokenId);
-    // event Log(string, uint8);
-    event Log(string, address);
-    event Log(string, uint256);
-
-    error TokenNotExistsError();
-    error FixedMaxSupply();
-    error WithdrawError(uint8 isPlaformCall); // 0 = yes, 1 = no, fail admin
-    error MintForOwnerError(uint8);
-    error MintError(bytes4, uint8);
-    error RoyaltyFeeError(uint8);
-
     /// @notice Called by MvxFactory on clone Deployment
     /// @param _nftData maxSupply,royaltyFee,name,symbol,baseURI,baseExt
     /// @param _ogs address[]og,
@@ -44,10 +26,17 @@ contract MvxCollection is MintingStages {
         address[] calldata _wls
     ) external {
         require(!initalized, "Already initialized");
-        address _owner = _getArgAddress(0); // immutable arguments
-        publicStageWeeks = _getArgUint8(20); // immutable arguments
-        platformFee = _getArgUint16(21); // 21 - 23
-        updateStageFee = _getArgUint72(30);
+
+        address _owner = _getArgAddress(0); // immutable arguments:
+        publicStageWeeks = _getArgUint8(20); // 20 byte offset
+        platformFee = _getArgUint16(21); //     1 byte offset
+        updateStageFee = _getArgUint72(23); //  2 byte offset
+        stageTimeCap = _getArgUint40(32); //    9 byte offset
+
+        emit Log("publicStageWeeks",publicStageWeeks);
+        emit Log("platformFee",platformFee);
+        emit Log("updateStageFee",updateStageFee);
+        emit Log("stageTimeCap",stageTimeCap);
 
         address _mvxFactory = msg.sender;
 
@@ -66,15 +55,18 @@ contract MvxCollection is MintingStages {
         _updateRoyaltyInfo(_owner, _nftData.royaltyFee);
 
         collectionData = _nftData;
-        mintingStages = _mintingStages;
+        mintingStages = _validateStages(_mintingStages);
         platformFeeReceiver = _mvxFactory;
         initalized = true;
         revokeRole(ADMIN_ROLE, _mvxFactory);
     }
 
     error PublicStageUpdateError(uint8);
-
     event PublicStageUpdate();
+
+    function receive() external payable {
+        emit Log("incoming ", msg.value);
+    }
 
     function updatePublicEndTime(uint8 _weeks) external payable OnlyAdminOrOperator {
         uint8 _publicStageWeeks = publicStageWeeks;
@@ -151,9 +143,12 @@ contract MvxCollection is MintingStages {
         uint256 _mintStageEndsAt,
         bytes4 _mintType
     ) internal {
-        emit Log("_maxMintAmount: ", _maxMintAmount);
         if (mintsPerWallet[msg.sender][_mintType] + _mintAmount > _maxMintAmount) revert MintError(_mintType, 1); // Exceeds mint per wallet amount
         uint256 _currentTime = block.timestamp;
+
+        emit Log("_currentTime: ", _currentTime);
+        emit Log("_mintStageStartsAt: ", _mintStageStartsAt);
+
         if (_currentTime < _mintStageStartsAt) revert MintError(_mintType, 2); // Stage mintType has not started
         if (_currentTime > _mintStageEndsAt) revert MintError(_mintType, 3); // Stage mint ended already
         if (totalSupply() + _mintAmount > collectionData.maxSupply) revert MintError(_mintType, 4); // Mint amount exceeds supply

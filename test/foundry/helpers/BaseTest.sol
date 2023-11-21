@@ -44,6 +44,13 @@ contract BaseTest is Test {
         return factory.createCollection{value: _deployCost}(nftData, stages, _ogs, _wls);
     }
 
+    event Log(string, uint40);
+
+    function _getTime(uint8 _days) internal returns (uint256) {
+        emit Log("Log time:: ", uint40(block.timestamp + (0 * 60 * 60 * 24)));
+        return block.timestamp + (60 * 60 * 24 * _days);
+    }
+
     function _setStages() public {
         stages = Stages({
             isMaxSupplyUpdatable: true,
@@ -53,12 +60,12 @@ contract BaseTest is Test {
             mintMaxPerUser: uint16(60),
             ogMintMaxPerUser: uint16(60),
             whitelistMintMaxPerUser: uint16(50),
-            mintStart: uint40(block.timestamp),
-            mintEnd: uint40(block.timestamp + 5 * 60 * 60 * 24),
-            ogMintStart: uint40(block.timestamp),
-            ogMintEnd: uint40(block.timestamp + 5 * 60 * 60 * 24),
-            whitelistMintStart: uint40(block.timestamp),
-            whitelistMintEnd: uint40(block.timestamp + 5 * 60 * 60 * 24)
+            ogMintStart: uint40(block.timestamp - 10),
+            ogMintEnd: uint40(_getTime(1)),
+            whitelistMintStart: uint40(_getTime(2)),
+            whitelistMintEnd: uint40(_getTime(3)),
+            mintStart: uint40(_getTime(3)),
+            mintEnd: uint40(_getTime(7))
         });
     }
 

@@ -38,11 +38,12 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
     uint256 public collectionCount;
     uint8 public publicStageWeeks;
     uint72 public updateStageFee;
-
+    uint40 public stageTimeCap;
 
     mapping(address => Artist) public artists; // artists addr => Artist data, expires
     mapping(address => Partner) public partners; // collection addr => Collection data, expires
     mapping(address => Member) public members; // Members addr => Member data, expires
+    mapping(address => uint72) public referralBalances; // Referral => balance
 
     error InvalidColletion();
     error Unathorized();
@@ -62,15 +63,16 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
     event CreateEvent(address indexed _sender, address _impl, address _cloneAddress);
     event MemberDiscount(address indexed _sender, uint256 _deployFee, uint256 _discountAmt);
     event ArtistDiscount(address indexed _sender, uint256 _deployFee, uint256 _discountAmt);
-    event GrantReferralDiscount(address indexed _artist, address _sender, address _collection);
-    event WithdrawPartner(address indexed _sender, address _collection, uint256 _balance);
-    event WithdrawReferral(address indexed _sender, address _artist, uint256 _referralBalance);
+    event GrantReferralDiscount(address indexed _artist, address indexed _sender, address _collection);
+    event WithdrawPartner(address indexed _sender, address indexed _collection, uint256 indexed _balance);
+    event WithdrawReferral(address indexed _sender, uint256 indexed _referralBalance);
     event UpdateCollectionImpl(address indexed _newImpl);
+    event UpdateStageConfigEvent(uint8 _publicStageWeeks, uint40 _stageTimeCapInDays, uint72 _updateStageFee);
 
     event UpdatePartnerEvent(address indexed _admin, address indexed _collection, uint16 _expirationDays);
     event UpdateMemberEvent(address indexed _member, address indexed _collection, uint16 _expirationDays);
-    event ReferralBalanceUpdate(address indexed _referral, uint256 _amount);
-    event PartnerBalanceUpdate(address indexed _partner, uint256 _balance);
+    event ReferralBalanceUpdate(address indexed _referral, uint256 indexed _amount);
+    event PartnerBalanceUpdate(address indexed _partner, uint256 indexed _balance);
 
     event FactoryBalanceUpdate(uint256);
 
@@ -172,16 +174,15 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
         emit WithdrawPartner(_sender, _collection, _balance);
     }
 
-    function withdrawReferral(address artist_) external {
+    function withdrawReferral() external {
         address _sender = msg.sender;
-        Artist memory _artist = artists[artist_];
-        if (_artist.referral != _sender) revert WithdrawReferralError(1);
-        uint256 _referralBalance = _artist.referralBalance;
-        if (_referralBalance == 0) revert WithdrawReferralError(2);
-        delete artists[artist_];
+        uint256 _referralBalance = referralBalances[_sender];
+        emit Log("_referralBalance:", _referralBalance);
+        if (_referralBalance < 0) revert WithdrawReferralError(1);
+        referralBalances[_sender] = 0;
         (bool sent,) = _sender.call{value: _referralBalance}("");
-        if (!sent) revert WithdrawReferralError(3);
-        emit WithdrawReferral(_sender, artist_, _referralBalance);
+        if (!sent) revert WithdrawReferralError(2);
+        emit WithdrawReferral(_sender, _referralBalance);
     }
 
     ///0x0000000000000000000000000000000000000000000000000000000000000000
@@ -208,13 +209,19 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
         // Check if artist has a referral already - only one referral allowed per artist per collection
         if (artists[_artist].referral != address(0x0)) revert GrantReferralError(4);
 
-        artists[_artist] = Artist(_referral, _extCollection, 0); // 20% referrals
+        artists[_artist] = Artist(_referral, _extCollection); // 20% referrals
         emit GrantReferralDiscount(_artist, _referral, _extCollection);
     }
 
-    function updateStageDateFtr(uint8 _publicStageWeeks, uint72 _updateStageFee) external onlyOwner {
+    function updateStageConfig(
+        uint8 _publicStageWeeks,
+        uint40 _stageTimeCapInDays,
+        uint72 _updateStageFee) external onlyOwner
+    {
         publicStageWeeks = _publicStageWeeks;
+        stageTimeCap = _stageTimeCapInDays;
         updateStageFee = _updateStageFee;
+        emit UpdateStageConfigEvent(_publicStageWeeks, _stageTimeCapInDays, _updateStageFee);
     }
 
     ///0x0000000000000000000000000000000000000000000000000000000000000000
@@ -246,6 +253,7 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
             uint256 _discountAmount = _percent(_deployFee, _partner.discount);
             if (_msgValue < _deployFee - _discountAmount) revert CreateError(2);
             _applyArtistDiscount(_artist, _partner, _sender, _deployFee, _discountAmount);
+            delete _artist;
             emit ArtistDiscount(_sender, _deployFee, _discountAmount);
 
             // No discount
@@ -254,7 +262,14 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
         }
 
         // encode seder to clone immutable arg
-        bytes memory data = abi.encodePacked(_sender, publicStageWeeks, member.platformFee, updateStageFee);
+        bytes memory data =
+            abi.encodePacked(
+                _sender, // uint20
+                uint8(2),//publicStageWeeks, uint8
+                uint16(200),//member.platformFee, uint16
+                uint72(0.01 ether),//updateStageFee, uint72
+                uint40(7) //stageTimeCap uint40
+            );
 
         // Lib clone minimal proxy with immutable args
         _clone = LibClone.clone(address(collectionImpl), data);
@@ -276,26 +291,6 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
     }
 
     ///0x0000000000000000000000000000000000000000000000000000000000000000
-    ///                         UI VIEWS
-    ///0x0000000000000000000000000000000000000000000000000000000000000000
-    function getTime() public view returns (uint256 _time) {
-        _time = block.timestamp;
-    }
-
-    /// @param _daysFromNow current timestamp plus days
-    function getTime(uint256 _daysFromNow) public view returns (uint256 _time) {
-        _time = block.timestamp + (_daysFromNow * 60 * 60 * 24);
-    }
-
-    function getPartnerBalance(address _collection) public view returns (uint256 _balance) {
-        _balance = partners[_collection].balance;
-    }
-
-    function getReferralBalance(address _artist) public view returns (uint256 _balance) {
-        _balance = artists[_artist].referralBalance;
-    }
-
-    ///0x0000000000000000000000000000000000000000000000000000000000000000
     ///                      INTERNAL LOGIC
     ///0x0000000000000000000000000000000000000000000000000000000000000000
     function _applyArtistDiscount(
@@ -312,16 +307,16 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
         uint256 _referralAmount = _percent(_deployFeeAfterDiscounts, _partner.referralOwnPercent);
         remain = remain - _referralAmount;
 
-        _artist.referralBalance = _referralAmount;
+        referralBalances[_artist.referral] = uint72(referralBalances[_artist.referral] + _referralAmount);
         artists[_sender] = _artist;
-        emit ReferralBalanceUpdate(_artist.referral, _referralAmount);
+        emit ReferralBalanceUpdate(_artist.referral, referralBalances[_artist.referral]);
 
         // Update Partner balance
         uint256 _partnerAmount = _percent(_deployFeeAfterDiscounts, _partner.adminOwnPercent);
         remain = remain - _partnerAmount;
         _partner.balance = uint72(_partner.balance + _partnerAmount);
         partners[_artist.collection] = _partner;
-        emit PartnerBalanceUpdate(_partner.admin, _partnerAmount);
+        emit PartnerBalanceUpdate(_partner.admin, _partner.balance);
 
         if (remain + _partnerAmount + _referralAmount < _deployFeeAfterDiscounts) revert DiscountError(2);
         emit FactoryBalanceUpdate(remain);
