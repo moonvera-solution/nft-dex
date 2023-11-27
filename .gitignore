@@ -25,3 +25,10 @@ docs/
 yarn-error.log
 .vscode
 .gas-snapshots
+.woke-build
+.woke-logs
+pytypes
+__pycache__/
+*.py[cod]
+.hypothesis/
+woke-coverage.cov

@@ -23,14 +23,64 @@ import type {
   TypedContractMethod,
 } from "../common";
 
+export type MemberStruct = {
+  collection: AddressLike;
+  deployFee: BigNumberish;
+  platformFee: BigNumberish;
+  discount: BigNumberish;
+  expiration: BigNumberish;
+};
+
+export type MemberStructOutput = [
+  collection: string,
+  deployFee: bigint,
+  platformFee: bigint,
+  discount: bigint,
+  expiration: bigint
+] & {
+  collection: string;
+  deployFee: bigint;
+  platformFee: bigint;
+  discount: bigint;
+  expiration: bigint;
+};
+
+export type PartnerStruct = {
+  collection: AddressLike;
+  admin: AddressLike;
+  adminOwnPercent: BigNumberish;
+  referralOwnPercent: BigNumberish;
+  discount: BigNumberish;
+  balance: BigNumberish;
+  expiration: BigNumberish;
+};
+
+export type PartnerStructOutput = [
+  collection: string,
+  admin: string,
+  adminOwnPercent: bigint,
+  referralOwnPercent: bigint,
+  discount: bigint,
+  balance: bigint,
+  expiration: bigint
+] & {
+  collection: string;
+  admin: string;
+  adminOwnPercent: bigint;
+  referralOwnPercent: bigint;
+  discount: bigint;
+  balance: bigint;
+  expiration: bigint;
+};
+
 export type CollectionStruct = {
   name: string;
   symbol: string;
   baseURI: string;
   baseExt: string;
+  royaltyReceiver: AddressLike;
   maxSupply: BigNumberish;
   royaltyFee: BigNumberish;
-  royaltyReceiver: AddressLike;
 };
 
 export type CollectionStructOutput = [
@@ -38,60 +88,63 @@ export type CollectionStructOutput = [
   symbol: string,
   baseURI: string,
   baseExt: string,
+  royaltyReceiver: string,
   maxSupply: bigint,
-  royaltyFee: bigint,
-  royaltyReceiver: string
+  royaltyFee: bigint
 ] & {
   name: string;
   symbol: string;
   baseURI: string;
   baseExt: string;
+  royaltyReceiver: string;
   maxSupply: bigint;
   royaltyFee: bigint;
-  royaltyReceiver: string;
 };
 
 export type StagesStruct = {
+  isMaxSupplyUpdatable: boolean;
   ogMintPrice: BigNumberish;
   whitelistMintPrice: BigNumberish;
   mintPrice: BigNumberish;
   mintMaxPerUser: BigNumberish;
   ogMintMaxPerUser: BigNumberish;
-  whitelistMintMaxPerUser: BigNumberish;
   mintStart: BigNumberish;
   mintEnd: BigNumberish;
   ogMintStart: BigNumberish;
   ogMintEnd: BigNumberish;
   whitelistMintStart: BigNumberish;
   whitelistMintEnd: BigNumberish;
+  whitelistMintMaxPerUser: BigNumberish;
 };
 
 export type StagesStructOutput = [
+  isMaxSupplyUpdatable: boolean,
   ogMintPrice: bigint,
   whitelistMintPrice: bigint,
   mintPrice: bigint,
   mintMaxPerUser: bigint,
   ogMintMaxPerUser: bigint,
-  whitelistMintMaxPerUser: bigint,
   mintStart: bigint,
   mintEnd: bigint,
   ogMintStart: bigint,
   ogMintEnd: bigint,
   whitelistMintStart: bigint,
-  whitelistMintEnd: bigint
+  whitelistMintEnd: bigint,
+  whitelistMintMaxPerUser: bigint
 ] & {
+  isMaxSupplyUpdatable: boolean;
   ogMintPrice: bigint;
   whitelistMintPrice: bigint;
   mintPrice: bigint;
   mintMaxPerUser: bigint;
   ogMintMaxPerUser: bigint;
-  whitelistMintMaxPerUser: bigint;
   mintStart: bigint;
   mintEnd: bigint;
   ogMintStart: bigint;
   ogMintEnd: bigint;
   whitelistMintStart: bigint;
   whitelistMintEnd: bigint;
+  whitelistMintMaxPerUser: bigint;
 };
 
 export interface MvxFactoryInterface extends Interface {
@@ -101,8 +154,6 @@ export interface MvxFactoryInterface extends Interface {
       | "collectionCount"
       | "collectionImpl"
       | "createCollection"
-      | "deleteArtist"
-      | "deleteMember"
       | "getPartnerBalance"
       | "getReferralBalance"
       | "getTime()"
@@ -113,13 +164,14 @@ export interface MvxFactoryInterface extends Interface {
       | "owner"
       | "partners"
       | "proxiableUUID"
+      | "publicStageWeeks"
       | "renounceOwnership"
-      | "totalCollections"
       | "transferOwnership"
       | "updateCollectionImpl"
       | "updateMember"
       | "updatePartnership"
-      | "updateReferralExpiration"
+      | "updateStageDateFtr"
+      | "updateStageFee"
       | "upgradeTo"
       | "upgradeToAndCall"
       | "withdraw"
@@ -130,19 +182,23 @@ export interface MvxFactoryInterface extends Interface {
   getEvent(
     nameOrSignatureOrTopic:
       | "AdminChanged"
+      | "ArtistDiscount"
       | "BeaconUpgraded"
-      | "CollectionDiscount"
-      | "CreateCollectionEvent"
       | "CreateEvent"
-      | "InitCollectionEvent"
+      | "FactoryBalanceUpdate"
+      | "GrantReferralDiscount"
       | "Initialized"
       | "Log(string,uint256)"
-      | "Log(string,bool)"
+      | "Log(string,address)"
+      | "MemberDiscount"
       | "OwnershipTransferred"
       | "PartnerBalanceUpdate"
       | "ReferralBalanceUpdate"
-      | "ReferralDiscount"
+      | "UpdateCollectionImpl"
+      | "UpdateMember"
+      | "UpdatePartner"
       | "Upgraded"
+      | "WithdrawAdmin"
       | "WithdrawPartner"
       | "WithdrawReferral"
   ): EventFragment;
@@ -162,14 +218,6 @@ export interface MvxFactoryInterface extends Interface {
   encodeFunctionData(
     functionFragment: "createCollection",
     values: [CollectionStruct, StagesStruct, AddressLike[], AddressLike[]]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "deleteArtist",
-    values: [AddressLike]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "deleteMember",
-    values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "getPartnerBalance",
@@ -206,11 +254,11 @@ export interface MvxFactoryInterface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "renounceOwnership",
+    functionFragment: "publicStageWeeks",
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "totalCollections",
+    functionFragment: "renounceOwnership",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -244,8 +292,12 @@ export interface MvxFactoryInterface extends Interface {
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "updateReferralExpiration",
-    values: [BigNumberish]
+    functionFragment: "updateStageDateFtr",
+    values: [BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "updateStageFee",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "upgradeTo",
@@ -279,14 +331,6 @@ export interface MvxFactoryInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "deleteArtist",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "deleteMember",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "getPartnerBalance",
     data: BytesLike
   ): Result;
@@ -312,11 +356,11 @@ export interface MvxFactoryInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "renounceOwnership",
+    functionFragment: "publicStageWeeks",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "totalCollections",
+    functionFragment: "renounceOwnership",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -336,7 +380,11 @@ export interface MvxFactoryInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "updateReferralExpiration",
+    functionFragment: "updateStageDateFtr",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "updateStageFee",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "upgradeTo", data: BytesLike): Result;
@@ -368,6 +416,28 @@ export namespace AdminChangedEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
+export namespace ArtistDiscountEvent {
+  export type InputTuple = [
+    _sender: AddressLike,
+    _deployFee: BigNumberish,
+    _discountAmt: BigNumberish
+  ];
+  export type OutputTuple = [
+    _sender: string,
+    _deployFee: bigint,
+    _discountAmt: bigint
+  ];
+  export interface OutputObject {
+    _sender: string;
+    _deployFee: bigint;
+    _discountAmt: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
 export namespace BeaconUpgradedEvent {
   export type InputTuple = [beacon: AddressLike];
   export type OutputTuple = [beacon: string];
@@ -380,52 +450,21 @@ export namespace BeaconUpgradedEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export namespace CollectionDiscountEvent {
-  export type InputTuple = [_collection: AddressLike, _discount: BigNumberish];
-  export type OutputTuple = [_collection: string, _discount: bigint];
-  export interface OutputObject {
-    _collection: string;
-    _discount: bigint;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
-
-export namespace CreateCollectionEventEvent {
-  export type InputTuple = [
-    sender: AddressLike,
-    template: AddressLike,
-    clone: AddressLike
-  ];
-  export type OutputTuple = [sender: string, template: string, clone: string];
-  export interface OutputObject {
-    sender: string;
-    template: string;
-    clone: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
-
 export namespace CreateEventEvent {
   export type InputTuple = [
-    sender: AddressLike,
-    impl: AddressLike,
-    cloneAddress: AddressLike
+    _sender: AddressLike,
+    _impl: AddressLike,
+    _cloneAddress: AddressLike
   ];
   export type OutputTuple = [
-    sender: string,
-    impl: string,
-    cloneAddress: string
+    _sender: string,
+    _impl: string,
+    _cloneAddress: string
   ];
   export interface OutputObject {
-    sender: string;
-    impl: string;
-    cloneAddress: string;
+    _sender: string;
+    _impl: string;
+    _cloneAddress: string;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -433,12 +472,33 @@ export namespace CreateEventEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export namespace InitCollectionEventEvent {
-  export type InputTuple = [sender: AddressLike, collection: AddressLike];
-  export type OutputTuple = [sender: string, collection: string];
+export namespace FactoryBalanceUpdateEvent {
+  export type InputTuple = [arg0: BigNumberish];
+  export type OutputTuple = [arg0: bigint];
   export interface OutputObject {
-    sender: string;
-    collection: string;
+    arg0: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace GrantReferralDiscountEvent {
+  export type InputTuple = [
+    _artist: AddressLike,
+    _sender: AddressLike,
+    _collection: AddressLike
+  ];
+  export type OutputTuple = [
+    _artist: string,
+    _sender: string,
+    _collection: string
+  ];
+  export interface OutputObject {
+    _artist: string;
+    _sender: string;
+    _collection: string;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -471,12 +531,34 @@ export namespace Log_string_uint256_Event {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export namespace Log_string_bool_Event {
-  export type InputTuple = [arg0: string, arg1: boolean];
-  export type OutputTuple = [arg0: string, arg1: boolean];
+export namespace Log_string_address_Event {
+  export type InputTuple = [arg0: string, arg1: AddressLike];
+  export type OutputTuple = [arg0: string, arg1: string];
   export interface OutputObject {
     arg0: string;
-    arg1: boolean;
+    arg1: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace MemberDiscountEvent {
+  export type InputTuple = [
+    _sender: AddressLike,
+    _deployFee: BigNumberish,
+    _discountAmt: BigNumberish
+  ];
+  export type OutputTuple = [
+    _sender: string,
+    _deployFee: bigint,
+    _discountAmt: bigint
+  ];
+  export interface OutputObject {
+    _sender: string;
+    _deployFee: bigint;
+    _discountAmt: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -498,11 +580,11 @@ export namespace OwnershipTransferredEvent {
 }
 
 export namespace PartnerBalanceUpdateEvent {
-  export type InputTuple = [arg0: AddressLike, arg1: BigNumberish];
-  export type OutputTuple = [arg0: string, arg1: bigint];
+  export type InputTuple = [_partner: AddressLike, _balance: BigNumberish];
+  export type OutputTuple = [_partner: string, _balance: bigint];
   export interface OutputObject {
-    arg0: string;
-    arg1: bigint;
+    _partner: string;
+    _balance: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -511,11 +593,11 @@ export namespace PartnerBalanceUpdateEvent {
 }
 
 export namespace ReferralBalanceUpdateEvent {
-  export type InputTuple = [arg0: AddressLike, arg1: BigNumberish];
-  export type OutputTuple = [arg0: string, arg1: bigint];
+  export type InputTuple = [_referral: AddressLike, _amount: BigNumberish];
+  export type OutputTuple = [_referral: string, _amount: bigint];
   export interface OutputObject {
-    arg0: string;
-    arg1: bigint;
+    _referral: string;
+    _amount: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -523,21 +605,35 @@ export namespace ReferralBalanceUpdateEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export namespace ReferralDiscountEvent {
-  export type InputTuple = [
-    _artist: AddressLike,
-    _sender: AddressLike,
-    _collection: AddressLike
-  ];
-  export type OutputTuple = [
-    _artist: string,
-    _sender: string,
-    _collection: string
-  ];
+export namespace UpdateCollectionImplEvent {
+  export type InputTuple = [_newImpl: AddressLike];
+  export type OutputTuple = [_newImpl: string];
   export interface OutputObject {
-    _artist: string;
-    _sender: string;
-    _collection: string;
+    _newImpl: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace UpdateMemberEvent {
+  export type InputTuple = [arg0: MemberStruct];
+  export type OutputTuple = [arg0: MemberStructOutput];
+  export interface OutputObject {
+    arg0: MemberStructOutput;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace UpdatePartnerEvent {
+  export type InputTuple = [arg0: PartnerStruct];
+  export type OutputTuple = [arg0: PartnerStructOutput];
+  export interface OutputObject {
+    arg0: PartnerStructOutput;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -550,6 +646,18 @@ export namespace UpgradedEvent {
   export type OutputTuple = [implementation: string];
   export interface OutputObject {
     implementation: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace WithdrawAdminEvent {
+  export type InputTuple = [amount: BigNumberish];
+  export type OutputTuple = [amount: bigint];
+  export interface OutputObject {
+    amount: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -647,11 +755,10 @@ export interface MvxFactory extends BaseContract {
   artists: TypedContractMethod<
     [arg0: AddressLike],
     [
-      [string, bigint, string, bigint] & {
+      [string, string, bigint] & {
         referral: string;
-        referralBalance: bigint;
         collection: string;
-        expiration: bigint;
+        referralBalance: bigint;
       }
     ],
     "view"
@@ -670,18 +777,6 @@ export interface MvxFactory extends BaseContract {
     ],
     [string],
     "payable"
-  >;
-
-  deleteArtist: TypedContractMethod<
-    [_artist: AddressLike],
-    [void],
-    "nonpayable"
-  >;
-
-  deleteMember: TypedContractMethod<
-    [_member: AddressLike],
-    [void],
-    "nonpayable"
   >;
 
   getPartnerBalance: TypedContractMethod<
@@ -731,12 +826,13 @@ export interface MvxFactory extends BaseContract {
   partners: TypedContractMethod<
     [arg0: AddressLike],
     [
-      [string, bigint, bigint, bigint, bigint, bigint] & {
+      [string, string, bigint, bigint, bigint, bigint, bigint] & {
+        collection: string;
         admin: string;
         adminOwnPercent: bigint;
         referralOwnPercent: bigint;
-        balance: bigint;
         discount: bigint;
+        balance: bigint;
         expiration: bigint;
       }
     ],
@@ -745,9 +841,9 @@ export interface MvxFactory extends BaseContract {
 
   proxiableUUID: TypedContractMethod<[], [string], "view">;
 
-  renounceOwnership: TypedContractMethod<[], [void], "nonpayable">;
+  publicStageWeeks: TypedContractMethod<[], [bigint], "view">;
 
-  totalCollections: TypedContractMethod<[], [bigint], "view">;
+  renounceOwnership: TypedContractMethod<[], [void], "nonpayable">;
 
   transferOwnership: TypedContractMethod<
     [newOwner: AddressLike],
@@ -787,11 +883,13 @@ export interface MvxFactory extends BaseContract {
     "nonpayable"
   >;
 
-  updateReferralExpiration: TypedContractMethod<
-    [_expirationInDays: BigNumberish],
+  updateStageDateFtr: TypedContractMethod<
+    [_publicStageWeeks: BigNumberish, _updateStageFee: BigNumberish],
     [void],
-    "payable"
+    "nonpayable"
   >;
+
+  updateStageFee: TypedContractMethod<[], [bigint], "view">;
 
   upgradeTo: TypedContractMethod<
     [_newImplementation: AddressLike],
@@ -828,11 +926,10 @@ export interface MvxFactory extends BaseContract {
   ): TypedContractMethod<
     [arg0: AddressLike],
     [
-      [string, bigint, string, bigint] & {
+      [string, string, bigint] & {
         referral: string;
-        referralBalance: bigint;
         collection: string;
-        expiration: bigint;
+        referralBalance: bigint;
       }
     ],
     "view"
@@ -855,12 +952,6 @@ export interface MvxFactory extends BaseContract {
     [string],
     "payable"
   >;
-  getFunction(
-    nameOrSignature: "deleteArtist"
-  ): TypedContractMethod<[_artist: AddressLike], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "deleteMember"
-  ): TypedContractMethod<[_member: AddressLike], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "getPartnerBalance"
   ): TypedContractMethod<[_collection: AddressLike], [bigint], "view">;
@@ -906,12 +997,13 @@ export interface MvxFactory extends BaseContract {
   ): TypedContractMethod<
     [arg0: AddressLike],
     [
-      [string, bigint, bigint, bigint, bigint, bigint] & {
+      [string, string, bigint, bigint, bigint, bigint, bigint] & {
+        collection: string;
         admin: string;
         adminOwnPercent: bigint;
         referralOwnPercent: bigint;
-        balance: bigint;
         discount: bigint;
+        balance: bigint;
         expiration: bigint;
       }
     ],
@@ -921,11 +1013,11 @@ export interface MvxFactory extends BaseContract {
     nameOrSignature: "proxiableUUID"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
+    nameOrSignature: "publicStageWeeks"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
     nameOrSignature: "renounceOwnership"
   ): TypedContractMethod<[], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "totalCollections"
-  ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "transferOwnership"
   ): TypedContractMethod<[newOwner: AddressLike], [void], "nonpayable">;
@@ -961,8 +1053,15 @@ export interface MvxFactory extends BaseContract {
     "nonpayable"
   >;
   getFunction(
-    nameOrSignature: "updateReferralExpiration"
-  ): TypedContractMethod<[_expirationInDays: BigNumberish], [void], "payable">;
+    nameOrSignature: "updateStageDateFtr"
+  ): TypedContractMethod<
+    [_publicStageWeeks: BigNumberish, _updateStageFee: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "updateStageFee"
+  ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "upgradeTo"
   ): TypedContractMethod<
@@ -995,25 +1094,18 @@ export interface MvxFactory extends BaseContract {
     AdminChangedEvent.OutputObject
   >;
   getEvent(
+    key: "ArtistDiscount"
+  ): TypedContractEvent<
+    ArtistDiscountEvent.InputTuple,
+    ArtistDiscountEvent.OutputTuple,
+    ArtistDiscountEvent.OutputObject
+  >;
+  getEvent(
     key: "BeaconUpgraded"
   ): TypedContractEvent<
     BeaconUpgradedEvent.InputTuple,
     BeaconUpgradedEvent.OutputTuple,
     BeaconUpgradedEvent.OutputObject
-  >;
-  getEvent(
-    key: "CollectionDiscount"
-  ): TypedContractEvent<
-    CollectionDiscountEvent.InputTuple,
-    CollectionDiscountEvent.OutputTuple,
-    CollectionDiscountEvent.OutputObject
-  >;
-  getEvent(
-    key: "CreateCollectionEvent"
-  ): TypedContractEvent<
-    CreateCollectionEventEvent.InputTuple,
-    CreateCollectionEventEvent.OutputTuple,
-    CreateCollectionEventEvent.OutputObject
   >;
   getEvent(
     key: "CreateEvent"
@@ -1023,11 +1115,18 @@ export interface MvxFactory extends BaseContract {
     CreateEventEvent.OutputObject
   >;
   getEvent(
-    key: "InitCollectionEvent"
+    key: "FactoryBalanceUpdate"
   ): TypedContractEvent<
-    InitCollectionEventEvent.InputTuple,
-    InitCollectionEventEvent.OutputTuple,
-    InitCollectionEventEvent.OutputObject
+    FactoryBalanceUpdateEvent.InputTuple,
+    FactoryBalanceUpdateEvent.OutputTuple,
+    FactoryBalanceUpdateEvent.OutputObject
+  >;
+  getEvent(
+    key: "GrantReferralDiscount"
+  ): TypedContractEvent<
+    GrantReferralDiscountEvent.InputTuple,
+    GrantReferralDiscountEvent.OutputTuple,
+    GrantReferralDiscountEvent.OutputObject
   >;
   getEvent(
     key: "Initialized"
@@ -1044,11 +1143,18 @@ export interface MvxFactory extends BaseContract {
     Log_string_uint256_Event.OutputObject
   >;
   getEvent(
-    key: "Log(string,bool)"
+    key: "Log(string,address)"
   ): TypedContractEvent<
-    Log_string_bool_Event.InputTuple,
-    Log_string_bool_Event.OutputTuple,
-    Log_string_bool_Event.OutputObject
+    Log_string_address_Event.InputTuple,
+    Log_string_address_Event.OutputTuple,
+    Log_string_address_Event.OutputObject
+  >;
+  getEvent(
+    key: "MemberDiscount"
+  ): TypedContractEvent<
+    MemberDiscountEvent.InputTuple,
+    MemberDiscountEvent.OutputTuple,
+    MemberDiscountEvent.OutputObject
   >;
   getEvent(
     key: "OwnershipTransferred"
@@ -1072,11 +1178,25 @@ export interface MvxFactory extends BaseContract {
     ReferralBalanceUpdateEvent.OutputObject
   >;
   getEvent(
-    key: "ReferralDiscount"
+    key: "UpdateCollectionImpl"
   ): TypedContractEvent<
-    ReferralDiscountEvent.InputTuple,
-    ReferralDiscountEvent.OutputTuple,
-    ReferralDiscountEvent.OutputObject
+    UpdateCollectionImplEvent.InputTuple,
+    UpdateCollectionImplEvent.OutputTuple,
+    UpdateCollectionImplEvent.OutputObject
+  >;
+  getEvent(
+    key: "UpdateMember"
+  ): TypedContractEvent<
+    UpdateMemberEvent.InputTuple,
+    UpdateMemberEvent.OutputTuple,
+    UpdateMemberEvent.OutputObject
+  >;
+  getEvent(
+    key: "UpdatePartner"
+  ): TypedContractEvent<
+    UpdatePartnerEvent.InputTuple,
+    UpdatePartnerEvent.OutputTuple,
+    UpdatePartnerEvent.OutputObject
   >;
   getEvent(
     key: "Upgraded"
@@ -1084,6 +1204,13 @@ export interface MvxFactory extends BaseContract {
     UpgradedEvent.InputTuple,
     UpgradedEvent.OutputTuple,
     UpgradedEvent.OutputObject
+  >;
+  getEvent(
+    key: "WithdrawAdmin"
+  ): TypedContractEvent<
+    WithdrawAdminEvent.InputTuple,
+    WithdrawAdminEvent.OutputTuple,
+    WithdrawAdminEvent.OutputObject
   >;
   getEvent(
     key: "WithdrawPartner"
@@ -1112,6 +1239,17 @@ export interface MvxFactory extends BaseContract {
       AdminChangedEvent.OutputObject
     >;
 
+    "ArtistDiscount(address,uint256,uint256)": TypedContractEvent<
+      ArtistDiscountEvent.InputTuple,
+      ArtistDiscountEvent.OutputTuple,
+      ArtistDiscountEvent.OutputObject
+    >;
+    ArtistDiscount: TypedContractEvent<
+      ArtistDiscountEvent.InputTuple,
+      ArtistDiscountEvent.OutputTuple,
+      ArtistDiscountEvent.OutputObject
+    >;
+
     "BeaconUpgraded(address)": TypedContractEvent<
       BeaconUpgradedEvent.InputTuple,
       BeaconUpgradedEvent.OutputTuple,
@@ -1121,28 +1259,6 @@ export interface MvxFactory extends BaseContract {
       BeaconUpgradedEvent.InputTuple,
       BeaconUpgradedEvent.OutputTuple,
       BeaconUpgradedEvent.OutputObject
-    >;
-
-    "CollectionDiscount(address,uint96)": TypedContractEvent<
-      CollectionDiscountEvent.InputTuple,
-      CollectionDiscountEvent.OutputTuple,
-      CollectionDiscountEvent.OutputObject
-    >;
-    CollectionDiscount: TypedContractEvent<
-      CollectionDiscountEvent.InputTuple,
-      CollectionDiscountEvent.OutputTuple,
-      CollectionDiscountEvent.OutputObject
-    >;
-
-    "CreateCollectionEvent(address,address,address)": TypedContractEvent<
-      CreateCollectionEventEvent.InputTuple,
-      CreateCollectionEventEvent.OutputTuple,
-      CreateCollectionEventEvent.OutputObject
-    >;
-    CreateCollectionEvent: TypedContractEvent<
-      CreateCollectionEventEvent.InputTuple,
-      CreateCollectionEventEvent.OutputTuple,
-      CreateCollectionEventEvent.OutputObject
     >;
 
     "CreateEvent(address,address,address)": TypedContractEvent<
@@ -1156,15 +1272,26 @@ export interface MvxFactory extends BaseContract {
       CreateEventEvent.OutputObject
     >;
 
-    "InitCollectionEvent(address,address)": TypedContractEvent<
-      InitCollectionEventEvent.InputTuple,
-      InitCollectionEventEvent.OutputTuple,
-      InitCollectionEventEvent.OutputObject
+    "FactoryBalanceUpdate(uint256)": TypedContractEvent<
+      FactoryBalanceUpdateEvent.InputTuple,
+      FactoryBalanceUpdateEvent.OutputTuple,
+      FactoryBalanceUpdateEvent.OutputObject
     >;
-    InitCollectionEvent: TypedContractEvent<
-      InitCollectionEventEvent.InputTuple,
-      InitCollectionEventEvent.OutputTuple,
-      InitCollectionEventEvent.OutputObject
+    FactoryBalanceUpdate: TypedContractEvent<
+      FactoryBalanceUpdateEvent.InputTuple,
+      FactoryBalanceUpdateEvent.OutputTuple,
+      FactoryBalanceUpdateEvent.OutputObject
+    >;
+
+    "GrantReferralDiscount(address,address,address)": TypedContractEvent<
+      GrantReferralDiscountEvent.InputTuple,
+      GrantReferralDiscountEvent.OutputTuple,
+      GrantReferralDiscountEvent.OutputObject
+    >;
+    GrantReferralDiscount: TypedContractEvent<
+      GrantReferralDiscountEvent.InputTuple,
+      GrantReferralDiscountEvent.OutputTuple,
+      GrantReferralDiscountEvent.OutputObject
     >;
 
     "Initialized(uint8)": TypedContractEvent<
@@ -1183,10 +1310,21 @@ export interface MvxFactory extends BaseContract {
       Log_string_uint256_Event.OutputTuple,
       Log_string_uint256_Event.OutputObject
     >;
-    "Log(string,bool)": TypedContractEvent<
-      Log_string_bool_Event.InputTuple,
-      Log_string_bool_Event.OutputTuple,
-      Log_string_bool_Event.OutputObject
+    "Log(string,address)": TypedContractEvent<
+      Log_string_address_Event.InputTuple,
+      Log_string_address_Event.OutputTuple,
+      Log_string_address_Event.OutputObject
+    >;
+
+    "MemberDiscount(address,uint256,uint256)": TypedContractEvent<
+      MemberDiscountEvent.InputTuple,
+      MemberDiscountEvent.OutputTuple,
+      MemberDiscountEvent.OutputObject
+    >;
+    MemberDiscount: TypedContractEvent<
+      MemberDiscountEvent.InputTuple,
+      MemberDiscountEvent.OutputTuple,
+      MemberDiscountEvent.OutputObject
     >;
 
     "OwnershipTransferred(address,address)": TypedContractEvent<
@@ -1222,15 +1360,37 @@ export interface MvxFactory extends BaseContract {
       ReferralBalanceUpdateEvent.OutputObject
     >;
 
-    "ReferralDiscount(address,address,address)": TypedContractEvent<
-      ReferralDiscountEvent.InputTuple,
-      ReferralDiscountEvent.OutputTuple,
-      ReferralDiscountEvent.OutputObject
+    "UpdateCollectionImpl(address)": TypedContractEvent<
+      UpdateCollectionImplEvent.InputTuple,
+      UpdateCollectionImplEvent.OutputTuple,
+      UpdateCollectionImplEvent.OutputObject
     >;
-    ReferralDiscount: TypedContractEvent<
-      ReferralDiscountEvent.InputTuple,
-      ReferralDiscountEvent.OutputTuple,
-      ReferralDiscountEvent.OutputObject
+    UpdateCollectionImpl: TypedContractEvent<
+      UpdateCollectionImplEvent.InputTuple,
+      UpdateCollectionImplEvent.OutputTuple,
+      UpdateCollectionImplEvent.OutputObject
+    >;
+
+    "UpdateMember(tuple)": TypedContractEvent<
+      UpdateMemberEvent.InputTuple,
+      UpdateMemberEvent.OutputTuple,
+      UpdateMemberEvent.OutputObject
+    >;
+    UpdateMember: TypedContractEvent<
+      UpdateMemberEvent.InputTuple,
+      UpdateMemberEvent.OutputTuple,
+      UpdateMemberEvent.OutputObject
+    >;
+
+    "UpdatePartner(tuple)": TypedContractEvent<
+      UpdatePartnerEvent.InputTuple,
+      UpdatePartnerEvent.OutputTuple,
+      UpdatePartnerEvent.OutputObject
+    >;
+    UpdatePartner: TypedContractEvent<
+      UpdatePartnerEvent.InputTuple,
+      UpdatePartnerEvent.OutputTuple,
+      UpdatePartnerEvent.OutputObject
     >;
 
     "Upgraded(address)": TypedContractEvent<
@@ -1242,6 +1402,17 @@ export interface MvxFactory extends BaseContract {
       UpgradedEvent.InputTuple,
       UpgradedEvent.OutputTuple,
       UpgradedEvent.OutputObject
+    >;
+
+    "WithdrawAdmin(uint256)": TypedContractEvent<
+      WithdrawAdminEvent.InputTuple,
+      WithdrawAdminEvent.OutputTuple,
+      WithdrawAdminEvent.OutputObject
+    >;
+    WithdrawAdmin: TypedContractEvent<
+      WithdrawAdminEvent.InputTuple,
+      WithdrawAdminEvent.OutputTuple,
+      WithdrawAdminEvent.OutputObject
     >;
 
     "WithdrawPartner(address,address,uint256)": TypedContractEvent<

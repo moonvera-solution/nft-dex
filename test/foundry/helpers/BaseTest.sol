@@ -44,20 +44,28 @@ contract BaseTest is Test {
         return factory.createCollection{value: _deployCost}(nftData, stages, _ogs, _wls);
     }
 
+    event Log(string, uint40);
+
+    function _getTime(uint8 _days) internal returns (uint256) {
+        emit Log("Log time:: ", uint40(block.timestamp + (0 * 60 * 60 * 24)));
+        return block.timestamp + (60 * 60 * 24 * _days);
+    }
+
     function _setStages() public {
         stages = Stages({
-            ogMintPrice: 1 ether,
-            whitelistMintPrice: 1 ether,
-            mintPrice: 1 ether,
-            mintMaxPerUser: 60,
-            ogMintMaxPerUser: 60,
-            whitelistMintMaxPerUser: 50,
-            mintStart: block.timestamp,
-            mintEnd: block.timestamp + 5 * 60 * 60 * 24,
-            ogMintStart: block.timestamp,
-            ogMintEnd: block.timestamp + 5 * 60 * 60 * 24,
-            whitelistMintStart: block.timestamp,
-            whitelistMintEnd: block.timestamp + 5 * 60 * 60 * 24
+            isMaxSupplyUpdatable: true,
+            ogMintPrice: uint72(1 ether),
+            whitelistMintPrice: uint72(1 ether),
+            mintPrice: uint72(1 ether),
+            mintMaxPerUser: uint16(60),
+            ogMintMaxPerUser: uint16(60),
+            whitelistMintMaxPerUser: uint16(50),
+            ogMintStart: uint40(block.timestamp - 10),
+            ogMintEnd: uint40(_getTime(1)),
+            whitelistMintStart: uint40(_getTime(2)),
+            whitelistMintEnd: uint40(_getTime(3)),
+            mintStart: uint40(_getTime(3)),
+            mintEnd: uint40(_getTime(7))
         });
     }
 
@@ -67,8 +75,8 @@ contract BaseTest is Test {
             symbol: "MVX",
             baseURI: "ipfs://QmXPHaxtTKxa58ise75a4vRAhLzZK3cANKV3zWb6KMoGUU/",
             baseExt: ".json",
-            maxSupply: 300,
-            royaltyFee: 1000,
+            maxSupply: uint128(2000),
+            royaltyFee: uint128(1000),
             royaltyReceiver: royaltyReiver
         });
     }

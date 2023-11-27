@@ -16,6 +16,13 @@ dotenv.config();
 // tdly.setup({ automaticVerifications: true })
 
 const {
+    POLYSCAN_API_KEY,
+    MUMBAI_NODE_1,
+    MUMBAI_NODE_2,
+    POLYGON_NODE_1,
+    POLYGON_NODE_2,
+    POLYGON_NODE_3,
+    SOLANA_DEV,
     TENDERLY_ACCESS_KEY,
     TENDERLY_PROJECT_SLUG,
     DEVNET_RPC_URL,
@@ -27,6 +34,7 @@ const {
     GOERLI_NODE_3,
     ADMIN_TEST_KEY,
     MEMBERT_TEST_KEY,
+    MEMBERT_2_TEST_KEY,
     REFERRAL_TEST_KEY,
     ARTISTI_TEST_KEY
 } = process.env;
@@ -39,8 +47,8 @@ const config: HardhatUserConfig = {
                 settings: {
                     optimizer: {
                         enabled: true,
-                        runs: 100000,
-                      },
+                        runs: 200,
+                    },
                     outputSelection: {
                         "*": {
                             "*": ["storageLayout"],
@@ -51,50 +59,80 @@ const config: HardhatUserConfig = {
         ],
     },
     networks: {
-        localhost:{
-            url:"http://127.0.0.1:8545/",
-            accounts:[`0x8166f546bab6da521a8369cab06c5d2b9e46670292d85c875ee9ec20e84ffb61`,
-            `0x${MEMBERT_TEST_KEY}`]
+        localhost: {
+            url: "http://127.0.0.1:8545/",
+            accounts: [`0x8166f546bab6da521a8369cab06c5d2b9e46670292d85c875ee9ec20e84ffb61`,
+                `0x${MEMBERT_TEST_KEY}`]
         },
         hardhat: {
-            forking: {
-              url: MAINNET_NODE,
-              blockNumber:18378515
-            }
-          },
-        mainnet:{
+            // forking: {
+            //     url: MAINNET_NODE,
+            //     blockNumber: 18378515
+            // }
+        },
+        mainnet: {
             url: MAINNET_NODE,
             chainId: 1,
-            accounts:[`${MAINNET_DEPLOYER_PK}`]
+            accounts: [`${MAINNET_DEPLOYER_PK}`]
         },
-        goerli_1:{
+        polygon: {
+            url: POLYGON_NODE_1,
+            chainId: 137,
+            accounts: [`${MAINNET_DEPLOYER_PK}`]
+        },
+        goerli_1: {
             url: GOERLI_NODE_1,
             chainId: 5,
-            accounts:[
+            accounts: [
                 `0x${ADMIN_TEST_KEY}`,
                 `0x${MEMBERT_TEST_KEY}`,
                 `0x${REFERRAL_TEST_KEY}`,
-                `0x${ARTISTI_TEST_KEY}`
+                `0x${ARTISTI_TEST_KEY}`,
+                `0x${MEMBERT_2_TEST_KEY}`
             ]
         },
-        goerli_2:{
+        goerli_2: {
             url: GOERLI_NODE_2,
             chainId: 5,
-            accounts:[
+            accounts: [
                 `0x${ADMIN_TEST_KEY}`,
                 `0x${MEMBERT_TEST_KEY}`,
                 `0x${REFERRAL_TEST_KEY}`,
-                `0x${ARTISTI_TEST_KEY}`
+                `0x${ARTISTI_TEST_KEY}`,
+                `0x${MEMBERT_2_TEST_KEY}`
             ]
         },
-        goerli_3:{
+        goerli_3: {
             url: GOERLI_NODE_3,
-            chainId: 5,
-            accounts:[
+            chainId: 80001,
+            accounts: [
                 `0x${ADMIN_TEST_KEY}`,
                 `0x${MEMBERT_TEST_KEY}`,
                 `0x${REFERRAL_TEST_KEY}`,
-                `0x${ARTISTI_TEST_KEY}`
+                `0x${ARTISTI_TEST_KEY}`,
+                `0x${MEMBERT_2_TEST_KEY}`
+            ]
+        },
+        mumbai_1: {
+            url: MUMBAI_NODE_1,
+            chainId: 80001,
+            accounts: [
+                `0x${ADMIN_TEST_KEY}`,
+                `0x${MEMBERT_TEST_KEY}`,
+                `0x${REFERRAL_TEST_KEY}`,
+                `0x${ARTISTI_TEST_KEY}`,
+                `0x${MEMBERT_2_TEST_KEY}`
+            ]
+        },
+        mumbai_2: {
+            url: MUMBAI_NODE_1,
+            chainId: 80001,
+            accounts: [
+                `0x${ADMIN_TEST_KEY}`,
+                `0x${MEMBERT_TEST_KEY}`,
+                `0x${REFERRAL_TEST_KEY}`,
+                `0x${ARTISTI_TEST_KEY}`,
+                `0x${MEMBERT_2_TEST_KEY}`
             ]
         },
         tenderly: {
@@ -111,8 +149,8 @@ const config: HardhatUserConfig = {
         disambiguatePaths: false,
         runOnCompile: false,
         strict: true,
-      },
-      gasReporter: {
+    },
+    gasReporter: {
         enabled: true,
         currency: 'USD',
         gasPrice: 21,
@@ -120,12 +158,15 @@ const config: HardhatUserConfig = {
         token: 'ETH',
         showMethodSig: true,
         gasPriceApi: `https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=${ETHERSCAN_API_KEY}`
-      },
-      etherscan: {
+    },
+    etherscan: {
         apiKey: {
-            goerli: ETHERSCAN_API_KEY
+            mainnet: ETHERSCAN_API_KEY,
+            goerli: ETHERSCAN_API_KEY,
+            polygonMumbai: POLYSCAN_API_KEY,
+            polygon: POLYSCAN_API_KEY
         }
-  },
+    },
     preprocess: {
         eachLine: (hre) => ({
             transform: (line: string) => {
@@ -141,7 +182,7 @@ const config: HardhatUserConfig = {
             },
         }),
     },
-    
+
 };
 
 function getRemappings() {

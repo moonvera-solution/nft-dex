@@ -20,7 +20,50 @@
     },
     {
       "inputs": [],
+      "name": "FixedMaxSupply",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint8",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "name": "InvalidCollectionData",
+      "type": "error"
+    },
+    {
+      "inputs": [],
       "name": "MintERC2309QuantityExceedsLimit",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes4",
+          "name": "",
+          "type": "bytes4"
+        },
+        {
+          "internalType": "uint8",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "name": "MintError",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint8",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "name": "MintForOwnerError",
       "type": "error"
     },
     {
@@ -41,6 +84,22 @@
     {
       "inputs": [],
       "name": "OwnershipNotInitializedForExtraData",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint8",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "name": "RoyaltyFeeError",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "TokenNotExistsError",
       "type": "error"
     },
     {
@@ -66,6 +125,17 @@
     {
       "inputs": [],
       "name": "URIQueryForNonexistentToken",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint8",
+          "name": "isPlaformCall",
+          "type": "uint8"
+        }
+      ],
+      "name": "WithdrawError",
       "type": "error"
     },
     {
@@ -123,6 +193,25 @@
       "inputs": [
         {
           "indexed": true,
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "BurnEvent",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
           "internalType": "uint256",
           "name": "fromTokenId",
           "type": "uint256"
@@ -147,6 +236,143 @@
         }
       ],
       "name": "ConsecutiveTransfer",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "Log",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "Log",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "mintPrice",
+          "type": "uint256"
+        }
+      ],
+      "name": "MintEvent",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "_ogMintPrice",
+          "type": "uint256"
+        }
+      ],
+      "name": "OGmintEvent",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "OwnerMintEvent",
       "type": "event"
     },
     {
@@ -230,6 +456,31 @@
         {
           "indexed": true,
           "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "receiver",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint96",
+          "name": "royaltyFee",
+          "type": "uint96"
+        }
+      ],
+      "name": "RoyaltyFeeUpdate",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
           "name": "from",
           "type": "address"
         },
@@ -285,6 +536,80 @@
         }
       ],
       "name": "UpdateWLevent",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [],
+      "name": "ValidStages",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "wlMintPrice",
+          "type": "uint256"
+        }
+      ],
+      "name": "WLmintEvent",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "balance",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "feeReceiver",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "fee",
+          "type": "uint256"
+        }
+      ],
+      "name": "WithdrawEvent",
       "type": "event"
     },
     {
@@ -414,19 +739,19 @@
           "type": "string"
         },
         {
-          "internalType": "uint256",
-          "name": "maxSupply",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint96",
-          "name": "royaltyFee",
-          "type": "uint96"
-        },
-        {
           "internalType": "address",
           "name": "royaltyReceiver",
           "type": "address"
+        },
+        {
+          "internalType": "uint128",
+          "name": "maxSupply",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint128",
+          "name": "royaltyFee",
+          "type": "uint128"
         }
       ],
       "stateMutability": "view",
@@ -554,64 +879,69 @@
       "name": "mintingStages",
       "outputs": [
         {
-          "internalType": "uint256",
+          "internalType": "bool",
+          "name": "isMaxSupplyUpdatable",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint72",
           "name": "ogMintPrice",
-          "type": "uint256"
+          "type": "uint72"
         },
         {
-          "internalType": "uint256",
+          "internalType": "uint72",
           "name": "whitelistMintPrice",
-          "type": "uint256"
+          "type": "uint72"
         },
         {
-          "internalType": "uint256",
+          "internalType": "uint72",
           "name": "mintPrice",
-          "type": "uint256"
+          "type": "uint72"
         },
         {
-          "internalType": "uint256",
+          "internalType": "uint16",
           "name": "mintMaxPerUser",
-          "type": "uint256"
+          "type": "uint16"
         },
         {
-          "internalType": "uint256",
+          "internalType": "uint16",
           "name": "ogMintMaxPerUser",
-          "type": "uint256"
+          "type": "uint16"
         },
         {
-          "internalType": "uint256",
-          "name": "whitelistMintMaxPerUser",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
+          "internalType": "uint40",
           "name": "mintStart",
-          "type": "uint256"
+          "type": "uint40"
         },
         {
-          "internalType": "uint256",
+          "internalType": "uint40",
           "name": "mintEnd",
-          "type": "uint256"
+          "type": "uint40"
         },
         {
-          "internalType": "uint256",
+          "internalType": "uint40",
           "name": "ogMintStart",
-          "type": "uint256"
+          "type": "uint40"
         },
         {
-          "internalType": "uint256",
+          "internalType": "uint40",
           "name": "ogMintEnd",
-          "type": "uint256"
+          "type": "uint40"
         },
         {
-          "internalType": "uint256",
+          "internalType": "uint40",
           "name": "whitelistMintStart",
-          "type": "uint256"
+          "type": "uint40"
         },
         {
-          "internalType": "uint256",
+          "internalType": "uint40",
           "name": "whitelistMintEnd",
-          "type": "uint256"
+          "type": "uint40"
+        },
+        {
+          "internalType": "uint16",
+          "name": "whitelistMintMaxPerUser",
+          "type": "uint16"
         }
       ],
       "stateMutability": "view",
@@ -625,9 +955,9 @@
           "type": "address"
         },
         {
-          "internalType": "string",
+          "internalType": "bytes4",
           "name": "",
-          "type": "string"
+          "type": "bytes4"
         }
       ],
       "name": "mintsPerWallet",
@@ -678,9 +1008,9 @@
       "name": "platformFee",
       "outputs": [
         {
-          "internalType": "uint256",
+          "internalType": "uint16",
           "name": "",
-          "type": "uint256"
+          "type": "uint16"
         }
       ],
       "stateMutability": "view",
@@ -694,6 +1024,19 @@
           "internalType": "address",
           "name": "",
           "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "publicStageWeeks",
+      "outputs": [
+        {
+          "internalType": "uint8",
+          "name": "",
+          "type": "uint8"
         }
       ],
       "stateMutability": "view",
@@ -834,6 +1177,19 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "stageTimeCap",
+      "outputs": [
+        {
+          "internalType": "uint40",
+          "name": "",
+          "type": "uint40"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "bytes4",
@@ -923,9 +1279,9 @@
     {
       "inputs": [
         {
-          "internalType": "uint256",
+          "internalType": "uint16",
           "name": "_mintMax",
-          "type": "uint256"
+          "type": "uint16"
         }
       ],
       "name": "updateMintMax",
@@ -936,9 +1292,9 @@
     {
       "inputs": [
         {
-          "internalType": "uint256",
+          "internalType": "uint72",
           "name": "_mintPrice",
-          "type": "uint256"
+          "type": "uint72"
         }
       ],
       "name": "updateMintPrice",
@@ -967,9 +1323,9 @@
     {
       "inputs": [
         {
-          "internalType": "uint256",
+          "internalType": "uint16",
           "name": "_ogMintMax",
-          "type": "uint256"
+          "type": "uint16"
         }
       ],
       "name": "updateOGMintMax",
@@ -980,9 +1336,9 @@
     {
       "inputs": [
         {
-          "internalType": "uint256",
+          "internalType": "uint72",
           "name": "_price",
-          "type": "uint256"
+          "type": "uint72"
         }
       ],
       "name": "updateOGMintPrice",
@@ -991,29 +1347,24 @@
       "type": "function"
     },
     {
-      "inputs": [
+      "inputs": [],
+      "name": "updateStageFee",
+      "outputs": [
         {
-          "internalType": "uint256",
-          "name": "_start",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_end",
-          "type": "uint256"
+          "internalType": "uint72",
+          "name": "",
+          "type": "uint72"
         }
       ],
-      "name": "updateTime",
-      "outputs": [],
-      "stateMutability": "nonpayable",
+      "stateMutability": "view",
       "type": "function"
     },
     {
       "inputs": [
         {
-          "internalType": "uint256",
+          "internalType": "uint16",
           "name": "_whitelistMintMax",
-          "type": "uint256"
+          "type": "uint16"
         }
       ],
       "name": "updateWLMintMax",
@@ -1024,9 +1375,9 @@
     {
       "inputs": [
         {
-          "internalType": "uint256",
+          "internalType": "uint72",
           "name": "_whitelistMintPrice",
-          "type": "uint256"
+          "type": "uint72"
         }
       ],
       "name": "updateWhitelistMintPrice",

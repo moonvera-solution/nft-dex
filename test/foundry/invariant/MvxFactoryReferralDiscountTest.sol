@@ -8,10 +8,10 @@ import {MvxCollection} from "@src/MvxCollection.sol";
 import "../helpers/BaseTest.sol";
 
 contract MvxFactoryReferralDiscountTest is BaseTest, GasSnapshot {
-    uint160 internal constant ALLOW_LAUNCH_PERIOD = 10 days;
-    uint256 internal constant DEPLOY_FEE = 0.5 ether;
-    uint96 internal constant PLATFORM_FEE = 200; //bp 2%
-    uint96 internal constant MEMBER_DISCOUNT = 0; //bp 20%
+    uint16 internal constant ALLOW_LAUNCH_PERIOD = 10;
+    uint72 internal constant DEPLOY_FEE = uint72(0.5 ether);
+    uint16 internal constant PLATFORM_FEE = 200; //bp 2%
+    uint16 internal constant MEMBER_DISCOUNT = 0; //bp 20%
 
     function setUp() public {
         clone = new MvxCollection();
@@ -21,6 +21,8 @@ contract MvxFactoryReferralDiscountTest is BaseTest, GasSnapshot {
         vm.deal(address(this), 10 ether);
         snapSize("MvxCollection", address(clone));
         factory.updateCollectionImpl(address(clone));
+        factory.updateStageConfig(2,7, 1 ether);
+        vm.warp(block.timestamp + 10056739);
     }
 
     function test_member_createCollection() public {
@@ -55,6 +57,7 @@ contract MvxFactoryReferralDiscountTest is BaseTest, GasSnapshot {
         // Random Collection members buys NFT becomes referral
         vm.startPrank(referral.addr);
         vm.deal(referral.addr, 1 ether);
+        vm.warp(_getTime(4));
         MvxCollection(_cloneAddress).mintForRegular{value: 1 ether}(referral.addr, 1);
         assert(MvxCollection(_cloneAddress).balanceOf(referral.addr) > 0);
         vm.stopPrank();
@@ -87,7 +90,8 @@ contract MvxFactoryReferralDiscountTest is BaseTest, GasSnapshot {
         vm.stopPrank();
 
         vm.startPrank(referral.addr);
-        factory.withdrawReferral(artist.addr);
+        factory.withdrawReferral();
+        assertEq(factory.referralBalances(referral.addr),0);
     }
 
     function test_fuzz_artist_createCollection(
@@ -119,12 +123,36 @@ contract MvxFactoryReferralDiscountTest is BaseTest, GasSnapshot {
         vm.stopPrank();
 
         ///0x0000000000000000000000000000000000000000000000000000000000000000
-        ///                         USER MINTINS
+        ///                         USER MINTINGS
         ///0x0000000000000000000000000000000000000000000000000000000000000000
 
-        // Random Collection members buys NFT becomes referral
+        // Random Collection members buys NFT to become referrals
+
+        /**
+         * OG  *
+         */
+        vm.startPrank(user1.addr);
+        vm.deal(user1.addr, 5 ether);
+        MvxCollection(_cloneAddress).mintForOG{value: 5 ether}(user1.addr, 5);
+        assert(MvxCollection(_cloneAddress).balanceOf(user1.addr) > 0);
+        vm.stopPrank();
+
+        /**
+         * WL *
+         */
+        vm.warp(_getTime(2));
+        vm.startPrank(user2.addr);
+        vm.deal(user2.addr, 11 ether);
+        MvxCollection(_cloneAddress).mintForWhitelist{value: 10 ether}(user2.addr, 10);
+        assert(MvxCollection(_cloneAddress).balanceOf(user2.addr) > 0);
+        vm.stopPrank();
+
+        /**
+         * REGULAR  *
+         */
         vm.startPrank(referral.addr);
         vm.deal(referral.addr, 20 ether);
+        vm.warp(_getTime(4));
         MvxCollection(_cloneAddress).mintForRegular{value: 20 ether}(referral.addr, 20);
         assert(MvxCollection(_cloneAddress).balanceOf(referral.addr) > 0);
         vm.stopPrank();
@@ -135,20 +163,7 @@ contract MvxFactoryReferralDiscountTest is BaseTest, GasSnapshot {
         MvxCollection(_cloneAddress).mintForRegular{value: 11 ether}(artist.addr, 11);
         assert(MvxCollection(_cloneAddress).balanceOf(artist.addr) > 0);
         vm.stopPrank();
-
-        // user1 mints for OG
-        vm.startPrank(user1.addr);
-        vm.deal(user1.addr, 5 ether);
-        MvxCollection(_cloneAddress).mintForOG{value: 5 ether}(user1.addr, 5);
-        assert(MvxCollection(_cloneAddress).balanceOf(user1.addr) > 0);
-        vm.stopPrank();
-
-        // user2 mints for WL
-        vm.startPrank(user2.addr);
-        vm.deal(user2.addr, 11 ether);
-        MvxCollection(_cloneAddress).mintForWhitelist{value: 10 ether}(user2.addr, 10);
-        assert(MvxCollection(_cloneAddress).balanceOf(user2.addr) > 0);
-        vm.stopPrank();
+        vm.warp(_getTime(0));
 
         ///0x0000000000000000000000000000000000000000000000000000000000000000
         ///                      MVX PARTNERS
@@ -172,7 +187,7 @@ contract MvxFactoryReferralDiscountTest is BaseTest, GasSnapshot {
         // if NO partnership grant Referral Fails
         // mvx member grants referal AFTER creating collection & having balance on it
         vm.startPrank(referral.addr);
-        factory.grantReferral(_cloneAddress, artist.addr);
+
         factory.grantReferral(_cloneAddress, user1.addr);
         factory.grantReferral(_cloneAddress, user2.addr);
         vm.stopPrank();
@@ -206,7 +221,7 @@ contract MvxFactoryReferralDiscountTest is BaseTest, GasSnapshot {
         vm.startPrank(artist.addr);
         vm.deal(artist.addr, 1 ether);
         snapStart("CreateClone Artist Discount"); // GAS tracking
-        _factoryCreate(factory, artist.addr, 0.5 ether); // feploy fee = .5 eth - referral discount 20% = .4 eth
+        _factoryCreate(factory, artist.addr, 0.56 ether); // feploy fee = .5 eth - referral discount 20% = .4 eth
         snapEnd();
         vm.stopPrank();
 
@@ -217,26 +232,23 @@ contract MvxFactoryReferralDiscountTest is BaseTest, GasSnapshot {
         /// REFERRALS
 
         vm.startPrank(referral.addr);
-        factory.withdrawReferral(artist.addr);
-        vm.stopPrank();
-
-        vm.startPrank(referral.addr);
-        factory.withdrawReferral(user1.addr);
-        vm.stopPrank();
-
-        vm.startPrank(referral.addr);
-        factory.withdrawReferral(user2.addr);
+        factory.withdrawReferral();
         vm.stopPrank();
 
         /// PARTNER
-
         vm.startPrank(member.addr);
-        (,,, uint256 balance,,) = factory.partners(_cloneAddress);
+        (,
+            address admin,,,,
+            uint72 balance,
+                    ) = factory.partners(_cloneAddress);
+        assertEq(admin,member.addr);
         uint256 _balanceB4withdraw = member.addr.balance;
-
+        uint256 _factoryBalanceB4Withdraw = address(factory).balance;
         factory.withdrawPartner(_cloneAddress);
         assertEq(member.addr.balance, _balanceB4withdraw + balance);
-
+        assertEq(address(factory).balance, _factoryBalanceB4Withdraw - balance);
+        (,,,,,uint72 _balance,) = factory.partners(_cloneAddress);
+         assertEq(_balance,0);
         vm.stopPrank();
 
         factory.withdraw();

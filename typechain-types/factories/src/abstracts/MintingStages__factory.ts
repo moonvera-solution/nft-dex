@@ -420,19 +420,19 @@ const _abi = [
         type: "string",
       },
       {
-        internalType: "uint256",
-        name: "maxSupply",
-        type: "uint256",
-      },
-      {
-        internalType: "uint96",
-        name: "royaltyFee",
-        type: "uint96",
-      },
-      {
         internalType: "address",
         name: "royaltyReceiver",
         type: "address",
+      },
+      {
+        internalType: "uint128",
+        name: "maxSupply",
+        type: "uint128",
+      },
+      {
+        internalType: "uint128",
+        name: "royaltyFee",
+        type: "uint128",
       },
     ],
     stateMutability: "view",
@@ -519,6 +519,19 @@ const _abi = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "initalized",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "address",
@@ -547,64 +560,69 @@ const _abi = [
     name: "mintingStages",
     outputs: [
       {
-        internalType: "uint256",
+        internalType: "bool",
+        name: "isMaxSupplyUpdatable",
+        type: "bool",
+      },
+      {
+        internalType: "uint72",
         name: "ogMintPrice",
-        type: "uint256",
+        type: "uint72",
       },
       {
-        internalType: "uint256",
+        internalType: "uint72",
         name: "whitelistMintPrice",
-        type: "uint256",
+        type: "uint72",
       },
       {
-        internalType: "uint256",
+        internalType: "uint72",
         name: "mintPrice",
-        type: "uint256",
+        type: "uint72",
       },
       {
-        internalType: "uint256",
+        internalType: "uint16",
         name: "mintMaxPerUser",
-        type: "uint256",
+        type: "uint16",
       },
       {
-        internalType: "uint256",
+        internalType: "uint16",
         name: "ogMintMaxPerUser",
-        type: "uint256",
+        type: "uint16",
       },
       {
-        internalType: "uint256",
-        name: "whitelistMintMaxPerUser",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
+        internalType: "uint40",
         name: "mintStart",
-        type: "uint256",
+        type: "uint40",
       },
       {
-        internalType: "uint256",
+        internalType: "uint40",
         name: "mintEnd",
-        type: "uint256",
+        type: "uint40",
       },
       {
-        internalType: "uint256",
+        internalType: "uint40",
         name: "ogMintStart",
-        type: "uint256",
+        type: "uint40",
       },
       {
-        internalType: "uint256",
+        internalType: "uint40",
         name: "ogMintEnd",
-        type: "uint256",
+        type: "uint40",
       },
       {
-        internalType: "uint256",
+        internalType: "uint40",
         name: "whitelistMintStart",
-        type: "uint256",
+        type: "uint40",
       },
       {
-        internalType: "uint256",
+        internalType: "uint40",
         name: "whitelistMintEnd",
-        type: "uint256",
+        type: "uint40",
+      },
+      {
+        internalType: "uint16",
+        name: "whitelistMintMaxPerUser",
+        type: "uint16",
       },
     ],
     stateMutability: "view",
@@ -618,9 +636,9 @@ const _abi = [
         type: "address",
       },
       {
-        internalType: "string",
+        internalType: "bytes4",
         name: "",
-        type: "string",
+        type: "bytes4",
       },
     ],
     name: "mintsPerWallet",
@@ -661,6 +679,45 @@ const _abi = [
         internalType: "address",
         name: "",
         type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "platformFee",
+    outputs: [
+      {
+        internalType: "uint16",
+        name: "",
+        type: "uint16",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "platformFeeReceiver",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "publicStageWeeks",
+    outputs: [
+      {
+        internalType: "uint8",
+        name: "",
+        type: "uint8",
       },
     ],
     stateMutability: "view",
@@ -890,9 +947,9 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "uint256",
+        internalType: "uint16",
         name: "_mintMax",
-        type: "uint256",
+        type: "uint16",
       },
     ],
     name: "updateMintMax",
@@ -903,9 +960,9 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "uint256",
+        internalType: "uint72",
         name: "_mintPrice",
-        type: "uint256",
+        type: "uint72",
       },
     ],
     name: "updateMintPrice",
@@ -934,9 +991,9 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "uint256",
+        internalType: "uint16",
         name: "_ogMintMax",
-        type: "uint256",
+        type: "uint16",
       },
     ],
     name: "updateOGMintMax",
@@ -947,9 +1004,9 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "uint256",
+        internalType: "uint72",
         name: "_price",
-        type: "uint256",
+        type: "uint72",
       },
     ],
     name: "updateOGMintPrice",
@@ -958,29 +1015,24 @@ const _abi = [
     type: "function",
   },
   {
-    inputs: [
+    inputs: [],
+    name: "updateStageFee",
+    outputs: [
       {
-        internalType: "uint256",
-        name: "_start",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "_end",
-        type: "uint256",
+        internalType: "uint72",
+        name: "",
+        type: "uint72",
       },
     ],
-    name: "updateTime",
-    outputs: [],
-    stateMutability: "nonpayable",
+    stateMutability: "view",
     type: "function",
   },
   {
     inputs: [
       {
-        internalType: "uint256",
+        internalType: "uint16",
         name: "_whitelistMintMax",
-        type: "uint256",
+        type: "uint16",
       },
     ],
     name: "updateWLMintMax",
@@ -991,9 +1043,9 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "uint256",
+        internalType: "uint72",
         name: "_whitelistMintPrice",
-        type: "uint256",
+        type: "uint72",
       },
     ],
     name: "updateWhitelistMintPrice",

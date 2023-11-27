@@ -1,56 +1,56 @@
-import {
-  time,
-  loadFixture,
-} from "@nomicfoundation/hardhat-toolbox/network-helpers";
-import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
+// import {
+//   time,
+//   loadFixture,
+// } from "@nomicfoundation/hardhat-toolbox/network-helpers";
+// import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import "@nomicfoundation/hardhat-ethers";
 
 
 import { _getGasPrice, _getMinters ,_getStageData,_getColletionData} from "./Utils.ts";
-import {
-  MvxFactory__factory,
-  MvxCollection__factory,Encoder__factory,
-  Encoder,MvxCollection, MvxFactory
-} from "typechain-types";
+
 
 describe("NftCollection", function () {
   // We define a fixture to reuse the same setup in every test.
   // We use loadFixture to run this setup once, snapshot that state,
   // and reset Hardhat Network to that snapshot in every test.
-  async function deployContracts() {
-    const signers = await ethers.getSigners();
-    const deployer = signers[0];
+  
+  // async function deployContracts() {
 
-    const EncoderFactory: Encoder__factory = await ethers.getContractFactory("Encoder");
-    const EncoderInstance = await EncoderFactory.deploy();
 
-    const Mvx: MvxFactory__factory = await ethers.getContractFactory("MvxFactory");
-    const FactoryInstance = await Mvx.deploy(0, { from: deployer });
-
-    const MvxColl: MvxCollection__factory = await ethers.getContractFactory("MvxCollection");
-    const CollectionInstance = await MvxColl.deploy({ from: deployer });
-
-    return { FactoryInstance, CollectionInstance ,EncoderInstance};
-  }
+  //   return { FactoryInstance, CollectionInstance ,EncoderInstance};
+  // }
 
   describe("Quote create collection", function () {
-    it("Should setCollectionImpl on Factory", async function () {
-      const { FactoryInstance, CollectionInstance } = await loadFixture(deployContracts);
+    let FactoryInstance:any;
+    let CollectionInstance:any;
+  
+    before(async function () {
+
+  
+    })
+
+    it("Deployment Quote", async function () {
+      // Fixture
+      const signers = await ethers.getSigners();
+      const deployer = signers[0];
+      const Mvx: any = await ethers.getContractFactory("MvxFactory");
+      const FactoryInstance = await Mvx.deploy({ from: deployer });
+      await FactoryInstance.initialize();
+  
+      const MvxColl: any = await ethers.getContractFactory("MvxCollection");
+      const CollectionInstance = await MvxColl.deploy({ from: deployer });
+
       const newImpl = CollectionInstance.target;
       await FactoryInstance.updateCollectionImpl(newImpl);
       const actualImpl = await FactoryInstance.collectionImpl();
       await expect(actualImpl).to.be.equals(newImpl);
-    });
-
-    it("Create a new collection from factory", async function () {
-      const { FactoryInstance, CollectionInstance ,EncoderInstance} = await loadFixture(deployContracts);
 
       const [Ogs, Wls] = await _getMinters();
-      const  CollectionStruct = await _getColletionData();
+      const  CollectionStruct = await _getColletionData(deployer.address);
       const StageStruct = await _getStageData();
-      await FactoryInstance.createCollection(CollectionStruct,StageStruct,Ogs,Wls);
+      const cloneAddr = await FactoryInstance.createCollection(CollectionStruct,StageStruct,Ogs,Wls);
     });
   });
 
