@@ -56,9 +56,6 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
     error UpdateMemberError(uint8);
     error CreateError(uint8);
 
-    event Log(string, uint256);
-    event Log(string, address);
-
     event WithdrawAdmin(uint256 amount);
     event CreateEvent(address indexed _sender, address _impl, address _cloneAddress);
     event MemberDiscount(address indexed _sender, uint256 _deployFee, uint256 _discountAmt);
@@ -163,12 +160,13 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
     ///0x0000000000000000000000000000000000000000000000000000000000000000
 
     function withdrawPartner(address _collection) external {
-        address _sender = payable(msg.sender);
         Partner memory _partner = partners[_collection];
         uint256 _balance = _partner.balance;
+        address _sender = payable(msg.sender);
         if (_partner.admin != _sender) revert WithdrawPartnerError(1);
         if (!(_balance > 0)) revert WithdrawPartnerError(2);
         _partner.balance = 0;
+        partners[_collection] = _partner;
         (bool sent,) = _sender.call{value: _balance}("");
         if (!sent) revert WithdrawPartnerError(3);
         emit WithdrawPartner(_sender, _collection, _balance);
@@ -177,7 +175,6 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
     function withdrawReferral() external {
         address _sender = msg.sender;
         uint256 _referralBalance = referralBalances[_sender];
-        emit Log("_referralBalance:", _referralBalance);
         if (_referralBalance < 0) revert WithdrawReferralError(1);
         referralBalances[_sender] = 0;
         (bool sent,) = _sender.call{value: _referralBalance}("");
@@ -213,10 +210,9 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
         emit GrantReferralDiscount(_artist, _referral, _extCollection);
     }
 
-    function updateStageConfig(
-        uint8 _publicStageWeeks,
-        uint40 _stageTimeCapInDays,
-        uint72 _updateStageFee) external onlyOwner
+    function updateStageConfig(uint8 _publicStageWeeks, uint40 _stageTimeCapInDays, uint72 _updateStageFee)
+        external
+        onlyOwner
     {
         publicStageWeeks = _publicStageWeeks;
         stageTimeCap = _stageTimeCapInDays;
@@ -262,14 +258,13 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
         }
 
         // encode seder to clone immutable arg
-        bytes memory data =
-            abi.encodePacked(
-                _sender, // uint20
-                uint8(2),//publicStageWeeks, uint8
-                uint16(200),//member.platformFee, uint16
-                uint72(0.01 ether),//updateStageFee, uint72
-                uint40(7) //stageTimeCap uint40
-            );
+        bytes memory data = abi.encodePacked(
+            _sender, // uint20
+            uint8(2), //publicStageWeeks, uint8
+            uint16(200), //member.platformFee, uint16
+            uint72(0.01 ether), //updateStageFee, uint72
+            uint40(7) //stageTimeCap uint40
+        );
 
         // Lib clone minimal proxy with immutable args
         _clone = LibClone.clone(address(collectionImpl), data);
@@ -330,5 +325,13 @@ contract MvxFactory is OwnableUpgradeable, UUPSUpgradeable {
 
     function upgradeTo(address _newImplementation) public override onlyOwner {
         super.upgradeTo(_newImplementation);
+    }
+
+    function getTime() external view returns (uint256) {
+        return block.timestamp;
+    }
+
+    function getTime(uint16 _days) external view returns (uint256) {
+        return block.timestamp + (60 * 60 * 24 * _days);
     }
 }

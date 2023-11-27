@@ -44,14 +44,13 @@ abstract contract MintingStages is Clone, AccessControl, ERC721A, IERC2981 {
     event Log(string, address);
     event Log(string, uint256);
 
-
     error TokenNotExistsError();
     error FixedMaxSupply();
     error WithdrawError(uint8 isPlaformCall); // 0 = yes, 1 = no, fail admin
     error MintForOwnerError(uint8);
     error MintError(bytes4, uint8);
     error RoyaltyFeeError(uint8);
-    error InvalidStageError(uint8);
+    error InvalidCollectionData(uint8);
 
     modifier OnlyAdminOrOperator() {
         require(hasRole(ADMIN_ROLE, msg.sender) || hasRole(OPERATOR_ROLE, msg.sender), "Only Admin or Operator");
@@ -117,17 +116,18 @@ abstract contract MintingStages is Clone, AccessControl, ERC721A, IERC2981 {
         if (b > a) {
             return b - a;
         } else {
-            revert InvalidStageError(1);
+            revert InvalidCollectionData(1);
         }
     }
 
     /// @notice Ensures stage order as 1st og, 2nd wl, 3rd public, even is one is not present.
-    function _validateStages(Stages calldata mintingStages_) internal returns (Stages memory _stg) {
+    function _validateCollection(uint128 maxSupply,Stages calldata mintingStages_) internal returns(Stages memory _stg){
         _stg = mintingStages_;
+        if(_stg.mintMaxPerUser + _stg.ogMintMaxPerUser + _stg.whitelistMintMaxPerUser > maxSupply) revert InvalidCollectionData(2);
         uint256 ogTime = _stg.ogMintStart > 0 ? _maxDiff(_stg.ogMintStart, _stg.ogMintEnd) : 0;
         uint256 wlTime = _stg.whitelistMintStart > 0 ? _maxDiff(_stg.whitelistMintStart, _stg.whitelistMintEnd) : 0;
         uint256 pbTime = _stg.mintStart > 0 ? _maxDiff(_stg.mintStart, _stg.mintEnd) : 0;
-        if ((ogTime + wlTime + pbTime) > (60 * 60 * 24 * stageTimeCap)) revert InvalidStageError(4);
+        if ((ogTime + wlTime + pbTime) > (60 * 60 * 24 * stageTimeCap)) revert InvalidCollectionData(3);
         emit ValidStages();
     }
 }

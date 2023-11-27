@@ -50,9 +50,7 @@ describe("NftCollection", function () {
       const [Ogs, Wls] = await _getMinters();
       const  CollectionStruct = await _getColletionData(deployer.address);
       const StageStruct = await _getStageData();
-      await FactoryInstance.createCollection(CollectionStruct,StageStruct,Ogs,Wls);
-
-
+      const cloneAddr = await FactoryInstance.createCollection(CollectionStruct,StageStruct,Ogs,Wls);
     });
   });
 

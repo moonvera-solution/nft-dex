@@ -37,11 +37,9 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
 
         factory.updateMember(wallet1.addr, address(0x0), 0.5 ether, 0, 0, 10);
         factory.updateMember(address(this), address(0x0), 0.5 ether, 0, 0, 10);
-        
+
         factory.updateStageConfig(
-            2, /* _publicStageWeeks */
-            7, /* _stageTimeCapInDays */
-            0.1 ether /* _updateStageFee */
+            2, /* _publicStageWeeks */ 7, /* _stageTimeCapInDays */ 0.1 ether /* _updateStageFee */
         );
 
         vm.deal(wallet1.addr, 100 ether);
@@ -294,8 +292,7 @@ contract MvxCollectionTest is Test, BaseTest, GasSnapshot {
 
         uint256 balanceB4Withdraw = address(wallet5.addr).balance;
         _nftCollection.withdraw();
-        assertGt(address(wallet5.addr).balance,balanceB4Withdraw);
-
+        assertGt(address(wallet5.addr).balance, balanceB4Withdraw);
     }
 
     function test_withdraw_with_platform_fee() public {

@@ -55,7 +55,8 @@ contract MvxCollection is MintingStages {
         _updateRoyaltyInfo(_owner, _nftData.royaltyFee);
 
         collectionData = _nftData;
-        mintingStages = _validateStages(_mintingStages);
+        uint128 _maxSupply = collectionData.maxSupply;
+        mintingStages = _validateCollection(_maxSupply,_mintingStages);
         platformFeeReceiver = _mvxFactory;
         initalized = true;
         revokeRole(ADMIN_ROLE, _mvxFactory);
@@ -145,10 +146,6 @@ contract MvxCollection is MintingStages {
     ) internal {
         if (mintsPerWallet[msg.sender][_mintType] + _mintAmount > _maxMintAmount) revert MintError(_mintType, 1); // Exceeds mint per wallet amount
         uint256 _currentTime = block.timestamp;
-
-        emit Log("_currentTime: ", _currentTime);
-        emit Log("_mintStageStartsAt: ", _mintStageStartsAt);
-
         if (_currentTime < _mintStageStartsAt) revert MintError(_mintType, 2); // Stage mintType has not started
         if (_currentTime > _mintStageEndsAt) revert MintError(_mintType, 3); // Stage mint ended already
         if (totalSupply() + _mintAmount > collectionData.maxSupply) revert MintError(_mintType, 4); // Mint amount exceeds supply

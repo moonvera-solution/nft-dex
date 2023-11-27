@@ -31,7 +31,7 @@
           "type": "uint8"
         }
       ],
-      "name": "InvalidStageError",
+      "name": "InvalidCollectionData",
       "type": "error"
     },
     {
@@ -536,6 +536,12 @@
         }
       ],
       "name": "UpdateWLevent",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [],
+      "name": "ValidStages",
       "type": "event"
     },
     {
@@ -1168,6 +1174,19 @@
       "name": "setApprovalForAll",
       "outputs": [],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "stageTimeCap",
+      "outputs": [
+        {
+          "internalType": "uint40",
+          "name": "",
+          "type": "uint40"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     },
     {

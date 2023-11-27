@@ -220,6 +220,26 @@
       "address": "0xBcB3380Abea0d02523Da897b0D1130F0A792BCBb",
       "txHash": "0xc937cb31ac9ee47ce4cbbf1bb7a0daec791b1ab8e6b8bed9a8dceddf8008518f",
       "kind": "uups"
+    },
+    {
+      "address": "0x2601EfEC9c7F7a72576028569D6b088AF6232e84",
+      "txHash": "0x9ffc9fec030c6ab078fc49f8dac381118c35f16c0b5187fe1506e08faae1350f",
+      "kind": "uups"
+    },
+    {
+      "address": "0x7F98a9f44b848617347Caa2834318c8397E7dB4c",
+      "txHash": "0x5350f33c2c89098eb3ba14cd72ec9b7e2843381afe65f51b57d54619c553fa66",
+      "kind": "uups"
+    },
+    {
+      "address": "0xC1033507A1a874Abaaf05aA9fF5D8ba6987cc4b8",
+      "txHash": "0x4a1a09b9b15554ec12fa6c5209b79fa3484405ac7b26ebcda481db529f7d521f",
+      "kind": "uups"
+    },
+    {
+      "address": "0x0f1eD4c89494fd16933fEA9518D9018f4a7EFb9e",
+      "txHash": "0x24170df2adbfa0ae5e2d9fc5a34d143b765d5416e76f029875cd90bf894b29b4",
+      "kind": "uups"
     }
   ],
   "impls": {
@@ -4765,6 +4785,891 @@
             "numberOfBytes": "64"
           },
           "t_struct(Partner)11629_storage": {
+            "label": "struct Partner",
+            "members": [
+              {
+                "label": "collection",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "admin",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "adminOwnPercent",
+                "type": "t_uint16",
+                "offset": 20,
+                "slot": "1"
+              },
+              {
+                "label": "referralOwnPercent",
+                "type": "t_uint16",
+                "offset": 22,
+                "slot": "1"
+              },
+              {
+                "label": "discount",
+                "type": "t_uint16",
+                "offset": 24,
+                "slot": "1"
+              },
+              {
+                "label": "balance",
+                "type": "t_uint72",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "expiration",
+                "type": "t_uint40",
+                "offset": 9,
+                "slot": "2"
+              }
+            ],
+            "numberOfBytes": "96"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint40": {
+            "label": "uint40",
+            "numberOfBytes": "5"
+          },
+          "t_uint72": {
+            "label": "uint72",
+            "numberOfBytes": "9"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {}
+      }
+    },
+    "cd9da724e4a7f28381ba7feb726c89003ab46e6e8590e8fb260ad50b4029faf7": {
+      "address": "0x08F6Bd91062F22D992AFe71172A2C87be1fD3cF1",
+      "txHash": "0x103fa0b7ede1f418812505d2ba34332eda1a9f5eddf136766e5048cf68e8e9d1",
+      "layout": {
+        "solcVersion": "0.8.20",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "lib/openzeppelin-contracts-upgradeable/contracts/proxy/utils/Initializable.sol:63",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "lib/openzeppelin-contracts-upgradeable/contracts/proxy/utils/Initializable.sol:68"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "lib/openzeppelin-contracts-upgradeable/contracts/utils/ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "lib/openzeppelin-contracts-upgradeable/contracts/access/OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "52",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "lib/openzeppelin-contracts-upgradeable/contracts/access/OwnableUpgradeable.sol:94"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "lib/openzeppelin-contracts-upgradeable/contracts/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol:169"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "lib/openzeppelin-contracts-upgradeable/contracts/proxy/utils/UUPSUpgradeable.sol:111"
+          },
+          {
+            "label": "collectionImpl",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_address",
+            "contract": "MvxFactory",
+            "src": "src/MvxFactory.sol:46"
+          },
+          {
+            "label": "collectionCount",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_uint256",
+            "contract": "MvxFactory",
+            "src": "src/MvxFactory.sol:48"
+          },
+          {
+            "label": "publicStageWeeks",
+            "offset": 0,
+            "slot": "203",
+            "type": "t_uint8",
+            "contract": "MvxFactory",
+            "src": "src/MvxFactory.sol:50"
+          },
+          {
+            "label": "updateStageFee",
+            "offset": 1,
+            "slot": "203",
+            "type": "t_uint72",
+            "contract": "MvxFactory",
+            "src": "src/MvxFactory.sol:51"
+          },
+          {
+            "label": "stageTimeCap",
+            "offset": 10,
+            "slot": "203",
+            "type": "t_uint40",
+            "contract": "MvxFactory",
+            "src": "src/MvxFactory.sol:52"
+          },
+          {
+            "label": "artists",
+            "offset": 0,
+            "slot": "204",
+            "type": "t_mapping(t_address,t_struct(Artist)11683_storage)",
+            "contract": "MvxFactory",
+            "src": "src/MvxFactory.sol:53"
+          },
+          {
+            "label": "partners",
+            "offset": 0,
+            "slot": "205",
+            "type": "t_mapping(t_address,t_struct(Partner)11698_storage)",
+            "contract": "MvxFactory",
+            "src": "src/MvxFactory.sol:55"
+          },
+          {
+            "label": "members",
+            "offset": 0,
+            "slot": "206",
+            "type": "t_mapping(t_address,t_struct(Member)11709_storage)",
+            "contract": "MvxFactory",
+            "src": "src/MvxFactory.sol:59"
+          },
+          {
+            "label": "referralBalances",
+            "offset": 0,
+            "slot": "207",
+            "type": "t_mapping(t_address,t_uint72)",
+            "contract": "MvxFactory",
+            "src": "src/MvxFactory.sol:62"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_address,t_struct(Artist)11683_storage)": {
+            "label": "mapping(address => struct Artist)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_struct(Member)11709_storage)": {
+            "label": "mapping(address => struct Member)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_struct(Partner)11698_storage)": {
+            "label": "mapping(address => struct Partner)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint72)": {
+            "label": "mapping(address => uint72)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(Artist)11683_storage": {
+            "label": "struct Artist",
+            "members": [
+              {
+                "label": "referral",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "collection",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(Member)11709_storage": {
+            "label": "struct Member",
+            "members": [
+              {
+                "label": "collection",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "deployFee",
+                "type": "t_uint72",
+                "offset": 20,
+                "slot": "0"
+              },
+              {
+                "label": "platformFee",
+                "type": "t_uint16",
+                "offset": 29,
+                "slot": "0"
+              },
+              {
+                "label": "discount",
+                "type": "t_uint16",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "expiration",
+                "type": "t_uint40",
+                "offset": 2,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(Partner)11698_storage": {
+            "label": "struct Partner",
+            "members": [
+              {
+                "label": "collection",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "admin",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "adminOwnPercent",
+                "type": "t_uint16",
+                "offset": 20,
+                "slot": "1"
+              },
+              {
+                "label": "referralOwnPercent",
+                "type": "t_uint16",
+                "offset": 22,
+                "slot": "1"
+              },
+              {
+                "label": "discount",
+                "type": "t_uint16",
+                "offset": 24,
+                "slot": "1"
+              },
+              {
+                "label": "balance",
+                "type": "t_uint72",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "expiration",
+                "type": "t_uint40",
+                "offset": 9,
+                "slot": "2"
+              }
+            ],
+            "numberOfBytes": "96"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint40": {
+            "label": "uint40",
+            "numberOfBytes": "5"
+          },
+          "t_uint72": {
+            "label": "uint72",
+            "numberOfBytes": "9"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {}
+      }
+    },
+    "70f9d0b9b142a6baea12b90e4846c45b6ffecd41985d1c46517e4cddfce8e148": {
+      "address": "0x52438107Dfd8459e76b3aa722760Fa33946a7Ff7",
+      "txHash": "0x8bd4fe5646d158d7fd861e9cc478ed81b3962f763de09809d4ef8e7a4ea68630",
+      "layout": {
+        "solcVersion": "0.8.20",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "lib/openzeppelin-contracts-upgradeable/contracts/proxy/utils/Initializable.sol:63",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "lib/openzeppelin-contracts-upgradeable/contracts/proxy/utils/Initializable.sol:68"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "lib/openzeppelin-contracts-upgradeable/contracts/utils/ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "lib/openzeppelin-contracts-upgradeable/contracts/access/OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "52",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "lib/openzeppelin-contracts-upgradeable/contracts/access/OwnableUpgradeable.sol:94"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "lib/openzeppelin-contracts-upgradeable/contracts/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol:169"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "lib/openzeppelin-contracts-upgradeable/contracts/proxy/utils/UUPSUpgradeable.sol:111"
+          },
+          {
+            "label": "collectionImpl",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_address",
+            "contract": "MvxFactory",
+            "src": "src/MvxFactory.sol:46"
+          },
+          {
+            "label": "collectionCount",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_uint256",
+            "contract": "MvxFactory",
+            "src": "src/MvxFactory.sol:48"
+          },
+          {
+            "label": "publicStageWeeks",
+            "offset": 0,
+            "slot": "203",
+            "type": "t_uint8",
+            "contract": "MvxFactory",
+            "src": "src/MvxFactory.sol:50"
+          },
+          {
+            "label": "updateStageFee",
+            "offset": 1,
+            "slot": "203",
+            "type": "t_uint72",
+            "contract": "MvxFactory",
+            "src": "src/MvxFactory.sol:51"
+          },
+          {
+            "label": "stageTimeCap",
+            "offset": 10,
+            "slot": "203",
+            "type": "t_uint40",
+            "contract": "MvxFactory",
+            "src": "src/MvxFactory.sol:52"
+          },
+          {
+            "label": "artists",
+            "offset": 0,
+            "slot": "204",
+            "type": "t_mapping(t_address,t_struct(Artist)11712_storage)",
+            "contract": "MvxFactory",
+            "src": "src/MvxFactory.sol:53"
+          },
+          {
+            "label": "partners",
+            "offset": 0,
+            "slot": "205",
+            "type": "t_mapping(t_address,t_struct(Partner)11727_storage)",
+            "contract": "MvxFactory",
+            "src": "src/MvxFactory.sol:55"
+          },
+          {
+            "label": "members",
+            "offset": 0,
+            "slot": "206",
+            "type": "t_mapping(t_address,t_struct(Member)11738_storage)",
+            "contract": "MvxFactory",
+            "src": "src/MvxFactory.sol:59"
+          },
+          {
+            "label": "referralBalances",
+            "offset": 0,
+            "slot": "207",
+            "type": "t_mapping(t_address,t_uint72)",
+            "contract": "MvxFactory",
+            "src": "src/MvxFactory.sol:62"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_address,t_struct(Artist)11712_storage)": {
+            "label": "mapping(address => struct Artist)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_struct(Member)11738_storage)": {
+            "label": "mapping(address => struct Member)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_struct(Partner)11727_storage)": {
+            "label": "mapping(address => struct Partner)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint72)": {
+            "label": "mapping(address => uint72)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(Artist)11712_storage": {
+            "label": "struct Artist",
+            "members": [
+              {
+                "label": "referral",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "collection",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(Member)11738_storage": {
+            "label": "struct Member",
+            "members": [
+              {
+                "label": "collection",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "deployFee",
+                "type": "t_uint72",
+                "offset": 20,
+                "slot": "0"
+              },
+              {
+                "label": "platformFee",
+                "type": "t_uint16",
+                "offset": 29,
+                "slot": "0"
+              },
+              {
+                "label": "discount",
+                "type": "t_uint16",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "expiration",
+                "type": "t_uint40",
+                "offset": 2,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(Partner)11727_storage": {
+            "label": "struct Partner",
+            "members": [
+              {
+                "label": "collection",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "admin",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "adminOwnPercent",
+                "type": "t_uint16",
+                "offset": 20,
+                "slot": "1"
+              },
+              {
+                "label": "referralOwnPercent",
+                "type": "t_uint16",
+                "offset": 22,
+                "slot": "1"
+              },
+              {
+                "label": "discount",
+                "type": "t_uint16",
+                "offset": 24,
+                "slot": "1"
+              },
+              {
+                "label": "balance",
+                "type": "t_uint72",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "expiration",
+                "type": "t_uint40",
+                "offset": 9,
+                "slot": "2"
+              }
+            ],
+            "numberOfBytes": "96"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint40": {
+            "label": "uint40",
+            "numberOfBytes": "5"
+          },
+          "t_uint72": {
+            "label": "uint72",
+            "numberOfBytes": "9"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {}
+      }
+    },
+    "e4138487c811cf6a38c73c873a1cfbe44bf8961e1a32e78625a0313975ff6c34": {
+      "address": "0xE7a1DD31D11Dd79bFa17bC098f7bebe90ec3E751",
+      "txHash": "0x5ef4b0fab8ebbd03c1c9b07446a259feb36d88341e71bc6b0f12ecaacfa4b3f2",
+      "layout": {
+        "solcVersion": "0.8.20",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "lib/openzeppelin-contracts-upgradeable/contracts/proxy/utils/Initializable.sol:63",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "lib/openzeppelin-contracts-upgradeable/contracts/proxy/utils/Initializable.sol:68"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "lib/openzeppelin-contracts-upgradeable/contracts/utils/ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "lib/openzeppelin-contracts-upgradeable/contracts/access/OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "52",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "lib/openzeppelin-contracts-upgradeable/contracts/access/OwnableUpgradeable.sol:94"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "lib/openzeppelin-contracts-upgradeable/contracts/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol:169"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "lib/openzeppelin-contracts-upgradeable/contracts/proxy/utils/UUPSUpgradeable.sol:111"
+          },
+          {
+            "label": "collectionImpl",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_address",
+            "contract": "MvxFactory",
+            "src": "src/MvxFactory.sol:46"
+          },
+          {
+            "label": "collectionCount",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_uint256",
+            "contract": "MvxFactory",
+            "src": "src/MvxFactory.sol:48"
+          },
+          {
+            "label": "publicStageWeeks",
+            "offset": 0,
+            "slot": "203",
+            "type": "t_uint8",
+            "contract": "MvxFactory",
+            "src": "src/MvxFactory.sol:50"
+          },
+          {
+            "label": "updateStageFee",
+            "offset": 1,
+            "slot": "203",
+            "type": "t_uint72",
+            "contract": "MvxFactory",
+            "src": "src/MvxFactory.sol:51"
+          },
+          {
+            "label": "stageTimeCap",
+            "offset": 10,
+            "slot": "203",
+            "type": "t_uint40",
+            "contract": "MvxFactory",
+            "src": "src/MvxFactory.sol:52"
+          },
+          {
+            "label": "artists",
+            "offset": 0,
+            "slot": "204",
+            "type": "t_mapping(t_address,t_struct(Artist)11726_storage)",
+            "contract": "MvxFactory",
+            "src": "src/MvxFactory.sol:53"
+          },
+          {
+            "label": "partners",
+            "offset": 0,
+            "slot": "205",
+            "type": "t_mapping(t_address,t_struct(Partner)11741_storage)",
+            "contract": "MvxFactory",
+            "src": "src/MvxFactory.sol:55"
+          },
+          {
+            "label": "members",
+            "offset": 0,
+            "slot": "206",
+            "type": "t_mapping(t_address,t_struct(Member)11752_storage)",
+            "contract": "MvxFactory",
+            "src": "src/MvxFactory.sol:59"
+          },
+          {
+            "label": "referralBalances",
+            "offset": 0,
+            "slot": "207",
+            "type": "t_mapping(t_address,t_uint72)",
+            "contract": "MvxFactory",
+            "src": "src/MvxFactory.sol:62"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_address,t_struct(Artist)11726_storage)": {
+            "label": "mapping(address => struct Artist)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_struct(Member)11752_storage)": {
+            "label": "mapping(address => struct Member)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_struct(Partner)11741_storage)": {
+            "label": "mapping(address => struct Partner)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint72)": {
+            "label": "mapping(address => uint72)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(Artist)11726_storage": {
+            "label": "struct Artist",
+            "members": [
+              {
+                "label": "referral",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "collection",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(Member)11752_storage": {
+            "label": "struct Member",
+            "members": [
+              {
+                "label": "collection",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "deployFee",
+                "type": "t_uint72",
+                "offset": 20,
+                "slot": "0"
+              },
+              {
+                "label": "platformFee",
+                "type": "t_uint16",
+                "offset": 29,
+                "slot": "0"
+              },
+              {
+                "label": "discount",
+                "type": "t_uint16",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "expiration",
+                "type": "t_uint40",
+                "offset": 2,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(Partner)11741_storage": {
             "label": "struct Partner",
             "members": [
               {

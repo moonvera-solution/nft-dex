@@ -91,6 +91,7 @@ contract MvxFactoryReferralDiscountTest is BaseTest, GasSnapshot {
 
         vm.startPrank(referral.addr);
         factory.withdrawReferral();
+        assertEq(factory.referralBalances(referral.addr),0);
     }
 
     function test_fuzz_artist_createCollection(
@@ -235,14 +236,19 @@ contract MvxFactoryReferralDiscountTest is BaseTest, GasSnapshot {
         vm.stopPrank();
 
         /// PARTNER
-
         vm.startPrank(member.addr);
-        (,,,, uint72 balance,,) = factory.partners(_cloneAddress);
+        (,
+            address admin,,,,
+            uint72 balance,
+                    ) = factory.partners(_cloneAddress);
+        assertEq(admin,member.addr);
         uint256 _balanceB4withdraw = member.addr.balance;
-
+        uint256 _factoryBalanceB4Withdraw = address(factory).balance;
         factory.withdrawPartner(_cloneAddress);
-        // assertEq(member.addr.balance, _balanceB4withdraw + balance);
-
+        assertEq(member.addr.balance, _balanceB4withdraw + balance);
+        assertEq(address(factory).balance, _factoryBalanceB4Withdraw - balance);
+        (,,,,,uint72 _balance,) = factory.partners(_cloneAddress);
+         assertEq(_balance,0);
         vm.stopPrank();
 
         factory.withdraw();
