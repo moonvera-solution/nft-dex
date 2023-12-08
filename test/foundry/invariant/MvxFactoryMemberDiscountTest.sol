@@ -26,6 +26,7 @@ contract MvxFactoryMemberDiscountTest is BaseTest, GasSnapshot {
         vm.deal(address(this), 10 ether);
         snapSize("MvxCollection", address(clone));
         factory.updateCollectionImpl(address(clone));
+        factory.updateStageConfig(2,7, 0.1 ether); // (_publicStageWeeks, _stageTimeCapInDays, _updateStageFee);
     }
 
     /// @dev Expect to create collection sending -20% of deployfee (member discount)
@@ -48,6 +49,7 @@ contract MvxFactoryMemberDiscountTest is BaseTest, GasSnapshot {
     /// @dev Up to 255 members get the discount
 
     function test_fuzz_member_discount(Vm.Wallet memory member, uint16 _memberDiscount, uint72 _deployFee) public {
+        vm.assume(member.addr != address(0x0));
         vm.assume(_memberDiscount > 0 && _memberDiscount < 5000); // discount bound up to 50%
         vm.assume(_deployFee > 0 && _deployFee < 10 ether);
 

@@ -32,12 +32,6 @@ contract MvxCollection is MintingStages {
         platformFee = _getArgUint16(21); //     1 byte offset
         updateStageFee = _getArgUint72(23); //  2 byte offset
         stageTimeCap = _getArgUint40(32); //    9 byte offset
-
-        emit Log("publicStageWeeks",publicStageWeeks);
-        emit Log("platformFee",platformFee);
-        emit Log("updateStageFee",updateStageFee);
-        emit Log("stageTimeCap",stageTimeCap);
-
         address _mvxFactory = msg.sender;
 
         __ERC721A_init(_nftData.name, _nftData.symbol);
