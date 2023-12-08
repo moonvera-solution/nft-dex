@@ -2463,8 +2463,8 @@
       }
     },
     "src/MvxFactory.sol": {
-      "lastModificationDate": 1702050741812,
-      "contentHash": "37883ff8b348b2e8dbf34c81d14ba432",
+      "lastModificationDate": 1702051128555,
+      "contentHash": "698e36f32c6d2df7311d9f269629338e",
       "sourceName": "src/MvxFactory.sol",
       "solcConfig": {
         "settings": {

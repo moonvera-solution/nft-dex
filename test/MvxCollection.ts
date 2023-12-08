@@ -44,6 +44,7 @@ describe("NftCollection", function () {
 
       const newImpl = CollectionInstance.target;
       await FactoryInstance.updateCollectionImpl(newImpl);
+      await FactoryInstance.updateStageConfig(2,7,100000000000000000n);
       const actualImpl = await FactoryInstance.collectionImpl();
       await expect(actualImpl).to.be.equals(newImpl);
 

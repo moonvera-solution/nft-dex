@@ -91,11 +91,11 @@ async function _deployFactory() {
 }
 
 async function _deployCollection() {
-  const Collection: any = await hre.ethers.getContractFactory("MvxCollection");
-  const CollectionInstance = await Collection.deploy();
-  const CollectionAddress = await CollectionInstance.getAddress();
-  _log("Collection 721A impl deployed to:", CollectionAddress);
-  await hre.run("verify:verify", { address: CollectionAddress });
+  // const Collection: any = await hre.ethers.getContractFactory("MvxCollection");
+  // const CollectionInstance = await Collection.deploy();
+  // const CollectionAddress = await CollectionInstance.getAddress();
+  // _log("Collection 721A impl deployed to:", CollectionAddress);
+  await hre.run("verify:verify", { address: "0x21E9137d1C541Fa0CA220f6Bef908d35CF6E8b45" });
 }
 
 async function _initFactory(FactoryProxyAddress: any, ImplAddr: any) {
@@ -118,12 +118,12 @@ async function _updateMember(FactoryProxyAddress: any, member: any, deployFee: a
   _log("Added Member", rc.logs);
 }
 
-async function _createCollection(FactoryProxyAddress: any, sender: any, collectionName:any) {
+async function _createCollection(FactoryProxyAddress: any, sender: any, collectionName:any, _deployFee:any) {
   const [stages,nftData,ogs,wls] = await _getCollectionParams(sender,collectionName);
   const FactoryProxy: MvxFactory = await ethers.getContractAt("MvxFactory", FactoryProxyAddress);
   const signer = await ethers.getSigner(sender);
   console.log(nftData, stages, ogs, wls)
-  const tx = await FactoryProxy.connect(signer).createCollection(nftData, stages, ogs, wls, { value: 0});//500000000000000000n });
+  const tx = await FactoryProxy.connect(signer).createCollection(nftData, stages, ogs, wls, { value: _deployFee});//500000000000000000n });
   const rc: any = await tx.wait();
   _log("Collection1 clone address", rc.logs);
 }
@@ -215,6 +215,8 @@ const DEPLOY_PRICE_USD = 1000;
 async function main() {
   await _fetchNaticePrice("ETH");
   await _fetchNaticePrice("MATIC");
+  const _deployFeeEth = ethers.parseEther(String(DEPLOY_PRICE_USD / ethPrice));
+  const _deployFeeMatic = ethers.parseEther(String(DEPLOY_PRICE_USD / maticPrice));
 
   // await _upgradeFactory(FACTORY_PROXY_GOERLI);
   // await _deployFactory();
@@ -222,8 +224,8 @@ async function main() {
 
   // await _initFactory(FACTORY_PROXY_GOERLI, CLONE_IMPL_GOERLI);
   // await _initFactory(FACTORY_PROXY_MUMBAI, CLONE_IMPL_MUMBAI);
-  const price = ethers.parseEther(String(DEPLOY_PRICE_USD / ethPrice));
-  await _updateMember(FACTORY_PROXY_GOERLI,ADMIN,price,0,0); // platformFee, discount
+  // const price = ethers.parseEther(String(DEPLOY_PRICE_USD / ethPrice));
+  // await _updateMember(FACTORY_PROXY_GOERLI,ADMIN,price,0,0); // platformFee, discount
   // await _updateMember(FACTORY_PROXY_MUMBAI,ADMIN,price,0,2000);// deployFee, platformFee, discount
   // ethers.parseEther(String(DEPLOY_PRICE_USD / maticPrice))
 
@@ -237,8 +239,8 @@ async function main() {
 
   // await _grantReferral(FACTORY_PROXY_GOERLI,ADMIN,ARTIST,CLONE_721A_GOERLI);
 
-  // await _updateMember(FACTORY_PROXY_GOERLI,ARTIST,ethers.parseEther(String(DEPLOY_PRICE_USD / ethPrice)),2000,2000); // deployfee,platFee,discount
-  // await _createCollection(FACTORY_PROXY_GOERLI, ARTIST); //bingo!
+  // await _updateMember(FACTORY_PROXY_GOERLI,ARTIST,_deployFeeEth,2000,0); // deployfee,platFee,discount
+  await _createCollection(FACTORY_PROXY_GOERLI, ARTIST,"SOLADY",_deployFeeEth);
   process.exit();
 }
 

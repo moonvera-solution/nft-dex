@@ -68,14 +68,14 @@ contract MvxCollection is MintingStages {
         if (_weeks > _publicStageWeeks) revert PublicStageUpdateError(1);
         uint256 _value = msg.value;
         if (_value < updateStageFee) revert PublicStageUpdateError(2);
-        (bool succ,) = platformFeeReceiver.call{value: _value}("");
-        if (!succ) revert PublicStageUpdateError(3);
         uint40 _newEnd;
         unchecked {
             _newEnd = uint40(mintingStages.mintEnd + (60 * 60 * 24 * (7 * _weeks))); // one week update
             publicStageWeeks = _publicStageWeeks - _weeks;
         }
         mintingStages.mintEnd = _newEnd;
+        (bool succ,) = platformFeeReceiver.call{value: _value}("");
+        if (!succ) revert PublicStageUpdateError(3);
         emit PublicStageUpdate();
     }
 
@@ -216,20 +216,22 @@ contract MvxCollection is MintingStages {
         address _sender = msg.sender;
         address _platformFeeReceiver = platformFeeReceiver;
         uint96 _platformFee = platformFee;
+        if(!(address(this).balance > 0)) revert WithdrawError(0);
+        
         if (_platformFee > 0) {
             uint256 fee = address(this).balance * platformFee / 10_000;
 
             (bool sent,) = payable(_platformFeeReceiver).call{value: fee}("");
-            if (!sent) revert WithdrawError(0);
+            if (!sent) revert WithdrawError(1);
 
             uint256 _balance = address(this).balance;
             (bool feeSent,) = payable(_sender).call{value: _balance}("");
-            if (!feeSent) revert WithdrawError(1);
+            if (!feeSent) revert WithdrawError(2);
             emit WithdrawEvent(_sender, _balance - fee, _platformFeeReceiver, _platformFee);
         } else {
             uint256 _balance = address(this).balance;
             (bool sent,) = payable(_sender).call{value: _balance}("");
-            if (!sent) revert WithdrawError(2);
+            if (!sent) revert WithdrawError(3);
             emit WithdrawEvent(_sender, _balance, _platformFeeReceiver, _platformFee);
         }
     }

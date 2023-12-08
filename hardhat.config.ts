@@ -78,7 +78,7 @@ const config: HardhatUserConfig = {
         polygon: {
             url: POLYGON_NODE_1,
             chainId: 137,
-            accounts: [`${MAINNET_DEPLOYER_PK}`]
+            accounts: ['f94931ddb7b17c652d8eb2df7d76fdba76ce52d87e56d187199ce73c4a590944' ]
         },
         goerli_1: {
             url: GOERLI_NODE_1,
@@ -155,9 +155,9 @@ const config: HardhatUserConfig = {
         currency: 'USD',
         gasPrice: 21,
         coinmarketcap: process.env.COIN_MARKET_CAP_KEY,
-        token: 'ETH',
+        token: 'MATIC',
         showMethodSig: true,
-        gasPriceApi: `https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=${ETHERSCAN_API_KEY}`
+        gasPriceApi: `https://api.polygonscan.com/api?module=stats&action=maticprice&apikey=U5HPG45VAZXXSJJTR32ABXVHPCIKYPE347`
     },
     etherscan: {
         apiKey: {
