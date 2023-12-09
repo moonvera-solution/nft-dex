@@ -1,0 +1,20 @@
+
+
+
+System Rules
+
+Partners
+
+
+Members
+
+To become a member the user has to pass the mvx vetting process
+Member are created/updated by mvx admin
+A member cannot manage 2 collections with a single memeber address
+MvxPad tracks members based on launched collections
+Members expiration date resets to 0 after they launch a collections
+
+
+Artists
+
+Artist discount remains until partnership expires
